@@ -1,10 +1,14 @@
 ---
+# `figures` is filled in by the figure-interpreter sub-Agent at runtime.
+# Each entry's `file` is the basename of an image in $PAPER_DIR/images/.
+# Real filenames from claude-paper:study look like `page_3_img_1.png`,
+# not `figure-1.png` — the placeholders below are illustrative only.
 figures:
-  - file: figure-1.png
+  - file: <basename-from-images-dir>
     caption: "<caption>"
     importance: 0.0  # 0.0–1.0, set by interpreter
     role: architecture | pipeline | main-result | ablation | qualitative | other
-  - file: figure-2.png
+  - file: <another-basename>
     caption: ""
     importance: 0.0
     role: other

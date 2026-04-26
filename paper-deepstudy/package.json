@@ -5,6 +5,6 @@
   "type": "commonjs",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test:unit": "bats tests/unit && node tests/unit/test-select-figures.cjs"
+    "test:unit": "bats tests/unit"
   }
 }

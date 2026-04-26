@@ -1,5 +1,10 @@
 #!/usr/bin/env bats
 
+# Ensure tests run from the plugin root regardless of where bats was invoked.
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
+
 required_sections=(
   "# Pack:"
   "## Core problems"
@@ -17,16 +22,16 @@ check_pack() {
 }
 
 @test "_template.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/_template.md
+  run check_pack domain-packs/_template.md
   [ "$status" -eq 0 ]
 }
 
 @test "ml-pure.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/ml-pure.md
+  run check_pack domain-packs/ml-pure.md
   [ "$status" -eq 0 ]
 }
 
 @test "single-cell.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/single-cell.md
+  run check_pack domain-packs/single-cell.md
   [ "$status" -eq 0 ]
 }

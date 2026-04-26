@@ -9,7 +9,8 @@ Deep paper study for ML and computational-biology papers. Layers on top of `clau
 ## Install (local dev)
 
 ```
-/plugin install /Users/chensijie/Projects/studypaper/paper-deepstudy
+# from this repo's root:
+/plugin install ./paper-deepstudy
 ```
 
 Requires `claude-paper:study` already installed.
