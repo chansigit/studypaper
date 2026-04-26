@@ -47,3 +47,8 @@ check_prompt() {
   run check_prompt prompts/prior-work-historian.md
   [ "$status" -eq 0 ]
 }
+
+@test "figure-interpreter.md has required sections" {
+  run check_prompt prompts/figure-interpreter.md
+  [ "$status" -eq 0 ]
+}
