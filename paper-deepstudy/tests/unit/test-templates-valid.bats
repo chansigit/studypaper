@@ -32,3 +32,25 @@ setup() {
 @test "06-figures.md has frontmatter for scoring" {
   head -1 templates/analysis/06-figures.md | grep -qE '^---$'
 }
+
+@test "review.md has Score section" {
+  grep -qF '## Score' templates/review.md
+}
+
+@test "notes/source.md has 9 sections" {
+  count=$(grep -cE '^## ' templates/notes/source.md)
+  [ "$count" -eq 9 ]
+}
+
+@test "notes/titles.md has xhs and wechat groups" {
+  grep -qF '## xhs' templates/notes/titles.md
+  grep -qF '## wechat' templates/notes/titles.md
+}
+
+@test "notes/xhs.md has frontmatter with title" {
+  head -3 templates/notes/xhs.md | grep -qF 'title:'
+}
+
+@test "notes/wechat.md has frontmatter with title" {
+  head -3 templates/notes/wechat.md | grep -qF 'title:'
+}
