@@ -91,3 +91,11 @@ check_prompt() {
     grep -qF "$s" skills/study-deep/SKILL.md || return 1
   done
 }
+
+@test "study-deep SKILL.md has Stage 2 section" {
+  grep -qF '## Stage 2: Review generation' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md mentions reviewer-synthesizer dispatch" {
+  grep -qF 'reviewer-synthesizer' skills/study-deep/SKILL.md
+}

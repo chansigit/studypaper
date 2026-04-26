@@ -125,6 +125,28 @@ Record failures in a `STAGE1_FAILURES` list for the final summary.
 
 ---
 
-## Stages 2 & 3
+## Stage 2: Review generation
 
-(Continued in subsequent skill content; see Tasks 19, 20 in the implementation plan — they extend this file.)
+### 2.1 Dispatch reviewer-synthesizer
+
+```
+Agent(
+  description: "reviewer-synthesizer drafts review.md v1",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/reviewer-synthesizer.md> + inputs:
+    ANALYSIS_DIR=$ANALYSIS_DIR
+    DOMAIN_PACKS=<list>
+    OUTPUT_PATH=$PAPER_DIR/review.md
+    TEMPLATE_PATH=$PLUGIN_ROOT/templates/review.md
+)
+```
+
+Wait for completion.
+
+### 2.2 Verify
+
+If `$PAPER_DIR/review.md` does not exist, write `<!-- FAILED: reviewer-synthesizer did not produce output -->` and record failure in `STAGE2_FAILURES`. Otherwise, proceed.
+
+## Stages 3
+
+(Stage 3 is added in Task 20.)
