@@ -15,7 +15,7 @@ Invoke with a PDF path or arXiv URL. Optional flags:
 
 ## Stage 0: Bootstrap & Profile
 
-## Idempotence and re-runs
+### Idempotence and re-runs
 
 Default behavior (no flags): for each output file, if it already exists, skip the corresponding sub-Agent dispatch. Skipped files are reported in the final summary.
 
@@ -25,7 +25,7 @@ Default behavior (no flags): for each output file, if it already exists, skip th
 
 `--only <stage>` (used by `/paper:rerun-<stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
 
-## Per-dispatch idempotence rule
+### Per-dispatch idempotence rule
 
 This rule applies uniformly to every Agent dispatch in Stages 0.4, 1.2, 2.1, 3.1, 3.2, and 3.4 below. Before issuing each Agent call:
 

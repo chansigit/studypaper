@@ -2593,8 +2593,8 @@ git commit -m "feat(paper-deepstudy): study-deep skill Stage 3 and final summary
 }
 
 @test "study-deep SKILL.md describes skip-existing default" {
-  grep -qiF 'skip' skills/study-deep/SKILL.md
-  grep -qF '.bak.' skills/study-deep/SKILL.md
+  grep -qiF 'skip' skills/study-deep/SKILL.md && \
+    grep -qF '.bak.' skills/study-deep/SKILL.md
 }
 ```
 
@@ -2605,7 +2605,7 @@ git commit -m "feat(paper-deepstudy): study-deep skill Stage 3 and final summary
 After Stage 0's intro and before Stage 0.1, insert:
 
 ```markdown
-## Idempotence and re-runs
+### Idempotence and re-runs
 
 Default behavior (no flags): for each output file, if it already exists, skip the corresponding sub-Agent dispatch. Skipped files are reported in the final summary.
 

@@ -123,6 +123,6 @@ check_prompt() {
 }
 
 @test "study-deep SKILL.md describes skip-existing default" {
-  grep -qiF 'skip' skills/study-deep/SKILL.md
-  grep -qF '.bak.' skills/study-deep/SKILL.md
+  grep -qiF 'skip' skills/study-deep/SKILL.md && \
+    grep -qF '.bak.' skills/study-deep/SKILL.md
 }
