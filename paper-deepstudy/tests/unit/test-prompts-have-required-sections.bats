@@ -32,3 +32,8 @@ check_prompt() {
   run check_prompt prompts/formalizer.md
   [ "$status" -eq 0 ]
 }
+
+@test "method-analyst.md has required sections" {
+  run check_prompt prompts/method-analyst.md
+  [ "$status" -eq 0 ]
+}
