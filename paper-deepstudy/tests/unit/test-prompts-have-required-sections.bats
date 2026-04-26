@@ -67,3 +67,13 @@ check_prompt() {
   run check_prompt prompts/title-generator.md
   [ "$status" -eq 0 ]
 }
+
+@test "xhs-renderer.md has required sections" {
+  run check_prompt prompts/xhs-renderer.md
+  [ "$status" -eq 0 ]
+}
+
+@test "wechat-renderer.md has required sections" {
+  run check_prompt prompts/wechat-renderer.md
+  [ "$status" -eq 0 ]
+}
