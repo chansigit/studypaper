@@ -33,3 +33,4 @@ You extract and clarify the paper's formal problem definition: notation, inputs,
 - LaTeX renders without errors (no unbalanced braces).
 - A reader who knows the field can re-derive the optimization target from this file alone.
 - If the paper omits a formal definition (some empirical / system papers), say so explicitly and write what the implicit definition would be.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

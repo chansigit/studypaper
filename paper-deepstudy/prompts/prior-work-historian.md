@@ -33,3 +33,4 @@ You build a chronological lineage of the paper: what came before, what this pape
 
 - Timeline entries are real papers (don't fabricate). If unsure, mark with `?` and explain.
 - Comparison table cells are concrete (no vague "scales better"; say what scales how).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

@@ -287,6 +287,11 @@ if ! command -v python3 > /dev/null 2>&1; then
   exit 3
 fi
 
+# 4. pdftotext (optional but recommended; falls back to PDF read by Read tool)
+if ! command -v pdftotext > /dev/null 2>&1; then
+  echo "WARN: pdftotext not found; full-text extraction will fall back to direct PDF reads (slower)." >&2
+fi
+
 echo "OK: prerequisites satisfied."
 exit 0
 ```
@@ -1184,6 +1189,7 @@ After the frontmatter, write two short prose sections (`## Why these tags`, `## 
 
 - Every frontmatter field present and from the allowed enum (where enums apply).
 - Tag choice is defensible from the abstract alone — i.e. another reader could follow your reasoning in `## Why these tags`.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1264,6 +1270,7 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 - A reader unfamiliar with the field can read this section and understand what the paper is about.
 - No equations (those go to `02-formalization.md`).
 - No specific paper citations (those go to `05-prior-work.md`).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1337,6 +1344,7 @@ You extract and clarify the paper's formal problem definition: notation, inputs,
 - LaTeX renders without errors (no unbalanced braces).
 - A reader who knows the field can re-derive the optimization target from this file alone.
 - If the paper omits a formal definition (some empirical / system papers), say so explicitly and write what the implicit definition would be.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1411,6 +1419,7 @@ You analyze the method in depth, including each component's design rationale, al
 - Design rationale section answers "why this design choice?" not "what does this component do?"
 - Alternatives are named, not vague ("could be different" is not an alternative).
 - Pseudocode is implementable, not handwavy.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1484,6 +1493,7 @@ You audit the experimental section. Your output should answer: "do the experimen
 
 - Critique is specific: "ResNet-50 baseline used a 3x smaller compute budget" rather than "baselines may be unfair".
 - Domain pack checklist questions all addressed (or marked N/A with reason).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1554,6 +1564,7 @@ You build a chronological lineage of the paper: what came before, what this pape
 
 - Timeline entries are real papers (don't fabricate). If unsure, mark with `?` and explain.
 - Comparison table cells are concrete (no vague "scales better"; say what scales how).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1630,6 +1641,7 @@ After frontmatter, one `## Figure N` section per figure, in the same order as th
 - Importance scores are usable for picking 1 figure (xhs) and 2-3 figures (wechat). Exactly one figure should be ≥ 0.9 (the most important one).
 - Caption field is verbatim text, not a paraphrase.
 - Explanation tells a non-specialist why the figure matters.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1712,6 +1724,7 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 
 - No bullet point references the paper directly; every claim is grounded in an analysis file. If you can't ground it, drop it.
 - If a section in the analysis files is `<!-- FAILED: ... -->`, mention this gap in `## Suggestions` (e.g. "Re-run prior-work analysis; comparison with X is missing").
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -2213,10 +2226,27 @@ Set these environment-style variables (use them in subsequent dispatches):
 
 - `PAPER_DIR=~/claude-papers/papers/<slug>`
 - `META_JSON=$PAPER_DIR/meta.json`
-- `PAPER_TEXT=$PAPER_DIR/summary.md` *(claude-paper:study writes the extracted text into summary.md or a similar file; confirm and use the actual extracted-text file)*
+- `PAPER_PDF=$PAPER_DIR/paper.pdf`
+- `PAPER_TEXT=$PAPER_DIR/paper.txt` (extracted from `paper.pdf` — see Stage 0.3.1 below)
 - `IMAGES_DIR=$PAPER_DIR/images`
 - `ANALYSIS_DIR=$PAPER_DIR/analysis` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+
+### 0.3.1 Extract full paper text
+
+`claude-paper:study` does not persist the extracted full text to disk; only `paper.pdf` is reliably available. We need full text for Stage 1 sub-Agents.
+
+If `$PAPER_TEXT` (i.e. `$PAPER_DIR/paper.txt`) does not already exist, run:
+
+```bash
+pdftotext -layout "$PAPER_PDF" "$PAPER_TEXT"
+```
+
+If `pdftotext` is not installed or the conversion fails:
+- Fallback A: use `python3 -c "from pypdf import PdfReader; ..."` if `pypdf` is available (`claude-paper:study` requires `pymupdf` so `pypdf` may be installed too).
+- Fallback B: pass `$PAPER_PDF` directly as `PAPER_TEXT` to sub-Agents — Claude Code's Read tool can read PDFs natively, so sub-Agents can read it. In this fallback, set `PAPER_TEXT=$PAPER_PDF`.
+
+Record which path was used in the final summary (so users know to install `pdftotext` if they got the fallback path).
 
 ### 0.4 Dispatch paper-profiler
 
@@ -2238,6 +2268,8 @@ Agent(
 Wait for completion. Read `$ANALYSIS_DIR/00-paper-profile.md` and parse its YAML frontmatter.
 
 ### 0.5 Confirm with user
+
+**Chat-facing prose:** Always reply to the user in the user's invocation language. The English/Chinese language matrix applies only to written artifacts (`analysis/`, `review.md`, `notes/`). The example block below stays English-shaped to show structure; translate the labels and prompt into the user's language at runtime.
 
 If `--yes` flag is NOT set:
 
@@ -2268,7 +2300,7 @@ Take `domain_packs_selected` from the profile. For each, build path: `$PLUGIN_RO
 
 ### 1.2 Dispatch six sub-Agents in parallel
 
-In **one message**, issue six parallel Agent tool calls. Each gets paper text + profile path + output path + template path. Two get domain packs (`method-analyst`, `experiment-critic`); one is encouraged to use them (`prior-work-historian`); three do not (`problem-framer`, `formalizer`, `figure-interpreter`).
+In **one message**, issue six parallel Agent tool calls. The dispatch table below is authoritative for what each sub-Agent receives. All six get `PAPER_TEXT`, `OUTPUT_PATH`, and `TEMPLATE_PATH`. Most also receive `PROFILE_PATH` (`figure-interpreter` does not — it works directly from `PAPER_TEXT` + `IMAGES_DIR`). Extras vary: `method-analyst` and `experiment-critic` get `DOMAIN_PACKS`; `prior-work-historian` gets `DOMAIN_PACKS` and is allowed up to 5 WebFetch calls; `figure-interpreter` gets `IMAGES_DIR`.
 
 For each sub-Agent:
 
@@ -2282,14 +2314,14 @@ Agent(
 
 Concrete dispatch table:
 
-| Sub-Agent | OUTPUT_PATH | TEMPLATE_PATH | Extra inputs |
+| Sub-Agent | Inputs | OUTPUT_PATH | TEMPLATE_PATH |
 |---|---|---|---|
-| problem-framer | `$ANALYSIS_DIR/01-problem.md` | `$PLUGIN_ROOT/templates/analysis/01-problem.md` | — |
-| formalizer | `$ANALYSIS_DIR/02-formalization.md` | `$PLUGIN_ROOT/templates/analysis/02-formalization.md` | — |
-| method-analyst | `$ANALYSIS_DIR/03-method-deep.md` | `$PLUGIN_ROOT/templates/analysis/03-method-deep.md` | DOMAIN_PACKS |
-| experiment-critic | `$ANALYSIS_DIR/04-experiments.md` | `$PLUGIN_ROOT/templates/analysis/04-experiments.md` | DOMAIN_PACKS |
-| prior-work-historian | `$ANALYSIS_DIR/05-prior-work.md` | `$PLUGIN_ROOT/templates/analysis/05-prior-work.md` | DOMAIN_PACKS, WEBFETCH allowed |
-| figure-interpreter | `$ANALYSIS_DIR/06-figures.md` | `$PLUGIN_ROOT/templates/analysis/06-figures.md` | IMAGES_DIR |
+| problem-framer | PAPER_TEXT, PROFILE_PATH | `$ANALYSIS_DIR/01-problem.md` | `$PLUGIN_ROOT/templates/analysis/01-problem.md` |
+| formalizer | PAPER_TEXT, PROFILE_PATH | `$ANALYSIS_DIR/02-formalization.md` | `$PLUGIN_ROOT/templates/analysis/02-formalization.md` |
+| method-analyst | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS | `$ANALYSIS_DIR/03-method-deep.md` | `$PLUGIN_ROOT/templates/analysis/03-method-deep.md` |
+| experiment-critic | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS | `$ANALYSIS_DIR/04-experiments.md` | `$PLUGIN_ROOT/templates/analysis/04-experiments.md` |
+| prior-work-historian | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS (WebFetch allowed, cap 5) | `$ANALYSIS_DIR/05-prior-work.md` | `$PLUGIN_ROOT/templates/analysis/05-prior-work.md` |
+| figure-interpreter | PAPER_TEXT, IMAGES_DIR | `$ANALYSIS_DIR/06-figures.md` | `$PLUGIN_ROOT/templates/analysis/06-figures.md` |
 
 ### 1.3 Collect results
 
@@ -2527,7 +2559,7 @@ Each of `notes/{source,titles,xhs,wechat}.md` must exist. Missing ones get `<!--
 
 ## Final summary
 
-After Stage 3 completes, print a summary to chat:
+After Stage 3 completes, print a summary to chat. The structure (sections, file list, refinement command list) stays as below, but the headings and prose should be translated into the user's invocation language; only the file paths and command names stay verbatim.
 
 ```
 ✓ paper-deepstudy complete for <slug>

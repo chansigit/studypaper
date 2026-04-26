@@ -48,3 +48,4 @@ After the frontmatter, write two short prose sections (`## Why these tags`, `## 
 
 - Every frontmatter field present and from the allowed enum (where enums apply).
 - Tag choice is defensible from the abstract alone — i.e. another reader could follow your reasoning in `## Why these tags`.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

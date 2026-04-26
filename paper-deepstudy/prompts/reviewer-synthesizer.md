@@ -45,3 +45,4 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 
 - No bullet point references the paper directly; every claim is grounded in an analysis file. If you can't ground it, drop it.
 - If a section in the analysis files is `<!-- FAILED: ... -->`, mention this gap in `## Suggestions` (e.g. "Re-run prior-work analysis; comparison with X is missing").
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

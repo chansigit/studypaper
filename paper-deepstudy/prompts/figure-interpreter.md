@@ -39,3 +39,4 @@ After frontmatter, one `## Figure N` section per figure, in the same order as th
 - Importance scores are usable for picking 1 figure (xhs) and 2-3 figures (wechat). Exactly one figure should be ≥ 0.9 (the most important one).
 - Caption field is verbatim text, not a paraphrase.
 - Explanation tells a non-specialist why the figure matters.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

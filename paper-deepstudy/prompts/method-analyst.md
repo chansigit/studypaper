@@ -37,3 +37,4 @@ You analyze the method in depth, including each component's design rationale, al
 - Design rationale section answers "why this design choice?" not "what does this component do?"
 - Alternatives are named, not vague ("could be different" is not an alternative).
 - Pseudocode is implementable, not handwavy.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

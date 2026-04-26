@@ -35,3 +35,4 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 - A reader unfamiliar with the field can read this section and understand what the paper is about.
 - No equations (those go to `02-formalization.md`).
 - No specific paper citations (those go to `05-prior-work.md`).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

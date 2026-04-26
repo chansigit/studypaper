@@ -36,3 +36,4 @@ You audit the experimental section. Your output should answer: "do the experimen
 
 - Critique is specific: "ResNet-50 baseline used a 3x smaller compute budget" rather than "baselines may be unfair".
 - Domain pack checklist questions all addressed (or marked N/A with reason).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

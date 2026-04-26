@@ -28,5 +28,10 @@ if ! command -v python3 > /dev/null 2>&1; then
   exit 3
 fi
 
+# 4. pdftotext (optional but recommended; falls back to PDF read by Read tool)
+if ! command -v pdftotext > /dev/null 2>&1; then
+  echo "WARN: pdftotext not found; full-text extraction will fall back to direct PDF reads (slower)." >&2
+fi
+
 echo "OK: prerequisites satisfied."
 exit 0
