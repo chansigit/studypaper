@@ -15,6 +15,26 @@ Invoke with a PDF path or arXiv URL. Optional flags:
 
 ## Stage 0: Bootstrap & Profile
 
+## Idempotence and re-runs
+
+Default behavior (no flags): for each output file, if it already exists, skip the corresponding sub-Agent dispatch. Skipped files are reported in the final summary.
+
+`--force`: for each output file that exists, copy it to `<file>.bak.NN` (where NN is the smallest non-existent integer ≥ 1) before re-running.
+
+`--yes`: skip the Stage 0 confirmation prompt. Use the auto-detected profile.
+
+`--only <stage>` (used by `/paper:rerun-<stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
+
+## Per-dispatch idempotence rule
+
+This rule applies uniformly to every Agent dispatch in Stages 0.4, 1.2, 2.1, 3.1, 3.2, and 3.4 below. Before issuing each Agent call:
+
+- If `OUTPUT_PATH` exists and `--force` is not set, log `skipping <subagent> (output exists)` and do not dispatch.
+- If `OUTPUT_PATH` exists and `--force` is set, copy `OUTPUT_PATH` to `OUTPUT_PATH.bak.NN` (smallest non-existent integer ≥ 1) first, then dispatch.
+- If `OUTPUT_PATH` does not exist, dispatch normally.
+
+Skipped dispatches still count as ✓ in the final summary (the existing file is the output).
+
 ### 0.1 Verify prerequisites
 
 ```bash

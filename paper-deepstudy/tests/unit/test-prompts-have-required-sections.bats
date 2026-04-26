@@ -113,3 +113,16 @@ check_prompt() {
 @test "study-deep SKILL.md mentions select-figures.cjs" {
   grep -qF 'select-figures.cjs' skills/study-deep/SKILL.md
 }
+
+@test "study-deep SKILL.md documents --force flag" {
+  grep -qF -e '--force' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md documents --yes flag" {
+  grep -qF -e '--yes' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md describes skip-existing default" {
+  grep -qiF 'skip' skills/study-deep/SKILL.md
+  grep -qF '.bak.' skills/study-deep/SKILL.md
+}
