@@ -2284,12 +2284,12 @@ Concrete dispatch table:
 
 | Sub-Agent | OUTPUT_PATH | TEMPLATE_PATH | Extra inputs |
 |---|---|---|---|
-| problem-framer | `$ANALYSIS_DIR/01-problem.md` | `templates/analysis/01-problem.md` | — |
-| formalizer | `$ANALYSIS_DIR/02-formalization.md` | `templates/analysis/02-formalization.md` | — |
-| method-analyst | `$ANALYSIS_DIR/03-method-deep.md` | `templates/analysis/03-method-deep.md` | DOMAIN_PACKS |
-| experiment-critic | `$ANALYSIS_DIR/04-experiments.md` | `templates/analysis/04-experiments.md` | DOMAIN_PACKS |
-| prior-work-historian | `$ANALYSIS_DIR/05-prior-work.md` | `templates/analysis/05-prior-work.md` | DOMAIN_PACKS, WEBFETCH allowed |
-| figure-interpreter | `$ANALYSIS_DIR/06-figures.md` | `templates/analysis/06-figures.md` | IMAGES_DIR |
+| problem-framer | `$ANALYSIS_DIR/01-problem.md` | `$PLUGIN_ROOT/templates/analysis/01-problem.md` | — |
+| formalizer | `$ANALYSIS_DIR/02-formalization.md` | `$PLUGIN_ROOT/templates/analysis/02-formalization.md` | — |
+| method-analyst | `$ANALYSIS_DIR/03-method-deep.md` | `$PLUGIN_ROOT/templates/analysis/03-method-deep.md` | DOMAIN_PACKS |
+| experiment-critic | `$ANALYSIS_DIR/04-experiments.md` | `$PLUGIN_ROOT/templates/analysis/04-experiments.md` | DOMAIN_PACKS |
+| prior-work-historian | `$ANALYSIS_DIR/05-prior-work.md` | `$PLUGIN_ROOT/templates/analysis/05-prior-work.md` | DOMAIN_PACKS, WEBFETCH allowed |
+| figure-interpreter | `$ANALYSIS_DIR/06-figures.md` | `$PLUGIN_ROOT/templates/analysis/06-figures.md` | IMAGES_DIR |
 
 ### 1.3 Collect results
 
