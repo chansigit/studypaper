@@ -27,3 +27,8 @@ check_prompt() {
   run check_prompt prompts/problem-framer.md
   [ "$status" -eq 0 ]
 }
+
+@test "formalizer.md has required sections" {
+  run check_prompt prompts/formalizer.md
+  [ "$status" -eq 0 ]
+}
