@@ -22,3 +22,8 @@ check_prompt() {
   run check_prompt prompts/paper-profiler.md
   [ "$status" -eq 0 ]
 }
+
+@test "problem-framer.md has required sections" {
+  run check_prompt prompts/problem-framer.md
+  [ "$status" -eq 0 ]
+}
