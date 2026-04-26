@@ -2013,7 +2013,8 @@ const { selectFigures } = require('../../scripts/select-figures.cjs');
 
 // Create a temp dir with a fake 06-figures.md
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pds-test-'));
-const figuresMd = `---
+try {
+  const figuresMd = `---
 figures:
   - file: figure-1.png
     caption: "Architecture overview"
@@ -2035,18 +2036,18 @@ figures:
 
 # Figures
 `;
-fs.writeFileSync(path.join(tmp, '06-figures.md'), figuresMd);
+  fs.writeFileSync(path.join(tmp, '06-figures.md'), figuresMd);
 
-// Test xhs (1 figure): should pick the highest-importance one
-const xhsPicks = selectFigures(path.join(tmp, '06-figures.md'), 1);
-assert.deepEqual(xhsPicks.map(p => p.file), ['figure-1.png']);
+  // Test xhs (1 figure): should pick the highest-importance one
+  const xhsPicks = selectFigures(path.join(tmp, '06-figures.md'), 1);
+  assert.deepEqual(xhsPicks.map(p => p.file), ['figure-1.png']);
 
-// Test wechat (3 figures): should pick top-3 by importance
-const wechatPicks = selectFigures(path.join(tmp, '06-figures.md'), 3);
-assert.deepEqual(wechatPicks.map(p => p.file), ['figure-1.png', 'figure-2.png', 'figure-3.png']);
+  // Test wechat (3 figures): should pick top-3 by importance
+  const wechatPicks = selectFigures(path.join(tmp, '06-figures.md'), 3);
+  assert.deepEqual(wechatPicks.map(p => p.file), ['figure-1.png', 'figure-2.png', 'figure-3.png']);
 
-// Test wechat with only 2 high-importance: should pick what's available, dedup low
-const figuresMd2 = `---
+  // Test wechat with only 2 high-importance: should pick what's available, dedup low
+  const figuresMd2 = `---
 figures:
   - file: f1.png
     caption: ""
@@ -2058,16 +2059,17 @@ figures:
     role: main-result
 ---
 `;
-fs.writeFileSync(path.join(tmp, 'few-figs.md'), figuresMd2);
-const fewPicks = selectFigures(path.join(tmp, 'few-figs.md'), 3);
-assert.deepEqual(fewPicks.map(p => p.file), ['f1.png', 'f2.png']);
+  fs.writeFileSync(path.join(tmp, 'few-figs.md'), figuresMd2);
+  const fewPicks = selectFigures(path.join(tmp, 'few-figs.md'), 3);
+  assert.deepEqual(fewPicks.map(p => p.file), ['f1.png', 'f2.png']);
 
-// Test bad path: throws
-assert.throws(() => selectFigures('/no/such/file', 1));
+  // Test bad path: throws
+  assert.throws(() => selectFigures('/no/such/file', 1));
 
-// Cleanup
-fs.rmSync(tmp, { recursive: true });
-console.log('select-figures: all tests passed');
+  console.log('select-figures: all tests passed');
+} finally {
+  fs.rmSync(tmp, { recursive: true });
+}
 ```
 
 - [ ] **Step 2: Run, verify fail**
