@@ -25,3 +25,8 @@ check_pack() {
   run check_pack paper-deepstudy/domain-packs/ml-pure.md
   [ "$status" -eq 0 ]
 }
+
+@test "single-cell.md has required sections" {
+  run check_pack paper-deepstudy/domain-packs/single-cell.md
+  [ "$status" -eq 0 ]
+}
