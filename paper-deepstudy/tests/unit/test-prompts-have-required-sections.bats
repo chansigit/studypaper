@@ -77,3 +77,17 @@ check_prompt() {
   run check_prompt prompts/wechat-renderer.md
   [ "$status" -eq 0 ]
 }
+
+@test "study-deep SKILL.md has YAML frontmatter with name" {
+  head -5 skills/study-deep/SKILL.md | grep -qF 'name: study-deep'
+}
+
+@test "study-deep SKILL.md mentions paper-profiler dispatch" {
+  grep -qF 'paper-profiler' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md mentions all 6 Stage 1 sub-agents" {
+  for s in problem-framer formalizer method-analyst experiment-critic prior-work-historian figure-interpreter; do
+    grep -qF "$s" skills/study-deep/SKILL.md || return 1
+  done
+}
