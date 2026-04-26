@@ -42,3 +42,8 @@ check_prompt() {
   run check_prompt prompts/experiment-critic.md
   [ "$status" -eq 0 ]
 }
+
+@test "prior-work-historian.md has required sections" {
+  run check_prompt prompts/prior-work-historian.md
+  [ "$status" -eq 0 ]
+}
