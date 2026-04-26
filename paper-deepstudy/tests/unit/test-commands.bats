@@ -11,3 +11,13 @@ setup() {
 @test "study.md invokes the study-deep skill" {
   grep -qF 'study-deep' commands/study.md
 }
+
+@test "rerun-stage.md has frontmatter" {
+  head -1 commands/rerun-stage.md | grep -qE '^---$'
+}
+
+@test "rerun-stage.md mentions all 4 stages" {
+  for s in profile analysis review notes; do
+    grep -qF "$s" commands/rerun-stage.md || return 1
+  done
+}
