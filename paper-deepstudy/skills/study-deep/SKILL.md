@@ -147,6 +147,122 @@ Wait for completion.
 
 If `$PAPER_DIR/review.md` does not exist, write `<!-- FAILED: reviewer-synthesizer did not produce output -->` and record failure in `STAGE2_FAILURES`. Otherwise, proceed.
 
-## Stages 3
+## Stage 3: Notes generation
 
-(Stage 3 is added in Task 20.)
+Stage 3 has two sequential sub-stages then two parallel renderers.
+
+### 3.1 Dispatch notes-writer (sequential, must finish first)
+
+```
+Agent(
+  description: "notes-writer drafts source.md",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/notes-writer.md> + inputs:
+    ANALYSIS_DIR=$ANALYSIS_DIR
+    OUTPUT_PATH=$PAPER_DIR/notes/source.md
+    TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/source.md
+)
+```
+
+Create `$PAPER_DIR/notes/` first if absent.
+
+### 3.2 Dispatch title-generator
+
+```
+Agent(
+  description: "title-generator generates xhs and wechat titles",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/title-generator.md> + inputs:
+    SOURCE_PATH=$PAPER_DIR/notes/source.md
+    OUTPUT_PATH=$PAPER_DIR/notes/titles.md
+    TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
+)
+```
+
+### 3.3 Pick figures
+
+Run:
+
+```bash
+node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 1
+node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 3
+```
+
+Capture each as JSON; transform to absolute paths under `$IMAGES_DIR`. Set:
+- `XHS_FIGURES`: 1 path
+- `WECHAT_FIGURES`: up to 3 paths
+
+If `06-figures.md` is the FAILED placeholder, set both lists empty and record a failure note for the final summary.
+
+### 3.4 Dispatch xhs-renderer + wechat-renderer in parallel
+
+Issue both Agent calls in one message:
+
+```
+Agent(  // xhs
+  description: "xhs-renderer renders xhs.md",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/xhs-renderer.md> + inputs:
+    SOURCE_PATH=$PAPER_DIR/notes/source.md
+    TITLES_PATH=$PAPER_DIR/notes/titles.md
+    OUTPUT_PATH=$PAPER_DIR/notes/xhs.md
+    TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/xhs.md
+    SELECTED_FIGURES=<XHS_FIGURES>
+)
+
+Agent(  // wechat
+  description: "wechat-renderer renders wechat.md",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/wechat-renderer.md> + inputs:
+    SOURCE_PATH=$PAPER_DIR/notes/source.md
+    TITLES_PATH=$PAPER_DIR/notes/titles.md
+    OUTPUT_PATH=$PAPER_DIR/notes/wechat.md
+    TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
+    SELECTED_FIGURES=<WECHAT_FIGURES>
+)
+```
+
+### 3.5 Verify outputs
+
+Each of `notes/{source,titles,xhs,wechat}.md` must exist. Missing ones get `<!-- FAILED: ... -->` placeholders and are recorded in `STAGE3_FAILURES`.
+
+---
+
+## Final summary
+
+After Stage 3 completes, print a summary to chat:
+
+```
+✓ paper-deepstudy complete for <slug>
+
+Profile: <paper_type> / <domain> / <difficulty>
+Domain packs: <list>
+Confirmation: <user_confirmed | --yes auto-accepted>
+
+Outputs (under $PAPER_DIR):
+  analysis/00-paper-profile.md ✓
+  analysis/01-problem.md       <✓ or FAILED>
+  analysis/02-formalization.md <✓ or FAILED>
+  analysis/03-method-deep.md   <✓ or FAILED>
+  analysis/04-experiments.md   <✓ or FAILED>
+  analysis/05-prior-work.md    <✓ or FAILED>
+  analysis/06-figures.md       <✓ or FAILED>
+  review.md                     <✓ or FAILED>
+  notes/source.md              <✓ or FAILED>
+  notes/titles.md              <✓ or FAILED>
+  notes/xhs.md                 <✓ or FAILED>
+  notes/wechat.md              <✓ or FAILED>
+
+If anything failed, retry that stage with /paper:rerun-<stage>.
+
+Available refinements:
+  /paper:review-round       — adversarial review
+  /paper:refine-notes [xhs|wechat]
+  /paper:deep-dive <topic>
+  /paper:compare <other-paper>
+  /paper:reselect-figures
+  /paper:retitle [xhs|wechat]
+  /paper:add-prior-work <ref>
+  /paper:reproduce-check
+  (These commands ship in Plans 2 and 3.)
+```
