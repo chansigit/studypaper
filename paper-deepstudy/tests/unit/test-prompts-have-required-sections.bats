@@ -52,3 +52,8 @@ check_prompt() {
   run check_prompt prompts/figure-interpreter.md
   [ "$status" -eq 0 ]
 }
+
+@test "reviewer-synthesizer.md has required sections" {
+  run check_prompt prompts/reviewer-synthesizer.md
+  [ "$status" -eq 0 ]
+}
