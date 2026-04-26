@@ -57,3 +57,13 @@ check_prompt() {
   run check_prompt prompts/reviewer-synthesizer.md
   [ "$status" -eq 0 ]
 }
+
+@test "notes-writer.md has required sections" {
+  run check_prompt prompts/notes-writer.md
+  [ "$status" -eq 0 ]
+}
+
+@test "title-generator.md has required sections" {
+  run check_prompt prompts/title-generator.md
+  [ "$status" -eq 0 ]
+}
