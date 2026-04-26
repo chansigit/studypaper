@@ -21,3 +21,11 @@ setup() {
     grep -qF "$s" commands/rerun-stage.md || return 1
   done
 }
+
+@test "README mentions live integration steps" {
+  grep -qF 'Manual integration test' README.md
+}
+
+@test "README lists 12 expected outputs" {
+  grep -qF '12 outputs' README.md
+}
