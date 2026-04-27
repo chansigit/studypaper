@@ -120,7 +120,7 @@ In Claude Code (CLI / IDE / Web):
 | `/paper:reselect-figures` | Re-pick which figures get embedded |
 | `/paper:deep-dive <topic>` | Focused sub-topic write-up |
 | `/paper:compare <target>` | Head-to-head comparison with another paper |
-| `/paper:add-prior-work <ref>` | Append a missed prior-work entry (arXiv URL / BibTeX / DOI) |
+| `/paper:add-prior-work <ref>` | Append a missed prior-work entry (arXiv URL / BibTeX) |
 | `/paper:reproduce-check` | 7-dimension reproducibility audit |
 
 Run any command without arguments for inline help, or see [`paper-deepstudy/README.md`](paper-deepstudy/README.md) for the full reference.
@@ -272,7 +272,7 @@ notes/
 | `/paper:reselect-figures` | 重新选取嵌入哪些图 |
 | `/paper:deep-dive <topic>` | 子话题深度展开 |
 | `/paper:compare <target>` | 与另一篇论文正面对比 |
-| `/paper:add-prior-work <ref>` | 增补一条先前工作(arXiv URL / BibTeX / DOI) |
+| `/paper:add-prior-work <ref>` | 增补一条先前工作(arXiv URL / BibTeX) |
 | `/paper:reproduce-check` | 7 维可复现性审计 |
 
 不带参数运行任何命令可看 inline help,完整参考见 [`paper-deepstudy/README.md`](paper-deepstudy/README.md)。

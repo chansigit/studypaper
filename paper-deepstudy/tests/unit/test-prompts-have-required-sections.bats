@@ -405,3 +405,8 @@ check_prompt() {
 @test "study.md argument-hint documents --paper flag" {
   grep -qF -- '--paper' commands/study.md
 }
+
+@test "add-prior-work skill is honest about DOI not being supported" {
+  ! grep -qF '/ DOI' ../../README.md
+  grep -qF 'DOI not yet supported' skills/add-prior-work/SKILL.md
+}
