@@ -132,6 +132,14 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
    - `review.md` should have a Score and Confidence value (not the placeholder underscores).
 4. Repeat with a single-cell paper (e.g. arXiv preprint of scVI or scGPT) and confirm `domain_packs_selected` includes `single-cell`.
 
+## Examples
+
+Real outputs from running this pipeline on actual papers, including the live integration tests that produced the artifacts in this repo:
+
+- [`examples/string-database-2025/`](../examples/string-database-2025/) — full pipeline on "The STRING database in 2025" (a `cs-bio` / `protein-function` database paper)
+
+(Examples are at the repo root, not inside the plugin install. Browse the folder on GitHub or after cloning the repo.)
+
 ## Troubleshooting
 
 ### `verify-prereqs.sh` exits with code 1: claude-paper not found

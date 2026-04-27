@@ -138,3 +138,7 @@ setup() {
 @test "README has Troubleshooting section" {
   grep -qF '## Troubleshooting' README.md
 }
+
+@test "README links to examples directory" {
+  grep -qF 'examples/' README.md
+}
