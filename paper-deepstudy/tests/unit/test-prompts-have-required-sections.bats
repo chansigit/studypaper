@@ -235,3 +235,13 @@ check_prompt() {
 @test "reselect-figures SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/reselect-figures/SKILL.md
 }
+
+@test "deep-dive-agent.md has required sections" {
+  run check_prompt prompts/deep-dive-agent.md
+  [ "$status" -eq 0 ]
+}
+
+@test "compare-agent.md has required sections" {
+  run check_prompt prompts/compare-agent.md
+  [ "$status" -eq 0 ]
+}
