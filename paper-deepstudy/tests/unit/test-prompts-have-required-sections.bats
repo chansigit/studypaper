@@ -245,3 +245,19 @@ check_prompt() {
   run check_prompt prompts/compare-agent.md
   [ "$status" -eq 0 ]
 }
+
+@test "deep-dive SKILL.md has YAML frontmatter with name" {
+  head -5 skills/deep-dive/SKILL.md | grep -qF 'name: deep-dive'
+}
+
+@test "deep-dive SKILL.md mentions deep-dive-agent dispatch" {
+  grep -qF 'deep-dive-agent' skills/deep-dive/SKILL.md
+}
+
+@test "deep-dive SKILL.md mentions slugify-objection.cjs for topic-slug" {
+  grep -qF 'slugify-objection.cjs' skills/deep-dive/SKILL.md
+}
+
+@test "deep-dive SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/deep-dive/SKILL.md
+}
