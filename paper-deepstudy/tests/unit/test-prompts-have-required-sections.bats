@@ -430,14 +430,41 @@ check_prompt() {
   grep -qE '/paper:compare attention-is-all-you-need' ../README.md
 }
 
-@test "skills with most-recent-paper auto-detect warn the user" {
+@test "all 9 skills source the resolve-paper helper instead of inline auto-detect" {
+  for f in skills/study-deep/SKILL.md \
+           skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
+           skills/reproduce-check/SKILL.md; do
+    grep -qE 'scripts/lib/resolve-paper\.sh' "$f" || { echo "FAIL: $f does not source resolve-paper.sh"; return 1; }
+    grep -qF 'resolve_paper' "$f" || { echo "FAIL: $f does not call resolve_paper"; return 1; }
+  done
+}
+
+@test "no skill still has inline ls -td papers auto-detect (post-Plan-11)" {
+  # After Plan 11, only the helper has this idiom; skills delegate.
   for f in skills/refine-notes/SKILL.md \
            skills/retitle/SKILL.md \
            skills/reselect-figures/SKILL.md \
            skills/review-round/SKILL.md \
            skills/deep-dive/SKILL.md \
            skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
            skills/reproduce-check/SKILL.md; do
-    grep -qF 'most recently modified' "$f" || { echo "FAIL: $f missing warning"; return 1; }
+    if grep -qE 'ls -td.*claude-papers/papers/\*' "$f"; then
+      echo "FAIL: $f still has inline auto-detect"
+      return 1
+    fi
   done
+  # study-deep gets a free pass — its Stage 0.2 wraps claude-paper:study and may
+  # need a different paper-folder discovery mechanism (most-recently-MODIFIED is
+  # how it picks the freshly-created folder). Leave that as-is.
+}
+
+@test "Plan-10 'most recently modified' assertion now lives in helper, not skills" {
+  grep -qF 'most recently modified' scripts/lib/resolve-paper.sh
 }

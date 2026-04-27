@@ -19,7 +19,18 @@ Optional flags:
 
 ### 1.1 Resolve target paper
 
-Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent (most recently modified paper folder). If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` Verify required files:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
+```
+
+If `resolve_paper` returns non-zero, abort with the helper's stderr message. Verify required files:
 - `$PAPER_DIR/analysis/06-figures.md`
 - `$PAPER_DIR/images/` directory (non-empty)
 - `$PAPER_DIR/notes/source.md`

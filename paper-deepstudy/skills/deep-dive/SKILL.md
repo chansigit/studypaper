@@ -18,13 +18,18 @@ Optional flag: `--paper <slug>` (default: most recently modified paper folder).
 
 ### 1.1 Resolve target paper
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Verify required files:
 - `$PAPER_DIR/analysis/` directory with at least `00-paper-profile.md`

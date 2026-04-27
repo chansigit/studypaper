@@ -18,17 +18,22 @@ Optional flags:
 
 ## Stage 1: Resolve focal paper
 
-If `--paper <slug>` is provided, set `THIS_PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-THIS_PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
+
+Set `THIS_PAPER_DIR=$PAPER_DIR` and `THIS_SLUG=$PAPER_SLUG`.
 
 Verify `$THIS_PAPER_DIR/analysis/00-paper-profile.md` exists. If not, abort: `"Focal paper has no analysis directory. Run /paper:study first."`
-
-Read `$THIS_PAPER_DIR/analysis/00-paper-profile.md` frontmatter to extract `THIS_SLUG` (basename of `$THIS_PAPER_DIR`).
 
 ---
 
@@ -70,7 +75,9 @@ Skill(skill: "paper-deepstudy:study-deep", args: "<other-paper> --yes")
 After it returns, locate the new paper folder (most recently modified):
 
 ```bash
-OTHER_PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper
+OTHER_PAPER_DIR="$PAPER_DIR"
 ```
 
 Verify it's a different folder from `THIS_PAPER_DIR` (defensive). If they match, abort: `"Auto-study did not produce a distinct paper folder. Check /paper:study output."`

@@ -134,7 +134,20 @@ If `pdftotext` is not installed or the conversion fails:
 
 Record which path was used in the final summary (so users know to install `pdftotext` if they got the fallback path).
 
-### 0.4 Dispatch paper-profiler
+### 0.4 Resolve paper folder and dispatch paper-profiler
+
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
+```
+
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Read `prompts/paper-profiler.md`. Dispatch via the Agent tool:
 

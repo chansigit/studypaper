@@ -24,13 +24,18 @@ Parse the user's command. The first positional argument selects the platform:
 
 If neither is provided or the value is invalid, abort with: "Usage: /paper:refine-notes [xhs|wechat] [--paper <slug>]".
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1)
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Strip trailing slash. Verify:
 - `$PAPER_DIR/notes/source.md` exists. If not, abort: "No notes/source.md at <path>. Run /paper:study on this paper first."
