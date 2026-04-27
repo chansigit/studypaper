@@ -86,9 +86,9 @@ Wait for user. Apply corrections. Proceed when user types `ok` or equivalent.
 
 ### 2.1 Determine parallelism
 
-If `--sequential` is set, process objections one at a time through Stages 2.2 → 2.3 → 2.4 (i.e., run all five stages for objection 1, then all five for objection 2, etc.).
+If `--sequential` is set, process objections one at a time through Stages 2.2 → 2.3 → 3 (i.e., run defense, judge, and user confirmation for objection 1, then repeat for objection 2, etc.).
 
-Otherwise (default): dispatch all defense-agent calls in parallel (Stage 2.2), wait, then all judge-agent calls in parallel (Stage 2.3), wait, then proceed to Stage 2.4.
+Otherwise (default): dispatch all defense-agent calls in parallel (Stage 2.2), wait, then all judge-agent calls in parallel (Stage 2.3), wait, then proceed to Stage 3.
 
 ### 2.2 Dispatch defense-agent (one per objection)
 

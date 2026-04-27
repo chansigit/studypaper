@@ -15,7 +15,7 @@ You receive **only these two strings**. Do not request paper text, analysis file
 
 ## Output
 
-A single JSON-like markdown block with two fields:
+A YAML code-fenced block with two fields:
 
 ```yaml
 verdict: holds | partially_holds | fails
