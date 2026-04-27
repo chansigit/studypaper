@@ -72,3 +72,9 @@ setup() {
     grep -qF "## $s" templates/compare.md || { echo "missing: $s"; return 1; }
   done
 }
+
+@test "reproduce-check.md has 7 required dimension sections" {
+  for s in 'Data availability' 'Code availability' 'Hyperparameters' 'Random seeds' 'Hardware' 'Evaluation scripts' 'Wet-lab protocol'; do
+    grep -qF "## $s" templates/reproduce-check.md || { echo "missing: $s"; return 1; }
+  done
+}
