@@ -29,3 +29,11 @@ setup() {
 @test "README lists 12 expected outputs" {
   grep -qF '12 outputs' README.md
 }
+
+@test "review-round.md has frontmatter" {
+  head -1 commands/review-round.md | grep -qE '^---$'
+}
+
+@test "review-round.md invokes the review-round skill" {
+  grep -qF 'review-round' commands/review-round.md
+}
