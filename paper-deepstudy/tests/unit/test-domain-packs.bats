@@ -50,3 +50,13 @@ check_pack() {
   run check_pack domain-packs/genomics.md
   [ "$status" -eq 0 ]
 }
+
+@test "drug-discovery.md has required sections" {
+  run check_pack domain-packs/drug-discovery.md
+  [ "$status" -eq 0 ]
+}
+
+@test "medical-imaging.md has required sections" {
+  run check_pack domain-packs/medical-imaging.md
+  [ "$status" -eq 0 ]
+}
