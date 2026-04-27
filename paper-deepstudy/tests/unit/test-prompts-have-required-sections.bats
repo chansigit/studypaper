@@ -379,3 +379,12 @@ check_prompt() {
   ! grep -qE '/paper:rerun-<stage>' skills/study-deep/SKILL.md
   grep -qE '/paper:rerun-stage <stage>' skills/study-deep/SKILL.md
 }
+
+@test "reviewer-synthesizer.md mandates runtime Last-updated date" {
+  grep -qF 'runtime ISO8601' prompts/reviewer-synthesizer.md
+  grep -qF 'do NOT fabricate' prompts/reviewer-synthesizer.md
+}
+
+@test "review-writer.md mandates runtime Last-updated date" {
+  grep -qF 'runtime ISO8601' prompts/review-writer.md
+}

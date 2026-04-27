@@ -69,6 +69,8 @@ The orchestrator uses this to populate the round file's `final_review_snippet` f
 7. Return the snippet inside `ADDED_SNIPPET_START`/`ADDED_SNIPPET_END` markers as specified.
 8. Output language: English (matches `review.md`).
 
+**Refresh `Last updated`:** every time you edit `review.md`, also update the `**Last updated:** <date>` line at the top to the runtime ISO8601 UTC date. Do NOT fabricate.
+
 ## Quality bar
 
 - The modified `review.md` is well-formed markdown — same overall structure as before.

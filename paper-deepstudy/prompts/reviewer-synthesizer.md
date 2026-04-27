@@ -41,6 +41,8 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 9. Score: integer 1-10 overall, 1-4 sub-scores per ICLR convention. Be honest. Don't default to 5.
 10. Confidence: 1 (not knowledgeable) to 5 (expert).
 
+**About the `Last updated` field:** must be the runtime ISO8601 UTC date (e.g. `2026-04-27`). Use the current date at the moment of generation. do NOT fabricate a date, do NOT use a plan-doc date, do NOT use a template-default. If you cannot determine the current date, leave it as `<runtime-date>` and let the orchestrator fill it in.
+
 ## Quality bar
 
 - No bullet point references the paper directly; every claim is grounded in an analysis file. If you can't ground it, drop it.
