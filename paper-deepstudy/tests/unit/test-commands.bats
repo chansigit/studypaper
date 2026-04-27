@@ -120,3 +120,13 @@ setup() {
 @test "README documents /paper:add-prior-work" {
   grep -qF '/paper:add-prior-work' README.md
 }
+
+@test "reproduce-check.md command has frontmatter" {
+  head -1 commands/reproduce-check.md | grep -qE '^---$'
+}
+
+@test "reproduce-check.md command lists 7 dimensions" {
+  for d in 'data' 'code' 'hyperparameters' 'seeds' 'hardware' 'evaluation' 'wet-lab'; do
+    grep -qiF "$d" commands/reproduce-check.md || { echo "missing dimension: $d"; return 1; }
+  done
+}
