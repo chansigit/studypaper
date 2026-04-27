@@ -47,7 +47,8 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 
 ## Quality bar
 
-- Length: 800-2000 words total.
+- Length: 800-2800 words total. Aim for the lower end (800-1500) when the two papers share the same problem and most differences are quantitative; aim for the upper end (2000-2800) when the papers solve related-but-different problems and need more setup to compare.
+- **word-count self-check (REQUIRED):** before finalizing, count the words in your draft. If the total exceeds 2800, re-read each section and trim — usually the "Method" or "Experiments" sections have redundant phrasing that can be cut without losing content. Do NOT submit a draft above 2800 words.
 - Each section uses information from BOTH analysis directories (don't write a one-sided comparison).
 - If `LANG=chinese`, all prose is in Chinese; section headings in the template stay English (so downstream tooling can grep them).
 - Cite as `(<this_slug> analysis/03-method-deep.md §Components)` or `(<other_slug> analysis/04-experiments.md)` — explicit which paper a citation refers to.

@@ -365,3 +365,8 @@ check_prompt() {
   grep -qF 'exactly 6 H2 sections' prompts/compare-agent.md
   grep -qF 'do NOT add' prompts/compare-agent.md
 }
+
+@test "compare-agent.md length cap is 800-2800 words with self-check" {
+  grep -qF '800-2800' prompts/compare-agent.md
+  grep -qF 'word-count self-check' prompts/compare-agent.md
+}
