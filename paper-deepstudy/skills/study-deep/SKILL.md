@@ -2,7 +2,7 @@
 name: study-deep
 description: Use when the user wants to deep-study a paper (PDF or URL) for ML or computational biology. Produces analysis/, review.md, and Chinese xhs/wechat notes. Layers on top of claude-paper:study.
 disable-model-invocation: false
-allowed-tools: Bash, Read, Write, Edit, Agent
+allowed-tools: Bash, Read, Write, Edit, Agent, Skill
 ---
 
 # paper-deepstudy: study-deep workflow

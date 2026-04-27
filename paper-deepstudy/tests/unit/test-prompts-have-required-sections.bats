@@ -370,3 +370,7 @@ check_prompt() {
   grep -qF '800-2800' prompts/compare-agent.md
   grep -qF 'word-count self-check' prompts/compare-agent.md
 }
+
+@test "study-deep SKILL.md allowed-tools includes Skill tool" {
+  grep -qE '^allowed-tools:.*\bSkill\b' skills/study-deep/SKILL.md
+}
