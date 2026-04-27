@@ -205,3 +205,13 @@ check_prompt() {
 @test "study-deep SKILL.md Stage 0.2 describes slug discovery" {
   grep -qF 'ls -t' skills/study-deep/SKILL.md
 }
+
+@test "study-deep SKILL.md has Flag dispatch section" {
+  grep -qF '## Flag dispatch' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md Flag dispatch covers all four flags" {
+  for f in --only --paper --yes --force; do
+    grep -qF -e "$f" skills/study-deep/SKILL.md || { echo "missing flag: $f"; return 1; }
+  done
+}
