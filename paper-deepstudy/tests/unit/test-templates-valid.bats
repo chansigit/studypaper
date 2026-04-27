@@ -54,3 +54,9 @@ setup() {
 @test "notes/wechat.md has frontmatter with title" {
   head -3 templates/notes/wechat.md | grep -qF 'title:'
 }
+
+@test "review-round.md has required frontmatter fields" {
+  for f in round created_at objection dimension severity defense judge_verdict judge_reasoning user_decision user_reasoning final_verdict final_review_snippet; do
+    grep -qE "^${f}:" templates/review-round.md || { echo "missing field: $f"; return 1; }
+  done
+}
