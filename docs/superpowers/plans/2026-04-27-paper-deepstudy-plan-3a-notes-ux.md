@@ -271,7 +271,16 @@ Options:
   3. Cancel. Type 'cancel'.
 ```
 
-Wait for user. If `source`, exit this skill and tell the user: "Use /paper:rerun-stage notes after editing source.md, or run /paper:refine-notes again with a rendering-level instruction." (Do NOT auto-modify source.md from this skill.)
+Wait for user. If `source`, exit this skill and show the user this guidance:
+
+> "To update source.md and re-render both platforms:
+> 1. Manually edit `notes/source.md` with your content change.
+> 2. **Do NOT run `/paper:rerun-stage notes`** — that re-runs notes-writer and would overwrite your source.md edits.
+> 3. Instead, run `/paper:refine-notes xhs` and `/paper:refine-notes wechat` separately, with a rendering-level instruction like 'sync to updated source.md' for each. The renderers read source.md on each invocation, so they'll pick up your edits."
+>
+> (A future Plan 3b may add a dedicated `/paper:rerender-notes` command for this workflow.)
+
+(Do NOT auto-modify source.md from this skill.)
 
 If `rendering`, proceed to Stage 2 with the original `EDIT_INSTRUCTION`.
 
@@ -302,7 +311,7 @@ After this, the prior version is preserved at `$EXISTING_PATH.bak.<NN>` for roll
 
 Read `PROMPT_PATH` (the matching `xhs-renderer.md` or `wechat-renderer.md` from Plan 1 — they already declare `EDIT_INSTRUCTION` and `EXISTING_PATH` as inputs). Re-pick figures from the existing rendering's frontmatter (do NOT change the figure selection in this skill — that's `/paper:reselect-figures`'s job).
 
-Read `EXISTING_PATH`'s YAML frontmatter to extract its current `figures:` list. Set `SELECTED_FIGURES` to those paths.
+Read `EXISTING_PATH`'s YAML frontmatter to extract its current `figures:` list. The frontmatter typically contains basenames (e.g. `page_3_img_1.png`). Reconstruct absolute paths by prepending `$PAPER_DIR/images/` to each basename. Set `SELECTED_FIGURES` to the resulting list of absolute paths.
 
 Dispatch via the Agent tool:
 
@@ -516,11 +525,12 @@ Read the YAML frontmatter of `$RENDERING_PATH` to extract its current `title:` v
 ### 2.1 Backup `titles.md`
 
 ```bash
-NN=1
-while [ -e "$TITLES_PATH.bak.$NN" ]; do
-  NN=$((NN + 1))
+TITLES_BAK_NN=1
+while [ -e "$TITLES_PATH.bak.$TITLES_BAK_NN" ]; do
+  TITLES_BAK_NN=$((TITLES_BAK_NN + 1))
 done
-cp "$TITLES_PATH" "$TITLES_PATH.bak.$NN"
+TITLES_BAK_PATH="$TITLES_PATH.bak.$TITLES_BAK_NN"
+cp "$TITLES_PATH" "$TITLES_BAK_PATH"
 ```
 
 ### 2.2 Dispatch title-generator
@@ -562,8 +572,10 @@ Which one? (number 1-5, or 'keep' to abort and revert titles.md, or 'regen' to r
 
 Wait for user input. Parse:
 - Number 1-5 → `NEW_TITLE = candidates[<num> - 1]`. Proceed to Stage 3.
-- `keep` → restore `titles.md` from `$TITLES_PATH.bak.$NN`, exit gracefully.
+- `keep` → restore `titles.md` from `$TITLES_BAK_PATH`, exit gracefully.
 - `regen` → re-prompt for style, then re-dispatch title-generator (loop back to Stage 2.2). Cap at 3 regens to avoid runaway.
+
+**Important:** `$TITLES_BAK_PATH` (set in Stage 2.1) is the SINGLE original-state backup taken on first entry to this stage. Even if the user re-runs Stage 2.2 multiple times via `regen`, this restore point does NOT change — `keep` always restores the pre-retitle state. Stage 2.1 must NOT be re-executed during the regen loop. The `regen` branch loops back to Stage 2.2 (NOT Stage 2.1), so the original backup persists.
 
 ---
 
@@ -572,11 +584,12 @@ Wait for user input. Parse:
 ### 3.1 Backup the rendering
 
 ```bash
-NN=1
-while [ -e "$RENDERING_PATH.bak.$NN" ]; do
-  NN=$((NN + 1))
+RENDERING_BAK_NN=1
+while [ -e "$RENDERING_PATH.bak.$RENDERING_BAK_NN" ]; do
+  RENDERING_BAK_NN=$((RENDERING_BAK_NN + 1))
 done
-cp "$RENDERING_PATH" "$RENDERING_PATH.bak.$NN"
+RENDERING_BAK_PATH="$RENDERING_PATH.bak.$RENDERING_BAK_NN"
+cp "$RENDERING_PATH" "$RENDERING_BAK_PATH"
 ```
 
 ### 3.2 Replace the title
@@ -604,14 +617,14 @@ Replace `title: <OLD_TITLE>` with `title: <NEW_TITLE>`. Also replace any first-l
 Read `$TITLES_PATH`. Find the `## history` section (the titles template seeds an empty placeholder). Append:
 
 ```
-- <OLD_TITLE> — replaced for <platform> in round <NN> (<iso8601-utc>)
+- <OLD_TITLE> — replaced for <platform> on <iso8601-utc>
 ```
 
 Use the Edit tool. If `## history` section is missing (shouldn't happen; the template includes it), append it at end of file.
 
 ### 4.2 Restore the other platform's title selection
 
-The other platform (the one not being retitled) had its `## <other-platform>` group overwritten in Stage 2.2. Read `$TITLES_PATH.bak.$NN` (Stage 2.1's backup) and extract the prior `## <other-platform>` group. Replace the new file's `## <other-platform>` group with the saved one using the Edit tool.
+The other platform (the one not being retitled) had its `## <other-platform>` group overwritten in Stage 2.2. Read `$TITLES_BAK_PATH` (Stage 2.1's backup) and extract the prior `## <other-platform>` group. Replace the new file's `## <other-platform>` group with the saved one using the Edit tool.
 
 This guarantees:
 - Targeted platform: new candidates
@@ -626,8 +639,8 @@ This guarantees:
   New title: "<NEW_TITLE>"
   Old title archived in titles.md ## history
   Backups:
-    titles.md.bak.<NN>
-    <platform>.md.bak.<NN>
+    titles.md.bak.<TITLES_BAK_NN>
+    <platform>.md.bak.<RENDERING_BAK_NN>
 ```
 
 ---
@@ -790,6 +803,18 @@ Set:
 
 If `--reinterpret` is set:
 
+First, back up the existing `06-figures.md`:
+
+```bash
+NN=1
+while [ -e "$FIGURES_MD.bak.$NN" ]; do
+  NN=$((NN + 1))
+done
+cp "$FIGURES_MD" "$FIGURES_MD.bak.$NN"
+```
+
+Then dispatch figure-interpreter:
+
 ```
 Agent(
   description: "figure-interpreter (refresh scores)",
@@ -802,7 +827,7 @@ Agent(
 )
 ```
 
-Back up the old `06-figures.md` first as `$FIGURES_MD.bak.NN`. Wait for completion.
+Wait for completion.
 
 If `--reinterpret` is not set, skip this step.
 
