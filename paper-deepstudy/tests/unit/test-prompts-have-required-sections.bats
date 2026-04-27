@@ -370,3 +370,34 @@ check_prompt() {
   grep -qF '800-2800' prompts/compare-agent.md
   grep -qF 'word-count self-check' prompts/compare-agent.md
 }
+
+@test "study-deep SKILL.md allowed-tools includes Skill tool" {
+  grep -qE '^allowed-tools:.*\bSkill\b' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md uses correct rerun-stage command name" {
+  ! grep -qE '/paper:rerun-<stage>' skills/study-deep/SKILL.md
+  grep -qE '/paper:rerun-stage <stage>' skills/study-deep/SKILL.md
+}
+
+@test "reviewer-synthesizer.md mandates runtime Last-updated date" {
+  grep -qF 'runtime ISO8601' prompts/reviewer-synthesizer.md
+  grep -qF 'do NOT fabricate' prompts/reviewer-synthesizer.md
+}
+
+@test "review-writer.md mandates runtime Last-updated date" {
+  grep -qF 'runtime ISO8601' prompts/review-writer.md
+}
+
+@test "study-deep SKILL.md uses paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' skills/study-deep/SKILL.md
+  ! grep -qF 'transform to absolute paths' skills/study-deep/SKILL.md
+}
+
+@test "xhs-renderer.md mandates paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' prompts/xhs-renderer.md
+}
+
+@test "wechat-renderer.md mandates paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' prompts/wechat-renderer.md
+}

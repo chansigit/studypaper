@@ -34,6 +34,8 @@ Render the source notes into a Xiaohongshu-style article. You consume `source.md
 4. Length: count Chinese characters (excluding markdown syntax). Stop at 1300; aim for 1000.
 5. If `EDIT_INSTRUCTION` is present, apply it minimally — change only what's needed.
 
+**Figure paths must be paper-folder-relative** — e.g. `images/page_1_img_1.jpeg`, NOT `/Users/.../page_1_img_1.jpeg` and NOT `file:///...`. The frontmatter `figures:` list and the inline `![...](...)` must both use the relative form. This is what makes the notes portable when the paper folder is shared/committed.
+
 ## Quality bar
 
 - Fits Xiaohongshu rhythm: short paragraphs, subheadings every ~150-200 chars.

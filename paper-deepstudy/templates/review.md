@@ -1,7 +1,7 @@
 # Review: <Paper Title>
 
 **Reviewer:** paper-deepstudy (auto-generated v1; refined via /paper:review-round)
-**Last updated:** <date>
+**Last updated:** <runtime-date>
 **Domain packs applied:** <list>
 
 ## Summary

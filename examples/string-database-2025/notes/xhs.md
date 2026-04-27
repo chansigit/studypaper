@@ -3,7 +3,7 @@ title: 蛋白质网络终于有了"谁调谁"的答案
 length_target: 1000
 length_max: 1300
 figures:
-  - /Users/chensijie/claude-papers/papers/string-database-2025/images/page_1_img_1.jpeg
+  - images/page_1_img_1.jpeg
 ---
 
 # 蛋白质网络终于有了"谁调谁"的答案
@@ -24,7 +24,7 @@ figures:
 
 作者们在16961个标注的调控关系上微调RoBERTa模型，然后将它应用到12亿条PubMed和PMC的句子对。模型学会了识别八种调控关系类型：正调控、负调控、基因表达调控、降解调控、磷酸化等。从这个海量处理中，他们提取出4300万条有向调控交互，其中1800万条涉及人类蛋白质。
 
-![STRING 12.5调控网络提取和整合架构](/Users/chensijie/claude-papers/papers/string-database-2025/images/page_1_img_1.jpeg)
+![STRING 12.5调控网络提取和整合架构](images/page_1_img_1.jpeg)
 
 ## 如何衡量和融合证据
 

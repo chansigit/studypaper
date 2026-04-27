@@ -2,7 +2,7 @@
 name: study-deep
 description: Use when the user wants to deep-study a paper (PDF or URL) for ML or computational biology. Produces analysis/, review.md, and Chinese xhs/wechat notes. Layers on top of claude-paper:study.
 disable-model-invocation: false
-allowed-tools: Bash, Read, Write, Edit, Agent
+allowed-tools: Bash, Read, Write, Edit, Agent, Skill
 ---
 
 # paper-deepstudy: study-deep workflow
@@ -60,7 +60,7 @@ Default behavior (no flags): for each output file, if it already exists, skip th
 
 `--yes`: skip the Stage 0 confirmation prompt. Use the auto-detected profile.
 
-`--only <stage>` (used by `/paper:rerun-<stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
+`--only <stage>` (used by `/paper:rerun-stage <stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
 
 ### Per-dispatch idempotence rule
 
@@ -292,7 +292,7 @@ node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 1
 node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 3
 ```
 
-Capture each as JSON; transform to absolute paths under `$IMAGES_DIR`. Set:
+Capture each as JSON; keep them as **paper-folder-relative paths** (e.g. `images/page_1_img_1.jpeg`, NOT `$IMAGES_DIR/page_1_img_1.jpeg`). The renderer prompts then embed those paths directly so committed/shared notes don't leak the author's home directory. Set:
 - `XHS_FIGURES`: 1 path
 - `WECHAT_FIGURES`: up to 3 paths
 
@@ -359,7 +359,7 @@ Outputs (under $PAPER_DIR):
   notes/xhs.md                 <✓ or FAILED>
   notes/wechat.md              <✓ or FAILED>
 
-If anything failed, retry that stage with /paper:rerun-<stage>.
+If anything failed, retry that stage with /paper:rerun-stage <stage>.
 
 Available refinements:
   /paper:review-round       — adversarial review

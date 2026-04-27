@@ -1,7 +1,7 @@
 ---
 slug: string-database-2025
 created_at: 2026-04-25T00:00:00Z
-overall_score: yellow
+overall_score: red
 checked_dimensions: 7
 fails_count: 3
 partials_count: 3
@@ -23,7 +23,7 @@ partials_count: 3
 | Evaluation scripts | partial |
 | Wet-lab protocol | partial |
 
-**Overall:** yellow — STRING 12.5 provides public access to integrated databases (SIGNOR, KEGG, Reactome, cellxgene, EBI Atlas) and the deployed service, but does not release training code, fine-tuning hyperparameters, or LLM model checkpoints. The regulatory network's F1=73.5% is reported on a proprietary test set without per-relation-type breakdowns, per-organism validation, or variance estimates, limiting independent verification.
+**Overall:** red — STRING 12.5 provides public access to integrated databases (SIGNOR, KEGG, Reactome, cellxgene, EBI Atlas) and the deployed service, but does not release training code, fine-tuning hyperparameters, or LLM model checkpoints. The regulatory network's F1=73.5% is reported on a proprietary test set without per-relation-type breakdowns, per-organism validation, or variance estimates, limiting independent verification.
 
 ---
 
@@ -158,3 +158,5 @@ The following weaknesses should be addressed to improve reproducibility:
 6. **Data availability (partial)**: Explicitly state RegulaTome train/validation/test split (PMID list or stratification strategy), PubMed/PMC corpus snapshot date, SIGNOR/KEGG/Reactome version/date, cellxgene and EBI Atlas version/date and filtering criteria. This anchors reproduction to fixed snapshots.
 
 **Severity**: Fails on 3/7 dimensions (Code, Hyperparameters, Random seeds) and partials on 3/7 (Data, Evaluation, Wet-lab). For a production database reaching thousands of researchers, these gaps hinder trust in extracted regulatory interactions and prevent independent validation of model performance claims.
+
+*Note: this example was generated before Plan 6 fixed the reproduce-checker scoring rubric and was hand-corrected post-hoc to match the current lookup table (fails_count ≥ 2 → red).*
