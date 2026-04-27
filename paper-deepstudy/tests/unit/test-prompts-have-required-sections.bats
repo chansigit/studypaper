@@ -307,3 +307,8 @@ check_prompt() {
 @test "add-prior-work SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/add-prior-work/SKILL.md
 }
+
+@test "reproduce-checker.md has required sections" {
+  run check_prompt prompts/reproduce-checker.md
+  [ "$status" -eq 0 ]
+}
