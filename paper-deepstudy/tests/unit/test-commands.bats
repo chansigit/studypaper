@@ -82,3 +82,41 @@ setup() {
 @test "README documents /paper:reselect-figures" {
   grep -qF '/paper:reselect-figures' README.md
 }
+
+@test "deep-dive.md has frontmatter" {
+  head -1 commands/deep-dive.md | grep -qE '^---$'
+}
+
+@test "deep-dive.md mentions topic argument" {
+  grep -qF '<topic>' commands/deep-dive.md
+}
+
+@test "compare.md has frontmatter" {
+  head -1 commands/compare.md | grep -qE '^---$'
+}
+
+@test "compare.md mentions --lang flag" {
+  grep -qF -e '--lang' commands/compare.md
+}
+
+@test "add-prior-work.md has frontmatter" {
+  head -1 commands/add-prior-work.md | grep -qE '^---$'
+}
+
+@test "add-prior-work.md mentions BibTeX, arXiv URL, and free-text inputs" {
+  for kind in 'BibTeX' 'arXiv' 'free-text'; do
+    grep -qiF "$kind" commands/add-prior-work.md || { echo "missing kind: $kind"; return 1; }
+  done
+}
+
+@test "README documents /paper:deep-dive" {
+  grep -qF '/paper:deep-dive' README.md
+}
+
+@test "README documents /paper:compare" {
+  grep -qF '/paper:compare' README.md
+}
+
+@test "README documents /paper:add-prior-work" {
+  grep -qF '/paper:add-prior-work' README.md
+}

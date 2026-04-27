@@ -235,3 +235,75 @@ check_prompt() {
 @test "reselect-figures SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/reselect-figures/SKILL.md
 }
+
+@test "deep-dive-agent.md has required sections" {
+  run check_prompt prompts/deep-dive-agent.md
+  [ "$status" -eq 0 ]
+}
+
+@test "compare-agent.md has required sections" {
+  run check_prompt prompts/compare-agent.md
+  [ "$status" -eq 0 ]
+}
+
+@test "deep-dive SKILL.md has YAML frontmatter with name" {
+  head -5 skills/deep-dive/SKILL.md | grep -qF 'name: deep-dive'
+}
+
+@test "deep-dive SKILL.md mentions deep-dive-agent dispatch" {
+  grep -qF 'deep-dive-agent' skills/deep-dive/SKILL.md
+}
+
+@test "deep-dive SKILL.md mentions slugify-objection.cjs for topic-slug" {
+  grep -qF 'slugify-objection.cjs' skills/deep-dive/SKILL.md
+}
+
+@test "deep-dive SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/deep-dive/SKILL.md
+}
+
+@test "compare SKILL.md has YAML frontmatter with name" {
+  head -5 skills/compare/SKILL.md | grep -qF 'name: compare'
+}
+
+@test "compare SKILL.md mentions compare-agent dispatch" {
+  grep -qF 'compare-agent' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md handles all four input types for other-paper" {
+  for kind in 'slug' 'paper folder path' 'PDF path' 'URL'; do
+    grep -qF "$kind" skills/compare/SKILL.md || { echo "missing: $kind"; return 1; }
+  done
+}
+
+@test "compare SKILL.md auto-studies the other paper when needed" {
+  grep -qF 'auto-studies' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md mentions --lang flag handling" {
+  grep -qF -e '--lang' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/compare/SKILL.md
+}
+
+@test "add-prior-work SKILL.md has YAML frontmatter with name" {
+  head -5 skills/add-prior-work/SKILL.md | grep -qF 'name: add-prior-work'
+}
+
+@test "add-prior-work SKILL.md reuses prior-work-historian prompt" {
+  grep -qF 'prior-work-historian' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md backs up 05-prior-work.md before mutation" {
+  grep -qF '.bak.' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md suggests /paper:review-round when prior-work weaknesses might be affected" {
+  grep -qF '/paper:review-round' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/add-prior-work/SKILL.md
+}
