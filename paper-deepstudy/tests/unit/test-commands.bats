@@ -82,3 +82,11 @@ setup() {
 @test "README documents /paper:reselect-figures" {
   grep -qF '/paper:reselect-figures' README.md
 }
+
+@test "deep-dive.md has frontmatter" {
+  head -1 commands/deep-dive.md | grep -qE '^---$'
+}
+
+@test "deep-dive.md mentions topic argument" {
+  grep -qF '<topic>' commands/deep-dive.md
+}
