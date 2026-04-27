@@ -42,6 +42,18 @@ Set:
 
 If `--reinterpret` is set:
 
+First, back up the existing `06-figures.md`:
+
+```bash
+NN=1
+while [ -e "$FIGURES_MD.bak.$NN" ]; do
+  NN=$((NN + 1))
+done
+cp "$FIGURES_MD" "$FIGURES_MD.bak.$NN"
+```
+
+Then dispatch figure-interpreter:
+
 ```
 Agent(
   description: "figure-interpreter (refresh scores)",
@@ -54,7 +66,7 @@ Agent(
 )
 ```
 
-Back up the old `06-figures.md` first as `$FIGURES_MD.bak.NN`. Wait for completion.
+Wait for completion.
 
 If `--reinterpret` is not set, skip this step.
 

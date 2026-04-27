@@ -85,7 +85,16 @@ Options:
   3. Cancel. Type 'cancel'.
 ```
 
-Wait for user. If `source`, exit this skill and tell the user: "Use /paper:rerun-stage notes after editing source.md, or run /paper:refine-notes again with a rendering-level instruction." (Do NOT auto-modify source.md from this skill.)
+Wait for user. If `source`, exit this skill and show the user this guidance:
+
+> "To update source.md and re-render both platforms:
+> 1. Manually edit `notes/source.md` with your content change.
+> 2. **Do NOT run `/paper:rerun-stage notes`** — that re-runs notes-writer and would overwrite your source.md edits.
+> 3. Instead, run `/paper:refine-notes xhs` and `/paper:refine-notes wechat` separately, with a rendering-level instruction like 'sync to updated source.md' for each. The renderers read source.md on each invocation, so they'll pick up your edits."
+>
+> (A future Plan 3b may add a dedicated `/paper:rerender-notes` command for this workflow.)
+
+(Do NOT auto-modify source.md from this skill.)
 
 If `rendering`, proceed to Stage 2 with the original `EDIT_INSTRUCTION`.
 
@@ -116,7 +125,7 @@ After this, the prior version is preserved at `$EXISTING_PATH.bak.<NN>` for roll
 
 Read `PROMPT_PATH` (the matching `xhs-renderer.md` or `wechat-renderer.md` from Plan 1 — they already declare `EDIT_INSTRUCTION` and `EXISTING_PATH` as inputs). Re-pick figures from the existing rendering's frontmatter (do NOT change the figure selection in this skill — that's `/paper:reselect-figures`'s job).
 
-Read `EXISTING_PATH`'s YAML frontmatter to extract its current `figures:` list. Set `SELECTED_FIGURES` to those paths.
+Read `EXISTING_PATH`'s YAML frontmatter to extract its current `figures:` list. The frontmatter typically contains basenames (e.g. `page_3_img_1.png`). Reconstruct absolute paths by prepending `$PAPER_DIR/images/` to each basename. Set `SELECTED_FIGURES` to the resulting list of absolute paths.
 
 Dispatch via the Agent tool:
 
