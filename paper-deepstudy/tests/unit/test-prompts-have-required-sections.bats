@@ -197,3 +197,41 @@ check_prompt() {
 @test "reselect-figures SKILL.md mentions figure-interpreter for --reinterpret" {
   grep -qF 'figure-interpreter' skills/reselect-figures/SKILL.md
 }
+
+@test "study-deep SKILL.md Stage 0.2 mentions Skill tool dispatch" {
+  grep -qF 'Skill tool' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md Stage 0.2 describes slug discovery" {
+  grep -qF 'ls -t' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md has Flag dispatch section" {
+  grep -qF '## Flag dispatch' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md Flag dispatch covers all four flags" {
+  for f in --only --paper --yes --force; do
+    grep -qF -e "$f" skills/study-deep/SKILL.md || { echo "missing flag: $f"; return 1; }
+  done
+}
+
+@test "study-deep SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/study-deep/SKILL.md
+}
+
+@test "review-round SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/review-round/SKILL.md
+}
+
+@test "refine-notes SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/refine-notes/SKILL.md
+}
+
+@test "retitle SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/retitle/SKILL.md
+}
+
+@test "reselect-figures SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/reselect-figures/SKILL.md
+}

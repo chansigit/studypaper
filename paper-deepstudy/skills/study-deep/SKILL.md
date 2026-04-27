@@ -11,6 +11,43 @@ Invoke with a PDF path or arXiv URL. Optional flags:
 - `--yes`: skip Stage 0 confirmation prompt (auto-accept profile).
 - `--force`: re-run all stages, backing up existing outputs.
 
+## Flag dispatch
+
+This skill is invoked by `/paper:study <pdf-or-url> [flags]` and `/paper:rerun-stage <stage> [flags]`. The flags below control which stages run and how outputs are handled. The orchestrator MUST honor all four flags as specified.
+
+### `--paper <slug>`
+
+If set, skip Stage 0.2 (claude-paper:study invocation) and skip Stage 0.3 path resolution. Set `PAPER_DIR=~/claude-papers/papers/<slug>` directly. Verify `$PAPER_DIR/meta.json` exists; abort if not.
+
+If `--paper` is **not** set, the orchestrator either runs Stage 0.2 (for `/paper:study`) or auto-detects the most recent paper folder via `ls -td ~/claude-papers/papers/*/ | head -1` (for `/paper:rerun-stage`).
+
+### `--only <stage>` (used by `/paper:rerun-stage`)
+
+`<stage>` is one of `profile | analysis | review | notes`. When set:
+
+| `--only` value | Skip stages | Run stages |
+|---|---|---|
+| `profile` | Stage 1, 2, 3 | Stage 0 only (paper-profiler dispatch). The orchestrator backs up the existing `00-paper-profile.md` first. |
+| `analysis` | Stage 0.4, 0.5, 2, 3 | Stage 1 only (six parallel analysis sub-Agents). Stage 0.1–0.3.1 still runs to set up paths. Existing analysis files 01–06 are backed up first. |
+| `review` | Stage 0.4, 0.5, 1, 3 | Stage 2 only (reviewer-synthesizer). Existing `review.md` backed up. **Note:** this discards any edits made by `/paper:review-round`. The orchestrator MUST warn the user before proceeding. |
+| `notes` | Stage 0.4, 0.5, 1, 2 | Stage 3 only (notes-writer + title-generator + xhs/wechat renderers). Existing `notes/*.md` backed up. **Note:** this also overwrites `notes/source.md`, so any manual content edits to `source.md` are lost — refer to `refine-notes` skill for the source-vs-rendering split workflow. |
+
+`--only` implies `--force` scoped to that stage's outputs (existing files are backed up to `<file>.bak.NN` before re-running).
+
+### `--yes`
+
+Skip the Stage 0.5 user-confirmation prompt for the auto-detected profile. Use the profile as-is. Record `--yes auto-accepted` in the final summary.
+
+### `--force`
+
+For each output file in any stage that runs: if the file exists, back it up to `<file>.bak.NN` (smallest non-existent integer ≥ 1) before re-running its sub-Agent. Without `--force`, existing output files are skipped (per the per-dispatch idempotence rule below).
+
+### Conflict handling
+
+- `--only` and `--paper` are independent and may be combined.
+- `--only` implies `--force` scoped to the named stage; explicit `--force` on top is redundant but harmless.
+- `--yes` is independent of `--only` / `--paper` / `--force`.
+
 ---
 
 ## Stage 0: Bootstrap & Profile
@@ -45,9 +82,29 @@ If exit ≠ 0, abort with the script's error message.
 
 ### 0.2 Run claude-paper:study (baseline)
 
-Invoke the claude-paper study skill on the input. After completion, the paper folder lives at `~/claude-papers/papers/<slug>/` containing at least `meta.json`, `summary.md`, `paper.pdf`, and `images/`. Resolve `<slug>` from `meta.json` produced by claude-paper.
+Invoke `claude-paper:study` via the Skill tool with the user's input as args:
 
-If the paper folder does not exist after running claude-paper:study, abort with: "claude-paper:study did not produce expected outputs at ~/claude-papers/papers/<slug>/".
+```
+Skill(skill: "claude-paper:study", args: "<user-input-pdf-path-or-url>")
+```
+
+`claude-paper:study` will download / parse the PDF and produce a paper folder under `~/claude-papers/papers/<slug>/`. The slug is auto-derived from the paper title.
+
+After the Skill returns, locate the new paper folder. The most reliable way is to take the most recently modified subdirectory:
+
+```bash
+PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+```
+
+Verify required outputs exist:
+- `$PAPER_DIR/meta.json`
+- `$PAPER_DIR/paper.pdf`
+- `$PAPER_DIR/summary.md` (claude-paper's curated summary, not the full text — Stage 0.3.1 extracts the full text via pdftotext)
+- `$PAPER_DIR/images/` (may be empty if pdftotext-style extraction fails; report and continue)
+
+If any of these are missing, abort with: `"claude-paper:study did not produce expected outputs at $PAPER_DIR. Check the claude-paper plugin's installation and try /paper:study again."`
+
+Read `$PAPER_DIR/meta.json` and confirm its `slug` field matches the basename of `$PAPER_DIR`. If they disagree, prefer the `meta.json` slug (and adjust `PAPER_DIR` accordingly).
 
 ### 0.3 Compute paths
 
@@ -129,6 +186,8 @@ Take `domain_packs_selected` from the profile. For each, build path: `$PLUGIN_RO
 
 ### 1.2 Dispatch six sub-Agents in parallel
 
+**Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
+
 In **one message**, issue six parallel Agent tool calls. The dispatch table below is authoritative for what each sub-Agent receives. All six get `PAPER_TEXT`, `OUTPUT_PATH`, and `TEMPLATE_PATH`. Most also receive `PROFILE_PATH` (`figure-interpreter` does not — it works directly from `PAPER_TEXT` + `IMAGES_DIR`). Extras vary: `method-analyst` and `experiment-critic` get `DOMAIN_PACKS`; `prior-work-historian` gets `DOMAIN_PACKS` and is allowed up to 5 WebFetch calls; `figure-interpreter` gets `IMAGES_DIR`.
 
 For each sub-Agent:
@@ -168,6 +227,8 @@ Record failures in a `STAGE1_FAILURES` list for the final summary.
 
 ### 2.1 Dispatch reviewer-synthesizer
 
+**Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
+
 ```
 Agent(
   description: "reviewer-synthesizer drafts review.md v1",
@@ -192,6 +253,8 @@ Stage 3 has two sequential sub-stages then two parallel renderers.
 
 ### 3.1 Dispatch notes-writer (sequential, must finish first)
 
+**Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
+
 ```
 Agent(
   description: "notes-writer drafts source.md",
@@ -206,6 +269,8 @@ Agent(
 Create `$PAPER_DIR/notes/` first if absent.
 
 ### 3.2 Dispatch title-generator
+
+**Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
 
 ```
 Agent(
@@ -234,6 +299,8 @@ Capture each as JSON; transform to absolute paths under `$IMAGES_DIR`. Set:
 If `06-figures.md` is the FAILED placeholder, set both lists empty and record a failure note for the final summary.
 
 ### 3.4 Dispatch xhs-renderer + wechat-renderer in parallel
+
+**Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
 
 Issue both Agent calls in one message:
 
@@ -303,5 +370,5 @@ Available refinements:
   /paper:retitle [xhs|wechat]
   /paper:add-prior-work <ref>
   /paper:reproduce-check
-  (These commands ship in Plans 2 and 3.)
+  (These commands ship in: Plan 2 ✓ for /paper:review-round; Plan 3a ✓ for /paper:refine-notes, /paper:retitle, /paper:reselect-figures; Plan 3b for /paper:deep-dive, /paper:compare, /paper:add-prior-work; Plan 3c for /paper:reproduce-check.)
 ```

@@ -43,6 +43,13 @@ if [ ! -x "$ROOT/scripts/next-round-number.cjs" ]; then
   echo "FAIL: next-round-number.cjs missing or not executable"; fail=1
 fi
 
+# 3b. parse-judge-output and slugify-objection helpers exist and are executable
+for helper in parse-judge-output slugify-objection; do
+  if [ ! -x "$ROOT/scripts/$helper.cjs" ]; then
+    echo "FAIL: $helper.cjs missing or not executable"; fail=1
+  fi
+done
+
 # 4. verify-prereqs script exists and is executable
 if [ ! -x "$ROOT/scripts/verify-prereqs.sh" ]; then
   echo "FAIL: verify-prereqs.sh missing or not executable"; fail=1

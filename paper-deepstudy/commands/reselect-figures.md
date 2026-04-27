@@ -17,7 +17,7 @@ The skill will list every figure under `images/` along with the interpreter's im
 - 1 figure for xhs.md
 - 2-3 figures for wechat.md
 
-Both renderings are then re-dispatched with the new figure selections. The body content is preserved (the renderers respect existing `EDIT_INSTRUCTION`-style refinement when wired in; here `EDIT_INSTRUCTION` is omitted, so the renderers re-render from `source.md` and `titles.md` with the new figures).
+Both renderings are then re-dispatched with the new figure selections. **The body is regenerated from `source.md`** — any prior body edits made via `/paper:refine-notes` are NOT preserved. To preserve body edits while swapping figures, use `/paper:refine-notes <platform>` with an instruction like "swap embedded figure to <filename>" instead of running `/paper:reselect-figures`.
 
 The prior xhs.md and wechat.md are backed up as `.bak.NN`.
 

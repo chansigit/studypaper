@@ -36,7 +36,11 @@ After frontmatter, one `## Figure N` section per figure, in the same order as th
 
 ## Quality bar
 
-- Importance scores are usable for picking 1 figure (xhs) and 2-3 figures (wechat). Exactly one figure should be ≥ 0.9 (the most important one).
+- Importance scores must be calibrated so that downstream `select-figures.cjs` can reliably pick the top-1 (xhs) and top-3 (wechat) by score. Specifically:
+  - The single most-important figure should score in [0.9, 1.0]. Reserve 1.0 for genuinely headline figures (architecture diagram or main-result figure when there's a clear single one); use 0.9-0.95 otherwise.
+  - At most one figure may score ≥ 0.95, but multiple figures may score in 0.7-0.9 range.
+  - Spread the next-most-important figures into 0.6-0.85 so the top-3 ordering is unambiguous (no ties at the boundary).
+  - Figures that are decorative, repetitive, or not really part of the paper score ≤ 0.3.
 - Caption field is verbatim text, not a paraphrase.
 - Explanation tells a non-specialist why the figure matters.
 - Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
