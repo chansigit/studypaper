@@ -95,17 +95,22 @@ case "$TYPE" in
     check_no_pattern "Plan 3a ✓" "plan-numbered leak"
     ;;
   review-round)
-    check_required_fm_key slug
+    # review-round stores objection/defense in frontmatter, not as H2 headings.
+    # The template uses: round, objection, defense, judge_verdict, final_verdict.
+    # 'verdict' is stored as final_verdict in the frontmatter.
     check_required_fm_key round
-    check_required_fm_key verdict
-    check_required_h2 Objection
-    check_required_h2 Defense
+    check_required_fm_key objection
+    check_required_fm_key defense
+    check_required_fm_key judge_verdict
+    check_required_fm_key final_verdict
     ;;
   deep-dive)
-    check_required_fm_key slug
-    check_required_fm_key topic
-    check_required_fm_key created_at
-    check_required_fm_key language
+    # deep-dive template has no frontmatter; it uses H1 + 5 fixed H2 sections.
+    check_required_h2 "What is this topic"
+    check_required_h2 "How the paper handles it"
+    check_required_h2 "Math or algorithm detail"
+    check_required_h2 "How others have approached"
+    check_required_h2 Takeaway
     check_no_pattern "/Users/" "absolute path leak"
     ;;
   compare)
@@ -128,8 +133,8 @@ case "$TYPE" in
     check_required_fm_key fails_count
     check_required_fm_key partials_count
     check_required_fm_key checked_dimensions
-    check_required_h2 Data
-    check_required_h2 Code
+    check_required_h2 "Data availability"
+    check_required_h2 "Code availability"
     check_required_h2 Hyperparameters
     check_required_h2 "Random seeds"
     check_required_h2 Hardware

@@ -1,3 +1,4 @@
+<!-- generated: 2026-04-25T00:00:00Z by compare-agent (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
 ---
 this_paper: string-database-2025
 other_paper: attention-is-all-you-need
@@ -118,7 +119,7 @@ Both papers lack experimental rigor by modern standards:
 2. **Ablation gaps:** Neither paper fully validates all design choices (STRING: LLM backbone, evidence channel weighting; Attention: gradient clipping, weight decay, exact positional encoding base).
 3. **Limited scope:** STRING evaluated on one task (relation extraction) and one test set (RegulaTome); Attention generalized to parsing but still limited to NLP tasks.
 
-## Strengths and Weaknesses
+## Strengths and weaknesses
 
 | Dimension | STRING 12.5 | Attention Is All You Need |
 |---|---|---|
@@ -158,6 +159,6 @@ Both papers lack experimental rigor by modern standards:
 
 ---
 
-## Summary
+## Closing note
 
 These papers represent different layers of the ML stack. "Attention Is All You Need" is the foundational architecture paper that enables modern NLP; its contribution is architectural innovation, general applicability, and massive empirical validation across tasks. STRING 12.5 is an application paper that leverages Attention-based models to solve a domain-specific problem; its contribution is in integration, domain adaptation, and demonstrating feasibility at scale. Neither makes sense without the other: Attention provides the technical capability, STRING demonstrates the impact. For readers new to deep learning, Attention is essential; for readers building biology applications, STRING is the practical example.

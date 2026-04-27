@@ -247,10 +247,10 @@ checked_dimensions: 7
 
 # Reproducibility check
 
-## Data
+## Data availability
 ✗
 
-## Code
+## Code availability
 ✗
 
 ## Hyperparameters

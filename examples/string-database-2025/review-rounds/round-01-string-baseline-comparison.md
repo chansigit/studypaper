@@ -1,3 +1,4 @@
+<!-- generated: 2026-04-27T06:31:14Z by review-round-orchestrator (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
 ---
 round: 1
 created_at: 2026-04-27T06:31:14Z

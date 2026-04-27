@@ -1,3 +1,4 @@
+<!-- generated: 2026-04-25T00:00:00Z by wechat-renderer (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
 ---
 title: STRING 12.5：用微调语言模型为蛋白质网络添加调控方向和符号
 length_target: 3000
