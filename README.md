@@ -5,7 +5,8 @@
 <p>
   <a href="https://github.com/chansigit/studypaper/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-F59E0B.svg?style=flat-square"></a>
   <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.1.0-7C3AED?style=flat-square">
-  <img alt="Tests passing" src="https://img.shields.io/badge/tests-146%20passing-22C55E?style=flat-square">
+  <!-- maintainer: rebuild badge by running paper-deepstudy/scripts/count-tests.sh --badge-format -->
+  <img alt="Tests passing" src="https://img.shields.io/badge/tests-192%20passing-22C55E?style=flat-square">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-plugin-A78BFA?style=flat-square&logo=anthropic&logoColor=white">
   <img alt="Domain packs" src="https://img.shields.io/badge/domain%20packs-7-22D3EE?style=flat-square">
   <a href="https://github.com/chansigit/studypaper/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/chansigit/studypaper?style=flat-square&color=FBBF24"></a>
