@@ -1,0 +1,93 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="studypaper">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#7C3AED" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="512" height="512" rx="96" fill="url(#bgGrad)"/>
+
+  <!-- knowledge-graph aura -->
+  <circle cx="256" cy="180" r="170" fill="url(#aura)"/>
+
+  <!-- knowledge graph: edges (drawn first, behind nodes) -->
+  <g stroke="url(#edgeGrad)" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.9" filter="url(#softGlow)">
+    <line x1="180" y1="120" x2="332" y2="120"/>
+    <line x1="180" y1="120" x2="256" y2="170"/>
+    <line x1="332" y1="120" x2="256" y2="170"/>
+    <line x1="180" y1="120" x2="120" y2="210"/>
+    <line x1="332" y1="120" x2="392" y2="210"/>
+    <line x1="120" y1="210" x2="256" y2="170"/>
+    <line x1="392" y1="210" x2="256" y2="170"/>
+    <line x1="120" y1="210" x2="180" y2="260"/>
+    <line x1="392" y1="210" x2="332" y2="260"/>
+    <line x1="180" y1="260" x2="332" y2="260"/>
+  </g>
+
+  <!-- knowledge graph: nodes -->
+  <g filter="url(#softGlow)">
+    <circle cx="180" cy="120" r="11" fill="#22D3EE"/>
+    <circle cx="332" cy="120" r="11" fill="#22D3EE"/>
+    <circle cx="120" cy="210" r="11" fill="#A78BFA"/>
+    <circle cx="392" cy="210" r="11" fill="#A78BFA"/>
+    <circle cx="180" cy="260" r="9" fill="#22D3EE"/>
+    <circle cx="332" cy="260" r="9" fill="#22D3EE"/>
+    <circle cx="256" cy="170" r="15" fill="#FBBF24"/>
+  </g>
+
+  <!-- particles rising from book to graph -->
+  <g fill="#22D3EE">
+    <circle cx="208" cy="296" r="3" opacity="0.7"/>
+    <circle cx="240" cy="282" r="2" opacity="0.55"/>
+    <circle cx="276" cy="295" r="2.5" opacity="0.6"/>
+    <circle cx="304" cy="280" r="3" opacity="0.7"/>
+  </g>
+
+  <!-- open book -->
+  <g>
+    <!-- left page -->
+    <path d="M 80 320 L 256 350 L 256 460 L 80 432 Z" fill="url(#pageGrad)" stroke="#475569" stroke-width="2"/>
+    <!-- right page -->
+    <path d="M 432 320 L 256 350 L 256 460 L 432 432 Z" fill="url(#pageGrad)" stroke="#475569" stroke-width="2"/>
+    <!-- spine -->
+    <line x1="256" y1="350" x2="256" y2="460" stroke="url(#spineGrad)" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- text lines, left page (perspective-skewed) -->
+    <line x1="100" y1="358" x2="240" y2="382" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="100" y1="380" x2="226" y2="402" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="100" y1="402" x2="240" y2="424" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="100" y1="424" x2="220" y2="442" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- text lines, right page -->
+    <line x1="272" y1="382" x2="412" y2="358" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="286" y1="402" x2="412" y2="380" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="272" y1="424" x2="412" y2="402" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="292" y1="442" x2="412" y2="424" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

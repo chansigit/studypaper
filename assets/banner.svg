@@ -1,0 +1,86 @@
+<svg viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="studypaper banner">
+  <defs>
+    <linearGradient id="bnBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="55%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#312E81"/>
+    </linearGradient>
+    <linearGradient id="bnPage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="bnSpine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="bnEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="wordmark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="60%" stop-color="#E0E7FF"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <radialGradient id="bnAura" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#A78BFA" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- background -->
+  <rect width="1280" height="320" rx="20" fill="url(#bnBg)"/>
+  <rect width="1280" height="320" rx="20" fill="url(#dots)"/>
+
+  <!-- left: compact icon -->
+  <g transform="translate(60 50) scale(0.42)">
+    <!-- knowledge-graph aura -->
+    <circle cx="256" cy="180" r="170" fill="url(#bnAura)"/>
+
+    <!-- graph edges -->
+    <g stroke="url(#bnEdge)" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.9">
+      <line x1="180" y1="120" x2="332" y2="120"/>
+      <line x1="180" y1="120" x2="256" y2="170"/>
+      <line x1="332" y1="120" x2="256" y2="170"/>
+      <line x1="180" y1="120" x2="120" y2="210"/>
+      <line x1="332" y1="120" x2="392" y2="210"/>
+      <line x1="120" y1="210" x2="256" y2="170"/>
+      <line x1="392" y1="210" x2="256" y2="170"/>
+      <line x1="120" y1="210" x2="180" y2="260"/>
+      <line x1="392" y1="210" x2="332" y2="260"/>
+      <line x1="180" y1="260" x2="332" y2="260"/>
+    </g>
+    <!-- graph nodes -->
+    <circle cx="180" cy="120" r="11" fill="#22D3EE"/>
+    <circle cx="332" cy="120" r="11" fill="#22D3EE"/>
+    <circle cx="120" cy="210" r="11" fill="#A78BFA"/>
+    <circle cx="392" cy="210" r="11" fill="#A78BFA"/>
+    <circle cx="180" cy="260" r="9" fill="#22D3EE"/>
+    <circle cx="332" cy="260" r="9" fill="#22D3EE"/>
+    <circle cx="256" cy="170" r="15" fill="#FBBF24"/>
+
+    <!-- book -->
+    <path d="M 80 320 L 256 350 L 256 460 L 80 432 Z" fill="url(#bnPage)" stroke="#475569" stroke-width="2"/>
+    <path d="M 432 320 L 256 350 L 256 460 L 432 432 Z" fill="url(#bnPage)" stroke="#475569" stroke-width="2"/>
+    <line x1="256" y1="350" x2="256" y2="460" stroke="url(#bnSpine)" stroke-width="6" stroke-linecap="round"/>
+    <line x1="100" y1="358" x2="240" y2="382" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="100" y1="380" x2="226" y2="402" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="100" y1="402" x2="240" y2="424" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="272" y1="382" x2="412" y2="358" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="286" y1="402" x2="412" y2="380" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="272" y1="424" x2="412" y2="402" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- right: wordmark + tagline -->
+  <g font-family="'SF Pro Display','Segoe UI',Inter,system-ui,sans-serif">
+    <text x="320" y="155" font-size="92" font-weight="800" fill="url(#wordmark)" letter-spacing="-2">studypaper</text>
+    <text x="324" y="200" font-size="24" font-weight="500" fill="#94A3B8" letter-spacing="0.5">Read it. Roast it. Reproduce it.</text>
+    <text x="324" y="234" font-size="20" font-weight="400" fill="#64748B" letter-spacing="0.3">A Claude Code plugin for ML &amp; computational biology research.</text>
+
+    <!-- accent underline -->
+    <line x1="324" y1="252" x2="540" y2="252" stroke="url(#bnEdge)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
