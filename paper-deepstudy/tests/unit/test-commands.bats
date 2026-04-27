@@ -62,3 +62,11 @@ setup() {
 @test "retitle.md mentions style filter" {
   grep -qF -e '--style' commands/retitle.md
 }
+
+@test "reselect-figures.md has frontmatter" {
+  head -1 commands/reselect-figures.md | grep -qE '^---$'
+}
+
+@test "reselect-figures.md mentions reinterpret flag" {
+  grep -qF -e '--reinterpret' commands/reselect-figures.md
+}
