@@ -56,8 +56,13 @@ The orchestrator uses this to populate the round file's `final_review_snippet` f
    - `fails` + `minor`: same, but include a modal qualifier. E.g. "May overstate gains because the baseline used 3× less compute."
    - `partially_holds`: phrase as a clarification request. E.g. "What was the compute budget for each baseline, and were they tuned to comparable degrees?"
 4. **Dedup/merge check.** Read the target section's existing bullets. If any existing bullet is *substantively about the same issue* as your new draft (defined as: same dimension AND same root cause), do NOT append. Instead:
-   - Merge: rewrite the existing bullet to encompass both rounds. End with `← from rounds <prior N>, <new N>`.
+   - Merge: rewrite the existing bullet to encompass both rounds.
    - The merged bullet should be no more than 1 sentence longer than either input.
+   - End with a unified traceability tag according to these rules:
+     - If the existing bullet ends with `← from initial analysis`: change to `← from initial analysis, round <new N>`.
+     - If the existing bullet ends with `← from round <prior N>`: change to `← from rounds <prior N>, <new N>`.
+     - If the existing bullet ends with `← from rounds <list>`: append the new round number to the comma-separated list, e.g. `← from rounds 1, 3, <new N>`.
+     - **Never** mix the literal string "initial analysis" with bare round numbers in the same `rounds` list — keep "initial analysis" as a separate clause.
    - If you merge, the snippet you return is the *merged* bullet (not the original).
 5. **No-merge case.** If no overlap, append the new bullet to the end of the target section. If the section is empty (just contains the placeholder bullet from the template, e.g. `<Weakness> ← from round-NN`), replace the placeholder with your new bullet.
 6. Use the Edit tool (or Write to overwrite) to modify `REVIEW_PATH`. Do not modify any section other than the target section.
