@@ -401,3 +401,43 @@ check_prompt() {
 @test "wechat-renderer.md mandates paper-folder-relative figure paths" {
   grep -qF 'paper-folder-relative' prompts/wechat-renderer.md
 }
+
+@test "study.md argument-hint documents --paper flag" {
+  grep -qF -- '--paper' commands/study.md
+}
+
+@test "add-prior-work skill is honest about DOI not being supported" {
+  ! grep -qF '/ DOI' ../README.md
+  grep -qF 'DOI not yet supported' skills/add-prior-work/SKILL.md
+}
+
+@test "title-generator.md disambiguates STYLE_FILTER behavior" {
+  grep -qF 'all 5 candidates use that style' prompts/title-generator.md
+}
+
+@test "verify-prereqs.sh glob does not hardcode marketplace name" {
+  ! grep -qE '\$HOME/\.claude/plugins/cache/claude-paper/claude-paper/' scripts/verify-prereqs.sh
+  grep -qE '\$HOME/\.claude/plugins/cache/\*/claude-paper/' scripts/verify-prereqs.sh
+}
+
+@test "study-deep final summary does not leak Plan-numbered marketing" {
+  ! grep -qF 'Plan 2 ✓' skills/study-deep/SKILL.md
+  ! grep -qF 'Plan 3a ✓' skills/study-deep/SKILL.md
+}
+
+@test "README /paper:compare example uses a real arxiv slug, not bare BERT" {
+  ! grep -qF '/paper:compare BERT --lang zh' ../README.md
+  grep -qE '/paper:compare attention-is-all-you-need' ../README.md
+}
+
+@test "skills with most-recent-paper auto-detect warn the user" {
+  for f in skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/reproduce-check/SKILL.md; do
+    grep -qF 'most recently modified' "$f" || { echo "FAIL: $f missing warning"; return 1; }
+  done
+}

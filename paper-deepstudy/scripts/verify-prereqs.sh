@@ -4,7 +4,9 @@
 set -euo pipefail
 
 # 1. claude-paper plugin must be installed (look for its skill file)
-CLAUDE_PAPER_GLOB="$HOME/.claude/plugins/cache/claude-paper/claude-paper/*/skills/study/SKILL.md"
+# Glob is intentionally permissive: claude-paper may be installed under any
+# marketplace name (default: claude-paper, but users can re-add it under any name).
+CLAUDE_PAPER_GLOB="$HOME/.claude/plugins/cache/*/claude-paper/*/skills/study/SKILL.md"
 if ! ls $CLAUDE_PAPER_GLOB > /dev/null 2>&1; then
   echo "ERROR: claude-paper:study plugin not found." >&2
   echo "Install via the Claude Code plugin marketplace before using paper-deepstudy." >&2

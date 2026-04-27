@@ -19,7 +19,7 @@ Optional flags:
 
 ### 1.1 Resolve target paper
 
-Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent. Verify required files:
+Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent (most recently modified paper folder). If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` Verify required files:
 - `$PAPER_DIR/analysis/06-figures.md`
 - `$PAPER_DIR/images/` directory (non-empty)
 - `$PAPER_DIR/notes/source.md`

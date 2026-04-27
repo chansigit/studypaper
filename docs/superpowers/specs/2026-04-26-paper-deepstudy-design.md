@@ -518,6 +518,8 @@ All subagents are dispatched via the Agent tool with `subagent_type: general-pur
 - **WebFetch rate-limit / failure (prior-work-historian, reproduce-checker):** degrade gracefully with a `<!-- could not fetch <ref>: <reason> -->` note.
 - **User Ctrl-C mid-pipeline:** Whatever has been written to disk is preserved. User can resume by re-running `/paper:study` (skips completed files).
 
+**Known soft-failure — WebFetch budgets are advisory, not enforced.** Each prompt that allows WebFetch declares a numeric cap (e.g. "≤6 fetches" in `reproduce-checker`), but enforcement is by sub-Agent self-discipline. A sub-Agent that ignores the cap will not be stopped by the orchestrator. Spec §11 tracks central-budget enforcement as a future polish.
+
 ---
 
 ## 11. Open Questions for Implementation Plan

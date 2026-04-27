@@ -370,5 +370,4 @@ Available refinements:
   /paper:retitle [xhs|wechat]
   /paper:add-prior-work <ref>
   /paper:reproduce-check
-  (These commands ship in: Plan 2 ✓ for /paper:review-round; Plan 3a ✓ for /paper:refine-notes, /paper:retitle, /paper:reselect-figures; Plan 3b for /paper:deep-dive, /paper:compare, /paper:add-prior-work; Plan 3c for /paper:reproduce-check.)
 ```

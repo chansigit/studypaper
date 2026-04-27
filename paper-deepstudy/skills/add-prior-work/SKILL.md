@@ -5,6 +5,8 @@ disable-model-invocation: false
 allowed-tools: Bash, Read, Write, Edit, Agent
 ---
 
+> **Roadmap note:** DOI inputs (e.g. `10.1093/nar/gkae1113`) are not yet supported. The current implementation falls back to "free-text" parsing for DOIs which produces poor results. Use the arXiv URL or BibTeX form instead. *DOI not yet supported* — tracking issue in spec §11.
+
 # paper-deepstudy: add-prior-work workflow
 
 Invoke after `/paper:study` has produced `analysis/05-prior-work.md`. Each invocation augments that file with one new prior-work entry the auto-run pipeline missed. Reuses the `prior-work-historian` sub-Agent prompt from Plan 1 with extended inputs.
