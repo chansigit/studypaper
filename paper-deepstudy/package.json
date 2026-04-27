@@ -5,6 +5,6 @@
   "type": "commonjs",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test:unit": "bats tests/unit && node tests/unit/test-select-figures.cjs && node tests/unit/test-next-round-number.cjs"
+    "test:unit": "bats tests/unit && node tests/unit/test-select-figures.cjs && node tests/unit/test-next-round-number.cjs && node tests/unit/test-parse-judge-output.cjs && node tests/unit/test-slugify-objection.cjs"
   }
 }

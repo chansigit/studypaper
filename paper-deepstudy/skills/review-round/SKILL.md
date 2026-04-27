@@ -125,9 +125,13 @@ Agent(
 
 **Important:** the judge dispatch must NOT include `PAPER_TEXT`, `ANALYSIS_DIR`, or any other paper context. The judge is intentionally blind. Only objection + defense.
 
-Parse the judge's output to extract `JUDGE_VERDICT_<i>` (one of `holds | partially_holds | fails`) and `JUDGE_REASONING_<i>`. The judge returns these inside a yaml-fenced block; extract by reading lines between ` ``` yaml ` and ` ``` `.
+Parse the judge's output via the helper:
 
-If parsing fails (verdict missing or invalid), default to `partially_holds` with reasoning "Judge output unparseable — manual review required" and continue.
+```bash
+echo "$JUDGE_OUTPUT" | node $PLUGIN_ROOT/scripts/parse-judge-output.cjs
+```
+
+The helper returns a JSON object `{verdict, reasoning}`. `verdict` is one of `holds | partially_holds | fails`. On parse failure (missing yaml fence, invalid verdict, etc.), the helper returns `{verdict: "partially_holds", reasoning: "Judge output unparseable: ... — manual review required."}` — the orchestrator can use this directly without additional fallback logic.
 
 ---
 
@@ -204,9 +208,15 @@ For each objection (regardless of verdict), write a round file at `$ROUNDS_DIR/r
 ### 5.1 Compute filename
 
 - `<NN>`: zero-padded two-digit (or more) round number from Stage 3.5.
-- `<short-title>`: derived from the first ~6 words of the objection, lowercased, hyphenated, alphanumeric only. Cap at 40 chars.
+- `<short-title>`: derived from the objection text via the helper:
 
-Example: objection "The baseline comparison in §4 uses a 3x smaller compute budget" → `round-01-the-baseline-comparison-in-uses.md`.
+```bash
+echo "$OBJECTION" | node $PLUGIN_ROOT/scripts/slugify-objection.cjs
+```
+
+The helper returns the slug (or `untitled` if input has no extractable ASCII). Slug rules: lowercase, alphanumeric + hyphens only, first ~6 words, capped at 40 chars.
+
+Example: objection "The baseline comparison in §4 uses a 3x smaller compute budget" → slug `the-baseline-comparison-in-4-uses` → filename `round-01-the-baseline-comparison-in-4-uses.md`.
 
 ### 5.2 Write file
 
