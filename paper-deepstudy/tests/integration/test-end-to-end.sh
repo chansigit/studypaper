@@ -56,7 +56,7 @@ for d in ml-pure single-cell protein-structure protein-function genomics drug-di
 done
 
 # 6. Commands exist
-for c in study rerun-stage review-round; do
+for c in study rerun-stage review-round refine-notes retitle reselect-figures; do
   if [ ! -f "$ROOT/commands/$c.md" ]; then
     echo "FAIL: command missing: $c.md"; fail=1
   fi
@@ -69,6 +69,13 @@ fi
 if ! grep -qF 'defense-agent' "$ROOT/skills/review-round/SKILL.md" 2>/dev/null; then
   echo "FAIL: review-round SKILL.md does not mention defense-agent dispatch"; fail=1
 fi
+
+# 8. Plan 3a skills exist
+for s in refine-notes retitle reselect-figures; do
+  if [ ! -f "$ROOT/skills/$s/SKILL.md" ]; then
+    echo "FAIL: skill $s missing"; fail=1
+  fi
+done
 
 if [ $fail -ne 0 ]; then
   echo "Integration smoke test: FAILED"; exit 1
