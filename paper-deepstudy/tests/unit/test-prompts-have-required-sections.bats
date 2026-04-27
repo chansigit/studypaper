@@ -338,3 +338,8 @@ check_prompt() {
 @test "reproduce-check SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/reproduce-check/SKILL.md
 }
+
+@test "reproduce-checker.md mandates fails_count self-check" {
+  grep -qF 'self-check' prompts/reproduce-checker.md
+  grep -qF 'fails_count + partials_count' prompts/reproduce-checker.md
+}

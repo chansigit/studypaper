@@ -44,10 +44,39 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
    - Any other distinct GitHub link mentioned in the paper text (up to 1 more)
    - Up to 1 dataset link if explicitly cited (e.g. Zenodo DOI, Dryad repository)
    - Up to 2 protocols.io / other wet-lab links if relevant
-6. Compute `fails_count` (number of ✗) and `partials_count` (number of partial). Set `overall_score`:
-   - `green` if 0 fails AND 0-1 partials
-   - `yellow` if 0 fails AND 2-4 partials, or 1 fail
-   - `red` if 2+ fails or 5+ partials
+6. Compute the dimension counts and self-check, then derive `overall_score`:
+
+   **Step 6a — count each dimension's status**
+   Walk through all 7 dimensions (or 6 if Wet-lab is N/A). For each, classify the status as ✓, ✗, partial, or N/A. Count separately:
+   - `pass_count` = number of ✓
+   - `fails_count` = number of ✗
+   - `partials_count` = number of `partial`
+   - `na_count` = number of N/A
+
+   **Step 6b — self-check (REQUIRED, do not skip)**
+   Verify: `pass_count + fails_count + partials_count + na_count` equals the total number of dimension sections you actually wrote (7 for non-ml-pure papers, 7 for ml-pure with one being N/A — the N/A still counts as a written section).
+
+   If the equation does NOT balance, you miscounted at least one dimension. Re-walk the 7 sections, recount, and update the frontmatter values until the equation balances.
+
+   **Step 6c — derive `overall_score` from a lookup table**
+
+   Use this exact lookup (do NOT improvise):
+
+   | `fails_count` | `partials_count` | `overall_score` |
+   |---|---|---|
+   | 0 | 0–1 | green |
+   | 0 | 2–4 | yellow |
+   | 1 | (any) | yellow |
+   | 0 | ≥ 5 | red |
+   | ≥ 2 | (any) | red |
+
+   Concrete examples to verify your understanding:
+   - 0 fails, 1 partial → green
+   - 0 fails, 3 partials → yellow
+   - 1 fail, 2 partials → yellow
+   - 2 fails, 1 partial → **red** (because fails_count ≥ 2)
+   - 4 fails, 3 partials → **red**
+   - 0 fails, 5 partials → red
 7. If `fails_count >= 1` OR `partials_count >= 3`, populate `## Recommended next steps` with bullet points naming each weak dimension and suggesting the user raise it as a review-round objection. Otherwise, omit that section.
 
 ## Quality bar
