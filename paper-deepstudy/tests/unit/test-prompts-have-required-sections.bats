@@ -215,3 +215,23 @@ check_prompt() {
     grep -qF -e "$f" skills/study-deep/SKILL.md || { echo "missing flag: $f"; return 1; }
   done
 }
+
+@test "study-deep SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/study-deep/SKILL.md
+}
+
+@test "review-round SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/review-round/SKILL.md
+}
+
+@test "refine-notes SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/refine-notes/SKILL.md
+}
+
+@test "retitle SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/retitle/SKILL.md
+}
+
+@test "reselect-figures SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/reselect-figures/SKILL.md
+}
