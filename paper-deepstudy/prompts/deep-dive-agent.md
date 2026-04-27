@@ -40,7 +40,7 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 
 ## Quality bar
 
-- Length: 600-1500 words total.
+- Length: 600-2000 words total. Aim for the upper end (1500-2000) when the topic genuinely benefits from depth (math derivations, multi-method comparison, or non-obvious method-design rationale). Aim for the lower end (600-1000) for narrow topics that don't require extended treatment.
 - Every load-bearing claim cites a specific paper section, equation, figure, or analysis-file passage.
 - Math / pseudocode is implementable, not handwavy.
 - Output language: per `LANG` input. If `LANG=chinese`, all prose is Chinese; section headings (`## What is this topic`, etc.) stay English so downstream tooling can grep them. If `LANG=english` (default), the entire file is English.
