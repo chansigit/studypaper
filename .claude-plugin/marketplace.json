@@ -1,0 +1,32 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "studypaper",
+  "description": "Deep paper study toolkit for ML and computational-biology research",
+  "owner": {
+    "name": "Sijie Chen",
+    "email": "chansigit@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "paper-deepstudy",
+      "version": "0.1.0",
+      "description": "Deep paper study for ML and computational-biology papers. Adversarial review rounds, reproducibility audit, deep-dives, head-to-head comparisons, and Chinese social-media notes (Xiaohongshu / WeChat) generated from a single source.",
+      "author": {
+        "name": "Sijie Chen",
+        "email": "chansigit@gmail.com"
+      },
+      "category": "research",
+      "tags": [
+        "research",
+        "papers",
+        "machine-learning",
+        "computational-biology",
+        "review",
+        "reproducibility",
+        "notes"
+      ],
+      "source": "./paper-deepstudy",
+      "homepage": "https://github.com/chansigit/studypaper"
+    }
+  ]
+}
