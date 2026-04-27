@@ -90,3 +90,11 @@ setup() {
 @test "deep-dive.md mentions topic argument" {
   grep -qF '<topic>' commands/deep-dive.md
 }
+
+@test "compare.md has frontmatter" {
+  head -1 commands/compare.md | grep -qE '^---$'
+}
+
+@test "compare.md mentions --lang flag" {
+  grep -qF -e '--lang' commands/compare.md
+}
