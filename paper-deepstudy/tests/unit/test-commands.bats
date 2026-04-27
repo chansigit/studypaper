@@ -37,3 +37,11 @@ setup() {
 @test "review-round.md invokes the review-round skill" {
   grep -qF 'review-round' commands/review-round.md
 }
+
+@test "README documents /paper:review-round" {
+  grep -qF '/paper:review-round' README.md
+}
+
+@test "README documents review-rounds folder" {
+  grep -qF 'review-rounds/' README.md
+}
