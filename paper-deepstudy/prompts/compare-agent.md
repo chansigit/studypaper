@@ -33,6 +33,8 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 
 **About section headings:** copy the H2 headings from the bullet list above **verbatim** — do NOT capitalize "weaknesses" to "Weaknesses", do NOT add subsection H3s that aren't in the template, do NOT rename "When to use which" to "Decision guide" or similar. The downstream test runner greps for exact heading strings.
 
+**About extra sections:** the output has **exactly 6 H2 sections** (Problem, Formalization, Method, Experiments, Strengths and weaknesses, When to use which). Do NOT add a `## Summary`, `## Conclusion`, `## TL;DR`, or any other H2 not listed in the bullet list above. If you feel the comparison needs a wrap-up, fold it into the "When to use which" section instead.
+
 ## Instructions
 
 1. Read both `THIS_ANALYSIS_DIR/*.md` and `OTHER_ANALYSIS_DIR/*.md`. The most-relevant files: `00-paper-profile.md` (problem framing + claims), `01-problem.md` (problem definition), `02-formalization.md` (math), `03-method-deep.md` (method), `04-experiments.md` (experiments).

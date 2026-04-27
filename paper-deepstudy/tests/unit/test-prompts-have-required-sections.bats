@@ -360,3 +360,8 @@ check_prompt() {
   grep -qF 'verbatim' prompts/compare-agent.md
   grep -qF 'do NOT capitalize' prompts/compare-agent.md
 }
+
+@test "compare-agent.md forbids extra sections beyond the 6 listed" {
+  grep -qF 'exactly 6 H2 sections' prompts/compare-agent.md
+  grep -qF 'do NOT add' prompts/compare-agent.md
+}
