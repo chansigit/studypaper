@@ -54,3 +54,11 @@ setup() {
   grep -qF 'xhs' commands/refine-notes.md
   grep -qF 'wechat' commands/refine-notes.md
 }
+
+@test "retitle.md has frontmatter" {
+  head -1 commands/retitle.md | grep -qE '^---$'
+}
+
+@test "retitle.md mentions style filter" {
+  grep -qF -e '--style' commands/retitle.md
+}
