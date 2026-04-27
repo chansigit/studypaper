@@ -312,3 +312,29 @@ check_prompt() {
   run check_prompt prompts/reproduce-checker.md
   [ "$status" -eq 0 ]
 }
+
+@test "reproduce-check SKILL.md has YAML frontmatter with name" {
+  head -5 skills/reproduce-check/SKILL.md | grep -qF 'name: reproduce-check'
+}
+
+@test "reproduce-check SKILL.md mentions reproduce-checker dispatch" {
+  grep -qF 'reproduce-checker' skills/reproduce-check/SKILL.md
+}
+
+@test "reproduce-check SKILL.md mentions WebFetch budget" {
+  grep -qF 'WebFetch' skills/reproduce-check/SKILL.md
+  grep -qF 'cap 5' skills/reproduce-check/SKILL.md
+}
+
+@test "reproduce-check SKILL.md handles ml-pure -> wet-lab N/A branch" {
+  grep -qF 'ml-pure' skills/reproduce-check/SKILL.md
+  grep -qF 'N/A' skills/reproduce-check/SKILL.md
+}
+
+@test "reproduce-check SKILL.md suggests /paper:review-round on serious issues" {
+  grep -qF '/paper:review-round' skills/reproduce-check/SKILL.md
+}
+
+@test "reproduce-check SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/reproduce-check/SKILL.md
+}
