@@ -20,7 +20,9 @@ You do NOT read either paper's `paper.txt` directly — the analysis files are i
 
 A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 
-- YAML frontmatter (`this_paper`, `other_paper`, `created_at`, `language`)
+- YAML frontmatter (`this_paper`, `other_paper`, `created_at`, `language`).
+
+  **About `created_at`:** must be the runtime ISO8601 UTC timestamp (e.g. `2026-04-27T03:14:15Z`). Use the current timestamp at the moment of generation. Do NOT use a fabricated, plan-doc-derived, or template-default date. If you cannot determine the current time, leave it as `<runtime-timestamp>` and let the orchestrator fill it in.
 - `# Compare: <this paper title> vs. <other paper title>`
 - `## Problem` (2-3 paragraphs)
 - `## Formalization`
