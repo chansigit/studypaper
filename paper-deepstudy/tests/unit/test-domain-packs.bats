@@ -35,3 +35,8 @@ check_pack() {
   run check_pack domain-packs/single-cell.md
   [ "$status" -eq 0 ]
 }
+
+@test "protein-structure.md has required sections" {
+  run check_pack domain-packs/protein-structure.md
+  [ "$status" -eq 0 ]
+}
