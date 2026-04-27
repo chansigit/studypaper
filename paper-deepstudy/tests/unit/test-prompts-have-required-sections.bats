@@ -261,3 +261,29 @@ check_prompt() {
 @test "deep-dive SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/deep-dive/SKILL.md
 }
+
+@test "compare SKILL.md has YAML frontmatter with name" {
+  head -5 skills/compare/SKILL.md | grep -qF 'name: compare'
+}
+
+@test "compare SKILL.md mentions compare-agent dispatch" {
+  grep -qF 'compare-agent' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md handles three input types for other-paper" {
+  for kind in 'slug' 'PDF path' 'URL'; do
+    grep -qF "$kind" skills/compare/SKILL.md || { echo "missing: $kind"; return 1; }
+  done
+}
+
+@test "compare SKILL.md auto-studies the other paper when needed" {
+  grep -qF 'auto-studies' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md mentions --lang flag handling" {
+  grep -qF -e '--lang' skills/compare/SKILL.md
+}
+
+@test "compare SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/compare/SKILL.md
+}
