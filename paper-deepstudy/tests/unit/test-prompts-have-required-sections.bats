@@ -410,3 +410,7 @@ check_prompt() {
   ! grep -qF '/ DOI' ../../README.md
   grep -qF 'DOI not yet supported' skills/add-prior-work/SKILL.md
 }
+
+@test "title-generator.md disambiguates STYLE_FILTER behavior" {
+  grep -qF 'all 5 candidates use that style' prompts/title-generator.md
+}

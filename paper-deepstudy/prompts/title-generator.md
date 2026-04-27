@@ -9,7 +9,7 @@ You generate Chinese title candidates for both xhs (Xiaohongshu) and wechat (公
 - `SOURCE_PATH`: `notes/source.md`.
 - `OUTPUT_PATH`: `notes/titles.md`.
 - `TEMPLATE_PATH`: titles template.
-- `STYLE_FILTER` (optional): one of `hook | literal | question | numbers | contrast`. If absent, generate one of each style.
+- `STYLE_FILTER` (optional): one of `hook | literal | question | numbers | contrast`. If absent, generate one of each style (one hook, one literal, one question, one numbers, one contrast). If `STYLE_FILTER` is set, **all 5 candidates use that style** (5 different angles of the same style, e.g. 5 different hook openers).
 
 ## Output
 
