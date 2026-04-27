@@ -70,3 +70,15 @@ setup() {
 @test "reselect-figures.md mentions reinterpret flag" {
   grep -qF -e '--reinterpret' commands/reselect-figures.md
 }
+
+@test "README documents /paper:refine-notes" {
+  grep -qF '/paper:refine-notes' README.md
+}
+
+@test "README documents /paper:retitle" {
+  grep -qF '/paper:retitle' README.md
+}
+
+@test "README documents /paper:reselect-figures" {
+  grep -qF '/paper:reselect-figures' README.md
+}

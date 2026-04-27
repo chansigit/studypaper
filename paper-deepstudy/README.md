@@ -45,6 +45,21 @@ Requires `claude-paper:study` already installed.
 
 Interactively raise objections to the paper. The plugin dispatches a defense-agent (arguing for the authors) and a judge-agent (blind to the paper, rules on the defense's logic). You have final say. Accepted objections are appended to `review.md`; every round is persisted at `review-rounds/round-NN-<title>.md`.
 
+### Refine the rendered notes
+
+After /paper:study has produced notes/xhs.md and notes/wechat.md, you can iterate without re-running the full pipeline:
+
+```
+/paper:refine-notes xhs              # apply an edit instruction to xhs.md
+/paper:refine-notes wechat           # apply an edit instruction to wechat.md
+/paper:retitle xhs                   # regenerate 5 title candidates, pick one
+/paper:retitle wechat --style hook   # bias candidates toward a style
+/paper:reselect-figures              # re-pick which figures get embedded
+/paper:reselect-figures --reinterpret  # re-run figure-interpreter first, then re-pick
+```
+
+All three commands back up the prior version as `notes/<file>.bak.NN` before mutating, so you can roll back any time.
+
 ## What you get (12 outputs)
 
 Under `~/claude-papers/papers/<slug>/`:
@@ -85,5 +100,7 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 
 - **Plan 1:** auto-run pipeline, `ml-pure` and `single-cell` packs.
 - **Plan 2 (this branch):** `/paper:review-round` adversarial loop. ✓
-- **Plan 3:** seven refinement commands (`refine-notes`, `deep-dive`, `compare`, `reselect-figures`, `retitle`, `add-prior-work`, `reproduce-check`).
+- **Plan 3a (this branch):** notes UX commands — `refine-notes`, `retitle`, `reselect-figures`. ✓
+- **Plan 3b (future):** analysis-extension commands — `deep-dive`, `compare`, `add-prior-work`.
+- **Plan 3c (future):** `reproduce-check` audit command.
 - **Plan 4 (this branch):** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`). ✓
