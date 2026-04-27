@@ -30,7 +30,20 @@ function slugifyObjection(text) {
     // Trim trailing partial word if cut mid-word
     slug = slug.replace(/-[^-]*$/, '');
   }
-  if (slug.length === 0) return 'untitled';
+  // CJK fallback: if all ASCII has been stripped, derive a stable hash slug
+  // from the original text so multi-CJK inputs don't all collide on 'untitled'.
+  if (slug.length === 0) {
+    // Detect: did the input have any CJK / non-ASCII content worth preserving?
+    const hasCJK = /[一-鿿㐀-䶿豈-﫿぀-ゟ゠-ヿ]/.test(text);
+    if (hasCJK) {
+      // 6-char hex hash of the input text (deterministic, collision-resistant
+      // enough for filenames, no new deps).
+      const crypto = require('node:crypto');
+      const hash = crypto.createHash('sha1').update(text).digest('hex').slice(0, 6);
+      return `cjk-${hash}`;
+    }
+    return 'untitled';
+  }
   return slug;
 }
 

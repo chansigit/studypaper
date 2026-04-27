@@ -41,4 +41,15 @@ assert.strictEqual(
   'leading-dashes-and-multiple-spaces'
 );
 
+// Plan 9 I6: CJK-only input should not collapse to "untitled" — must produce
+// a stable, distinguishable slug. Two different CJK inputs must produce
+// different slugs.
+const slug1 = slugifyObjection('对比学习损失推导');
+const slug2 = slugifyObjection('注意力机制的推导');
+assert.ok(slug1 !== 'untitled', `CJK input "对比学习损失推导" should not slug to "untitled", got "${slug1}"`);
+assert.ok(slug2 !== 'untitled', `CJK input "注意力机制的推导" should not slug to "untitled", got "${slug2}"`);
+assert.ok(slug1 !== slug2, `Different CJK inputs must produce different slugs, got "${slug1}" === "${slug2}"`);
+// CJK-only slug should match the documented form: cjk- followed by 6 hex chars
+assert.match(slug1, /^cjk-[a-f0-9]{6}$/, `CJK-only slug should match /^cjk-[a-f0-9]{6}$/, got "${slug1}"`);
+
 console.log('slugify-objection: all tests passed');
