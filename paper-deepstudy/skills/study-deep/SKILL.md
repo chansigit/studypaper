@@ -45,9 +45,29 @@ If exit ≠ 0, abort with the script's error message.
 
 ### 0.2 Run claude-paper:study (baseline)
 
-Invoke the claude-paper study skill on the input. After completion, the paper folder lives at `~/claude-papers/papers/<slug>/` containing at least `meta.json`, `summary.md`, `paper.pdf`, and `images/`. Resolve `<slug>` from `meta.json` produced by claude-paper.
+Invoke `claude-paper:study` via the Skill tool with the user's input as args:
 
-If the paper folder does not exist after running claude-paper:study, abort with: "claude-paper:study did not produce expected outputs at ~/claude-papers/papers/<slug>/".
+```
+Skill(skill: "claude-paper:study", args: "<user-input-pdf-path-or-url>")
+```
+
+`claude-paper:study` will download / parse the PDF and produce a paper folder under `~/claude-papers/papers/<slug>/`. The slug is auto-derived from the paper title.
+
+After the Skill returns, locate the new paper folder. The most reliable way is to take the most recently modified subdirectory:
+
+```bash
+PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+```
+
+Verify required outputs exist:
+- `$PAPER_DIR/meta.json`
+- `$PAPER_DIR/paper.pdf`
+- `$PAPER_DIR/summary.md` (claude-paper's curated summary, not the full text — Stage 0.3.1 extracts the full text via pdftotext)
+- `$PAPER_DIR/images/` (may be empty if pdftotext-style extraction fails; report and continue)
+
+If any of these are missing, abort with: `"claude-paper:study did not produce expected outputs at $PAPER_DIR. Check the claude-paper plugin's installation and try /paper:study again."`
+
+Read `$PAPER_DIR/meta.json` and confirm its `slug` field matches the basename of `$PAPER_DIR`. If they disagree, prefer the `meta.json` slug (and adjust `PAPER_DIR` accordingly).
 
 ### 0.3 Compute paths
 

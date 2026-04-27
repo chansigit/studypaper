@@ -197,3 +197,11 @@ check_prompt() {
 @test "reselect-figures SKILL.md mentions figure-interpreter for --reinterpret" {
   grep -qF 'figure-interpreter' skills/reselect-figures/SKILL.md
 }
+
+@test "study-deep SKILL.md Stage 0.2 mentions Skill tool dispatch" {
+  grep -qF 'Skill tool' skills/study-deep/SKILL.md
+}
+
+@test "study-deep SKILL.md Stage 0.2 describes slug discovery" {
+  grep -qF 'ls -t' skills/study-deep/SKILL.md
+}
