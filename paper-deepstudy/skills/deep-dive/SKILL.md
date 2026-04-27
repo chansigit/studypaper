@@ -45,6 +45,12 @@ Set:
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `LANG=<english if user invocation language is English; chinese if Chinese; default english>` — the orchestrator detects the user's invocation language for the current `/paper:deep-dive` call and sets `LANG` accordingly. Falls back to `english` if uncertain.
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.2 Capture the topic
 
 `<topic>` is the first positional argument (everything before `--paper` if present). Treat the entire string as the topic verbatim. If empty, abort with: `"Usage: /paper:deep-dive <topic> [--paper <slug>]"`.
@@ -91,7 +97,13 @@ Agent(
 )
 ```
 
-Wait for completion. The agent writes the deep-dive file directly.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch deep-dive-agent deep-dives/$TOPIC_SLUG.md ok
+```
+
+If the agent produced no output: `log_dispatch deep-dive-agent deep-dives/$TOPIC_SLUG.md failed`
 
 ---
 

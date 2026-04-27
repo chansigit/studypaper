@@ -61,6 +61,12 @@ Read `$ANALYSIS_DIR/00-paper-profile.md` frontmatter and inspect the `domain` fi
 
 Set `WET_LAB_APPLICABLE=true` for non-ml-pure profiles.
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.3 Backup existing reproduce-check.md if present
 
 ```bash
@@ -95,7 +101,13 @@ Agent(
 )
 ```
 
-Wait for completion. The agent writes the audit file directly to `$OUTPUT_PATH`.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch reproduce-checker reproduce-check.md ok
+```
+
+If the agent produced no output: `log_dispatch reproduce-checker reproduce-check.md failed`
 
 ---
 

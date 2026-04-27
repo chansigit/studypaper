@@ -52,6 +52,12 @@ Set:
 - `PROMPT_PATH=$PLUGIN_ROOT/prompts/<platform>-renderer.md`
 - `TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/<platform>.md`
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.2 Show current rendering and solicit edit instruction
 
 Read `EXISTING_PATH`. Show the user a preview (last 60 lines, or full file if shorter) along with this prompt (in user's invocation language):
@@ -151,7 +157,13 @@ Agent(
 )
 ```
 
-Wait for completion. The renderer writes the new version directly to `$OUTPUT_PATH`.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md ok   # or wechat-renderer notes/wechat.md ok
+```
+
+If the renderer failed: log with `failed` status.
 
 ### 2.3 Verify output
 

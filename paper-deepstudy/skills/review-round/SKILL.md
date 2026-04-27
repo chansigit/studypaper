@@ -45,6 +45,12 @@ Set the additional path variables:
 - `ROUNDS_DIR=$PAPER_DIR/review-rounds` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 Read `$ANALYSIS_DIR/00-paper-profile.md` frontmatter to extract `slug` (used in round filenames).
 
 ### 1.2 Solicit objections
@@ -116,6 +122,12 @@ Agent(
 
 Capture each defense agent's full output text as `DEFENSE_<i>`.
 
+After each defense-agent returns:
+
+```bash
+log_dispatch defense-agent review-rounds/round-<NN>-<slug>.md ok
+```
+
 ### 2.3 Dispatch judge-agent (one per objection)
 
 For each `(objection, defense)` pair:
@@ -131,6 +143,12 @@ Agent(
 ```
 
 **Important:** the judge dispatch must NOT include `PAPER_TEXT`, `ANALYSIS_DIR`, or any other paper context. The judge is intentionally blind. Only objection + defense.
+
+After each judge-agent returns:
+
+```bash
+log_dispatch judge-agent review-rounds/round-<NN>-<slug>.md ok
+```
 
 Parse the judge's output via the helper:
 
@@ -203,6 +221,14 @@ Agent(
 ```
 
 Capture the snippet returned between `ADDED_SNIPPET_START` / `ADDED_SNIPPET_END` markers as `FINAL_REVIEW_SNIPPET_<i>`.
+
+After completion:
+
+```bash
+log_dispatch review-writer review.md ok
+```
+
+If the review-writer failed: `log_dispatch review-writer review.md failed`
 
 For `holds` verdicts, skip review-writer. The round file still gets written in Stage 5 using the pre-assigned `ROUND_NUMBER_<i>`; `final_review_snippet` is empty.
 

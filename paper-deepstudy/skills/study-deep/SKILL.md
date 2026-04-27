@@ -118,6 +118,13 @@ Set these environment-style variables (use them in subsequent dispatches):
 - `ANALYSIS_DIR=$PAPER_DIR/analysis` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
+Source the log-dispatch helper for recording all sub-Agent dispatches:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
+
 ### 0.3.1 Extract full paper text
 
 `claude-paper:study` does not persist the extracted full text to disk; only `paper.pdf` is reliably available. We need full text for Stage 1 sub-Agents.
@@ -164,7 +171,19 @@ Agent(
 )
 ```
 
-Wait for completion. Read `$ANALYSIS_DIR/00-paper-profile.md` and parse its YAML frontmatter.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch paper-profiler analysis/00-paper-profile.md ok
+```
+
+If the agent produced a FAILED placeholder:
+
+```bash
+log_dispatch paper-profiler analysis/00-paper-profile.md failed
+```
+
+Read `$ANALYSIS_DIR/00-paper-profile.md` and parse its YAML frontmatter.
 
 ### 0.5 Confirm with user
 
@@ -226,10 +245,22 @@ Concrete dispatch table:
 
 ### 1.3 Collect results
 
-After all six return, verify each expected output file exists. For any that did not produce a file, write a placeholder:
+After all six return, verify each expected output file exists. Log each dispatch:
+
+```bash
+log_dispatch problem-framer analysis/01-problem.md ok
+log_dispatch formalizer analysis/02-formalization.md ok
+log_dispatch method-analyst analysis/03-method-deep.md ok
+log_dispatch experiment-critic analysis/04-experiments.md ok
+log_dispatch prior-work-historian analysis/05-prior-work.md ok
+log_dispatch figure-interpreter analysis/06-figures.md ok
+```
+
+For any that did not produce a file, write a placeholder and log as failed:
 
 ```
 echo '<!-- FAILED: <reason from sub-Agent error> -->' > $OUTPUT_PATH
+log_dispatch <subagent-name> analysis/<NN-name>.md failed
 ```
 
 Record failures in a `STAGE1_FAILURES` list for the final summary.
@@ -256,9 +287,19 @@ Agent(
 
 Wait for completion.
 
+```bash
+log_dispatch reviewer-synthesizer review.md ok
+```
+
 ### 2.2 Verify
 
-If `$PAPER_DIR/review.md` does not exist, write `<!-- FAILED: reviewer-synthesizer did not produce output -->` and record failure in `STAGE2_FAILURES`. Otherwise, proceed.
+If `$PAPER_DIR/review.md` does not exist, write `<!-- FAILED: reviewer-synthesizer did not produce output -->`, log the failure, and record in `STAGE2_FAILURES`:
+
+```bash
+log_dispatch reviewer-synthesizer review.md failed
+```
+
+Otherwise, proceed.
 
 ## Stage 3: Notes generation
 
@@ -281,6 +322,14 @@ Agent(
 
 Create `$PAPER_DIR/notes/` first if absent.
 
+After completion:
+
+```bash
+log_dispatch notes-writer notes/source.md ok
+```
+
+If failed: `log_dispatch notes-writer notes/source.md failed`
+
 ### 3.2 Dispatch title-generator
 
 **Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
@@ -295,6 +344,14 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
 )
 ```
+
+After completion:
+
+```bash
+log_dispatch title-generator notes/titles.md ok
+```
+
+If failed: `log_dispatch title-generator notes/titles.md failed`
 
 ### 3.3 Pick figures
 
@@ -339,6 +396,20 @@ Agent(  // wechat
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
     SELECTED_FIGURES=<WECHAT_FIGURES>
 )
+```
+
+After both complete:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md ok
+log_dispatch wechat-renderer notes/wechat.md ok
+```
+
+If either failed:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md failed
+log_dispatch wechat-renderer notes/wechat.md failed
 ```
 
 ### 3.5 Verify outputs

@@ -49,6 +49,12 @@ Set:
 - `TITLES_PATH=$PAPER_DIR/notes/titles.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.2 Optionally re-interpret figures
 
 If `--reinterpret` is set:
@@ -78,6 +84,10 @@ Agent(
 ```
 
 Wait for completion.
+
+```bash
+log_dispatch figure-interpreter analysis/06-figures.md ok
+```
 
 If `--reinterpret` is not set, skip this step.
 
@@ -179,6 +189,15 @@ Agent(  // wechat
 ```
 
 (Note: `EDIT_INSTRUCTION` and `EXISTING_PATH` are intentionally omitted — this skill re-renders from scratch with new figures. The user's prior body edits will not be preserved. If the user wants to preserve body edits, they should use `/paper:refine-notes` with a figure-swap instruction instead.)
+
+After both complete:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md ok
+log_dispatch wechat-renderer notes/wechat.md ok
+```
+
+If either failed: log with `failed` status.
 
 ### 3.3 Verify outputs
 

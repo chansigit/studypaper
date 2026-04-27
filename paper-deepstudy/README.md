@@ -167,6 +167,14 @@ Workaround: run `claude-paper:study` standalone first, verify `meta.json` exists
 
 Most likely the judge-agent's YAML output couldn't be parsed by `parse-judge-output.cjs`. Check the judge-agent's chat output: it should be a YAML code-fenced block with `verdict:` and `reasoning:` keys. If the judge wrote the YAML in prose form or used a different fence label, `parse-judge-output.cjs` falls back to `partially_holds` per spec. Re-running the round usually resolves transient parse failures.
 
+### Disabling the per-paper run log
+
+`paper-deepstudy` writes a one-line-per-dispatch JSONL log at `~/claude-papers/papers/<slug>/.deepstudy/run.jsonl` to help debug bad outputs. The log contains only metadata (sub-Agent names, output filenames, timestamps, status) — never paper content or user input — and is purely local to your filesystem. To disable:
+
+```bash
+export PAPER_DEEPSTUDY_NO_RUN_LOG=1
+```
+
 ### Backups (`.bak.NN`) accumulate over time
 
 Every refinement command (`/paper:refine-notes`, `/paper:retitle`, `/paper:reselect-figures`, `/paper:add-prior-work`, `/paper:reproduce-check`, etc.) writes a `.bak.NN` before mutating its target. There's no automatic rotation in v1. To clean up, just delete `*.bak.*` files manually:

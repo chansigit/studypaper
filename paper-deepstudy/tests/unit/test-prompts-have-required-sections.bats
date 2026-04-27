@@ -468,3 +468,37 @@ check_prompt() {
 @test "Plan-10 'most recently modified' assertion now lives in helper, not skills" {
   grep -qF 'most recently modified' scripts/lib/resolve-paper.sh
 }
+
+@test "all dispatching skills source the log-dispatch helper" {
+  for f in skills/study-deep/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
+           skills/reproduce-check/SKILL.md \
+           skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md; do
+    grep -qE 'scripts/lib/log-dispatch\.sh' "$f" || { echo "FAIL: $f does not source log-dispatch.sh"; return 1; }
+    grep -qF 'log_dispatch' "$f" || { echo "FAIL: $f does not call log_dispatch"; return 1; }
+  done
+}
+
+@test "study-deep logs dispatch for all 11 stage sub-Agents" {
+  # study-deep dispatches: paper-profiler, problem-framer, formalizer, method-analyst,
+  # experiment-critic, prior-work-historian, figure-interpreter, reviewer-synthesizer,
+  # notes-writer, title-generator, xhs-renderer, wechat-renderer (12 total)
+  for agent in paper-profiler problem-framer formalizer method-analyst \
+               experiment-critic prior-work-historian figure-interpreter \
+               reviewer-synthesizer notes-writer title-generator xhs-renderer \
+               wechat-renderer; do
+    grep -qE "log_dispatch[[:space:]]+$agent" skills/study-deep/SKILL.md \
+      || { echo "FAIL: study-deep missing log_dispatch for $agent"; return 1; }
+  done
+}
+
+@test "PAPER_DEEPSTUDY_NO_RUN_LOG documented in at least one user-facing place" {
+  # Document the opt-out env var so users know how to disable logging
+  grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' README.md \
+    || grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' paper-deepstudy/README.md
+}

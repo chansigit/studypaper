@@ -43,6 +43,12 @@ Set:
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `REVIEW_PATH=$PAPER_DIR/review.md` (may not exist yet; see Stage 4)
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.2 Capture and classify the reference
 
 `<ref>` is the first positional argument. Detect its kind:
@@ -109,7 +115,13 @@ Agent(
 )
 ```
 
-Wait for completion. The agent writes the modified file directly to `$PRIOR_WORK_PATH`.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch prior-work-historian analysis/05-prior-work.md ok
+```
+
+If the agent failed: `log_dispatch prior-work-historian analysis/05-prior-work.md failed`
 
 ---
 

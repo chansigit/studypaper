@@ -90,6 +90,12 @@ Verify it's a different folder from `THIS_PAPER_DIR` (defensive). If they match,
 
 ## Stage 3: Resolve language flag and output path
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 Capture `--lang en` or `--lang zh` (default `en`). Set `LANG=english` or `LANG=chinese`.
 
 ```bash
@@ -129,7 +135,13 @@ Agent(
 )
 ```
 
-Wait for completion. The agent writes the comparison file directly.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch compare-agent compares/vs-${OTHER_SLUG}.md ok
+```
+
+If the agent produced no output: `log_dispatch compare-agent compares/vs-${OTHER_SLUG}.md failed`
 
 ---
 

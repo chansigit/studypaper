@@ -43,6 +43,12 @@ Set:
 - `RENDERING_PATH=$PAPER_DIR/notes/<platform>.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
+Source the log-dispatch helper:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+```
+
 ### 1.2 Read current title
 
 Read the YAML frontmatter of `$RENDERING_PATH` to extract its current `title:` value as `OLD_TITLE`.
@@ -78,7 +84,15 @@ Agent(
 )
 ```
 
-Wait for completion. The generator writes a fresh `titles.md` with new candidates in `## xhs` and `## wechat` sections.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch title-generator notes/titles.md ok
+```
+
+If the generator failed: `log_dispatch title-generator notes/titles.md failed`
+
+The generator writes a fresh `titles.md` with new candidates in `## xhs` and `## wechat` sections.
 
 **Important:** the generator overwrites `titles.md` for both platforms. The other platform's section also gets refreshed. This is intentional — calling retitle bumps both lists, but only the targeted platform's rendering is updated. To preserve the other platform's title selection, the orchestrator extracts and re-applies it after Stage 4 (see Stage 4.2).
 
