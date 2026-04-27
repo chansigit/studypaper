@@ -31,6 +31,10 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 - `## Strengths and weaknesses` (markdown table)
 - `## When to use which` (2-3 paragraphs of decision guidance)
 
+**About section headings:** copy the H2 headings from the bullet list above **verbatim** — do NOT capitalize "weaknesses" to "Weaknesses", do NOT add subsection H3s that aren't in the template, do NOT rename "When to use which" to "Decision guide" or similar. The downstream test runner greps for exact heading strings.
+
+**About extra sections:** the output has **exactly 6 H2 sections** (Problem, Formalization, Method, Experiments, Strengths and weaknesses, When to use which). Do NOT add a `## Summary`, `## Conclusion`, `## TL;DR`, or any other H2 not listed in the bullet list above. If you feel the comparison needs a wrap-up, fold it into the "When to use which" section instead.
+
 ## Instructions
 
 1. Read both `THIS_ANALYSIS_DIR/*.md` and `OTHER_ANALYSIS_DIR/*.md`. The most-relevant files: `00-paper-profile.md` (problem framing + claims), `01-problem.md` (problem definition), `02-formalization.md` (math), `03-method-deep.md` (method), `04-experiments.md` (experiments).
@@ -43,7 +47,8 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 
 ## Quality bar
 
-- Length: 800-2000 words total.
+- Length: 800-2800 words total. Aim for the lower end (800-1500) when the two papers share the same problem and most differences are quantitative; aim for the upper end (2000-2800) when the papers solve related-but-different problems and need more setup to compare.
+- **word-count self-check (REQUIRED):** before finalizing, count the words in your draft. If the total exceeds 2800, re-read each section and trim — usually the "Method" or "Experiments" sections have redundant phrasing that can be cut without losing content. Do NOT submit a draft above 2800 words.
 - Each section uses information from BOTH analysis directories (don't write a one-sided comparison).
 - If `LANG=chinese`, all prose is in Chinese; section headings in the template stay English (so downstream tooling can grep them).
 - Cite as `(<this_slug> analysis/03-method-deep.md §Components)` or `(<other_slug> analysis/04-experiments.md)` — explicit which paper a citation refers to.

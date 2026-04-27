@@ -355,3 +355,18 @@ check_prompt() {
 @test "compare-agent.md mandates runtime created_at, not fabricated" {
   grep -qF 'runtime ISO8601' prompts/compare-agent.md
 }
+
+@test "compare-agent.md mandates verbatim section headings" {
+  grep -qF 'verbatim' prompts/compare-agent.md
+  grep -qF 'do NOT capitalize' prompts/compare-agent.md
+}
+
+@test "compare-agent.md forbids extra sections beyond the 6 listed" {
+  grep -qF 'exactly 6 H2 sections' prompts/compare-agent.md
+  grep -qF 'do NOT add' prompts/compare-agent.md
+}
+
+@test "compare-agent.md length cap is 800-2800 words with self-check" {
+  grep -qF '800-2800' prompts/compare-agent.md
+  grep -qF 'word-count self-check' prompts/compare-agent.md
+}
