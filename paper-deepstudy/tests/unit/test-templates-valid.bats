@@ -60,3 +60,15 @@ setup() {
     grep -qE "^${f}:" templates/review-round.md || { echo "missing field: $f"; return 1; }
   done
 }
+
+@test "deep-dive.md has 5 required H2 sections" {
+  for s in 'What is this topic' 'How the paper handles it' 'Math or algorithm detail' 'How others have approached' 'Takeaway'; do
+    grep -qF "## $s" templates/deep-dive.md || { echo "missing: $s"; return 1; }
+  done
+}
+
+@test "compare.md has 6 required H2 sections" {
+  for s in 'Problem' 'Formalization' 'Method' 'Experiments' 'Strengths and weaknesses' 'When to use which'; do
+    grep -qF "## $s" templates/compare.md || { echo "missing: $s"; return 1; }
+  done
+}
