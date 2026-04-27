@@ -338,3 +338,16 @@ check_prompt() {
 @test "reproduce-check SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/reproduce-check/SKILL.md
 }
+
+@test "reproduce-checker.md mandates fails_count self-check" {
+  grep -qF 'self-check' prompts/reproduce-checker.md
+  grep -qF 'fails_count + partials_count' prompts/reproduce-checker.md
+}
+
+@test "reproduce-checker.md mandates runtime created_at, not fabricated" {
+  grep -qF 'runtime ISO8601' prompts/reproduce-checker.md
+}
+
+@test "deep-dive-agent.md length cap is 600-2000 words" {
+  grep -qF '600-2000' prompts/deep-dive-agent.md
+}
