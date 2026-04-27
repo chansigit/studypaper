@@ -134,3 +134,7 @@ setup() {
 @test "README documents /paper:reproduce-check" {
   grep -qF '/paper:reproduce-check' README.md
 }
+
+@test "README has Troubleshooting section" {
+  grep -qF '## Troubleshooting' README.md
+}

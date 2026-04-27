@@ -132,6 +132,43 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
    - `review.md` should have a Score and Confidence value (not the placeholder underscores).
 4. Repeat with a single-cell paper (e.g. arXiv preprint of scVI or scGPT) and confirm `domain_packs_selected` includes `single-cell`.
 
+## Troubleshooting
+
+### `verify-prereqs.sh` exits with code 1: claude-paper not found
+
+The plugin requires `claude-paper:study` to be installed. Install via the Claude Code marketplace, or look for it under `~/.claude/plugins/marketplaces/`. Once installed, the prereq check should find it under `~/.claude/plugins/cache/claude-paper/claude-paper/<version>/skills/study/SKILL.md`.
+
+### `verify-prereqs.sh` warns about missing pdftotext
+
+Stage 0.3.1 of `study-deep` extracts the paper's full text via `pdftotext` (from `poppler-utils`). On macOS: `brew install poppler`. On Debian/Ubuntu: `sudo apt install poppler-utils`. Without `pdftotext`, the orchestrator falls back to passing `paper.pdf` directly to sub-Agents — slower, but still works.
+
+### `/paper:study` fails with "claude-paper:study did not produce expected outputs"
+
+This means the upstream `claude-paper:study` skill ran but didn't write to `~/claude-papers/papers/<slug>/`. Common causes:
+- The PDF URL didn't return a real PDF (e.g. paywall redirect to login page).
+- claude-paper's parse-pdf.js failed silently (try `node ~/.claude/plugins/cache/claude-paper/claude-paper/*/skills/study/scripts/parse-pdf.js <pdf-path>` directly).
+- The paper folder slug is unexpected (claude-paper derives slug from title; legal-notice headers in arxiv PDFs sometimes confuse this).
+
+Workaround: run `claude-paper:study` standalone first, verify `meta.json` exists, then re-run `/paper:study` (which will skip-or-detect the existing folder).
+
+### `figure-interpreter` produces an empty `analysis/06-figures.md`
+
+`claude-paper:study` extracts images via `pymupdf`. If the PDF has no extractable raster images (e.g. all-vector text-only papers), `images/` will be empty and `figure-interpreter` has nothing to interpret. The orchestrator records a `<!-- FAILED: no images extracted -->` placeholder; the rest of the pipeline continues. xhs/wechat renders will skip the figure embed.
+
+### `/paper:review-round` judge verdict is always `partially_holds`
+
+Most likely the judge-agent's YAML output couldn't be parsed by `parse-judge-output.cjs`. Check the judge-agent's chat output: it should be a YAML code-fenced block with `verdict:` and `reasoning:` keys. If the judge wrote the YAML in prose form or used a different fence label, `parse-judge-output.cjs` falls back to `partially_holds` per spec. Re-running the round usually resolves transient parse failures.
+
+### Backups (`.bak.NN`) accumulate over time
+
+Every refinement command (`/paper:refine-notes`, `/paper:retitle`, `/paper:reselect-figures`, `/paper:add-prior-work`, `/paper:reproduce-check`, etc.) writes a `.bak.NN` before mutating its target. There's no automatic rotation in v1. To clean up, just delete `*.bak.*` files manually:
+
+```bash
+find ~/claude-papers/papers/<slug>/ -name '*.bak.*' -delete
+```
+
+This is on the spec §11 open-questions list (backup retention policy) for a future polish.
+
 ## Roadmap
 
 - **Plan 1 ✓ (shipped):** auto-run pipeline, `ml-pure` and `single-cell` packs.
