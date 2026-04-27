@@ -45,3 +45,8 @@ check_pack() {
   run check_pack domain-packs/protein-function.md
   [ "$status" -eq 0 ]
 }
+
+@test "genomics.md has required sections" {
+  run check_pack domain-packs/genomics.md
+  [ "$status" -eq 0 ]
+}
