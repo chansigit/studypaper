@@ -355,3 +355,8 @@ check_prompt() {
 @test "compare-agent.md mandates runtime created_at, not fabricated" {
   grep -qF 'runtime ISO8601' prompts/compare-agent.md
 }
+
+@test "compare-agent.md mandates verbatim section headings" {
+  grep -qF 'verbatim' prompts/compare-agent.md
+  grep -qF 'do NOT capitalize' prompts/compare-agent.md
+}
