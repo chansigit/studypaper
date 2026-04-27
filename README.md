@@ -18,7 +18,22 @@
 
 **One PDF in. A peer-review-grade workspace out — in twenty minutes.**
 
-[English](#english-) · [中文](#中文-) · [Install](#install) · [Quick start](#quick-start) · [Examples](examples/)
+</div>
+
+## Install · 安装
+
+In any [Claude Code](https://claude.com/claude-code) session (CLI / IDE / Web), run:
+
+```text
+/plugin marketplace add chansigit/studypaper
+/plugin install paper-deepstudy@studypaper
+```
+
+> Requires [`claude-paper`](https://github.com/alaliqing/claude-paper) installed first — the marketplace does not auto-install dependencies yet. · 需先装 [`claude-paper`](https://github.com/alaliqing/claude-paper)。
+
+<div align="center">
+
+[English](#english-) · [中文](#中文-) · [Quick start](#quick-start) · [Examples](examples/) · [Changelog](CHANGELOG.md)
 
 </div>
 
