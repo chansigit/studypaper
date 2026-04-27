@@ -136,9 +136,9 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 
 Real outputs from running this pipeline on actual papers, including the live integration tests that produced the artifacts in this repo:
 
-- [`examples/string-database-2025/`](../examples/string-database-2025/) — full pipeline on "The STRING database in 2025" (a `cs-bio` / `protein-function` database paper)
+- [`examples/string-database-2025/`](../examples/string-database-2025/) — or browse on GitHub: [github.com/chansigit/studypaper/tree/main/examples/string-database-2025](https://github.com/chansigit/studypaper/tree/main/examples/string-database-2025) — full pipeline on "The STRING database in 2025" (a `cs-bio` / `protein-function` database paper)
 
-(Examples are at the repo root, not inside the plugin install. Browse the folder on GitHub or after cloning the repo.)
+(Examples live at the repo root, not inside the marketplace plugin install. Use the GitHub link above when reading this README from a marketplace cache.)
 
 ## Troubleshooting
 
