@@ -98,3 +98,13 @@ setup() {
 @test "compare.md mentions --lang flag" {
   grep -qF -e '--lang' commands/compare.md
 }
+
+@test "add-prior-work.md has frontmatter" {
+  head -1 commands/add-prior-work.md | grep -qE '^---$'
+}
+
+@test "add-prior-work.md mentions BibTeX, arXiv URL, and free-text inputs" {
+  for kind in 'BibTeX' 'arXiv' 'free-text'; do
+    grep -qiF "$kind" commands/add-prior-work.md || { echo "missing kind: $kind"; return 1; }
+  done
+}
