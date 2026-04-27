@@ -98,7 +98,7 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 
 ## Roadmap
 
-- **Plan 1:** auto-run pipeline, `ml-pure` and `single-cell` packs.
+- **Plan 1 ✓ (shipped):** auto-run pipeline, `ml-pure` and `single-cell` packs.
 - **Plan 2 (this branch):** `/paper:review-round` adversarial loop. ✓
 - **Plan 3a (this branch):** notes UX commands — `refine-notes`, `retitle`, `reselect-figures`. ✓
 - **Plan 3b (future):** analysis-extension commands — `deep-dive`, `compare`, `add-prior-work`.
