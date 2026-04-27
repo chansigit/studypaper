@@ -18,13 +18,18 @@ Optional flag: `--paper <slug>` (default: most recently modified paper folder).
 
 ### 1.1 Resolve target paper
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Verify required files:
 - `$PAPER_DIR/analysis/` directory with at least `00-paper-profile.md`
@@ -39,6 +44,13 @@ Set:
 - `DEEP_DIVES_DIR=$PAPER_DIR/deep-dives` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `LANG=<english if user invocation language is English; chinese if Chinese; default english>` — the orchestrator detects the user's invocation language for the current `/paper:deep-dive` call and sets `LANG` accordingly. Falls back to `english` if uncertain.
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 ### 1.2 Capture the topic
 
@@ -83,10 +95,17 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/deep-dive.md
     WEBFETCH allowed (cap 3 fetches)
     LANG=$LANG
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
-Wait for completion. The agent writes the deep-dive file directly.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch deep-dive-agent deep-dives/$TOPIC_SLUG.md ok
+```
+
+If the agent produced no output: `log_dispatch deep-dive-agent deep-dives/$TOPIC_SLUG.md failed`
 
 ---
 

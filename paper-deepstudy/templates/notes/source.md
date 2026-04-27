@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by notes-writer (paper-deepstudy v<plugin-version>) -->
 # 学习笔记原料
 
 > 内部文件,中文,转述视角。两个 renderer 从这里取材。

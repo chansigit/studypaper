@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by problem-framer (paper-deepstudy v<plugin-version>) -->
 # Problem Background and Framing
 
 ## Field-level context

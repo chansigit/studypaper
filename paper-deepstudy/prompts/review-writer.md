@@ -33,6 +33,18 @@ ADDED_SNIPPET_END
 
 The orchestrator uses this to populate the round file's `final_review_snippet` field.
 
+**Generated-by header (REQUIRED — provenance refresh):** when you edit `review.md`, update the existing `<!-- generated: ... -->` header at the top. Append your role so the audit trail records both authors:
+
+```html
+<!-- generated: <original-ts> by reviewer-synthesizer; edited <runtime-iso8601-utc> by review-writer (paper-deepstudy v<plugin-version>) -->
+```
+
+If no provenance comment exists at the top of `review.md` (legacy file), prepend a fresh one:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by review-writer (paper-deepstudy v<plugin-version>) -->
+```
+
 ## Section routing
 
 | `JUDGE_VERDICT` | `DIMENSION` | Target section in review.md |

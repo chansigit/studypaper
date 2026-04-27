@@ -16,7 +16,20 @@ You audit a paper's reproducibility along 7 fixed dimensions. Each dimension get
 
 ## Output
 
-A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
+A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly.
+
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any YAML frontmatter or content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by reproduce-checker (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- This header is inert (HTML comment) and does NOT affect YAML frontmatter parsing.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
+Then:
 
 - YAML frontmatter (`slug`, `created_at`, `overall_score`, `checked_dimensions`, `fails_count`, `partials_count`).
 

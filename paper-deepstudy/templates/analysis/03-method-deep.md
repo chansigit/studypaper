@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by method-analyst (paper-deepstudy v<plugin-version>) -->
 # Method (Deep)
 
 ## High-level idea

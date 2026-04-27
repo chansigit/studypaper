@@ -24,13 +24,18 @@ Parse the user's command. The first positional argument selects the platform:
 
 If neither is provided or the value is invalid, abort with: "Usage: /paper:refine-notes [xhs|wechat] [--paper <slug>]".
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1)
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Strip trailing slash. Verify:
 - `$PAPER_DIR/notes/source.md` exists. If not, abort: "No notes/source.md at <path>. Run /paper:study on this paper first."
@@ -46,6 +51,13 @@ Set:
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `PROMPT_PATH=$PLUGIN_ROOT/prompts/<platform>-renderer.md`
 - `TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/<platform>.md`
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 ### 1.2 Show current rendering and solicit edit instruction
 
@@ -143,10 +155,17 @@ Agent(
     SELECTED_FIGURES=<list of figure paths from current frontmatter>
     EDIT_INSTRUCTION=<verbatim user instruction>
     EXISTING_PATH=$BAK_PATH    (so the renderer can read the prior version for context)
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
-Wait for completion. The renderer writes the new version directly to `$OUTPUT_PATH`.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md ok   # or wechat-renderer notes/wechat.md ok
+```
+
+If the renderer failed: log with `failed` status.
 
 ### 2.3 Verify output
 

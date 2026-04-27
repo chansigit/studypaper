@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by reviewer-synthesizer (paper-deepstudy v<plugin-version>) -->
 # Review: <Paper Title>
 
 **Reviewer:** paper-deepstudy (auto-generated v1; refined via /paper:review-round)

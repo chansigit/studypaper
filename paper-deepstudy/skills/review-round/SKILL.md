@@ -19,15 +19,20 @@ Optional flags:
 
 ### 1.1 Resolve target paper
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1)
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
 
-If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
-Strip trailing slash. Verify:
+Verify:
 - `$PAPER_DIR/review.md` exists. If not, abort with: "No review.md found at <path>. Run /paper:study on this paper first."
 - `$PAPER_DIR/analysis/` directory exists with at least `00-paper-profile.md`. If not, abort with same message.
 - `$PAPER_DIR/paper.txt` (or `paper.pdf`) exists.
@@ -39,6 +44,13 @@ Set the additional path variables:
 - `REVIEW_PATH=$PAPER_DIR/review.md`
 - `ROUNDS_DIR=$PAPER_DIR/review-rounds` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 Read `$ANALYSIS_DIR/00-paper-profile.md` frontmatter to extract `slug` (used in round filenames).
 
@@ -111,6 +123,12 @@ Agent(
 
 Capture each defense agent's full output text as `DEFENSE_<i>`.
 
+After each defense-agent returns:
+
+```bash
+log_dispatch defense-agent review-rounds/round-<NN>-<slug>.md ok
+```
+
 ### 2.3 Dispatch judge-agent (one per objection)
 
 For each `(objection, defense)` pair:
@@ -126,6 +144,12 @@ Agent(
 ```
 
 **Important:** the judge dispatch must NOT include `PAPER_TEXT`, `ANALYSIS_DIR`, or any other paper context. The judge is intentionally blind. Only objection + defense.
+
+After each judge-agent returns:
+
+```bash
+log_dispatch judge-agent review-rounds/round-<NN>-<slug>.md ok
+```
 
 Parse the judge's output via the helper:
 
@@ -194,10 +218,19 @@ Agent(
     DIMENSION=<dim>
     SEVERITY=<sev>
     ROUND_NUMBER=<ROUND_NUMBER_<i> from Stage 3.5>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
 Capture the snippet returned between `ADDED_SNIPPET_START` / `ADDED_SNIPPET_END` markers as `FINAL_REVIEW_SNIPPET_<i>`.
+
+After completion:
+
+```bash
+log_dispatch review-writer review.md ok
+```
+
+If the review-writer failed: `log_dispatch review-writer review.md failed`
 
 For `holds` verdicts, skip review-writer. The round file still gets written in Stage 5 using the pre-assigned `ROUND_NUMBER_<i>`; `final_review_snippet` is empty.
 
@@ -222,7 +255,11 @@ Example: objection "The baseline comparison in §4 uses a 3x smaller compute bud
 
 ### 5.2 Write file
 
-Read `$PLUGIN_ROOT/templates/review-round.md` and substitute fields. The frontmatter must contain all 12 required fields per the template:
+Read `$PLUGIN_ROOT/templates/review-round.md` and substitute fields. At the very top of the file, before the YAML frontmatter, write the provenance line:
+
+```
+<!-- generated: <runtime-iso8601-utc> by review-round-orchestrator (paper-deepstudy v<plugin-version>) -->
+``` The frontmatter must contain all 12 required fields per the template:
 - `round`: pre-assigned `ROUND_NUMBER_<i>` from Stage 3.5
 - `created_at`: current UTC time as ISO8601 (e.g. `2026-04-27T03:59:24Z`)
 - `objection`: verbatim user text (use YAML literal block `|`)

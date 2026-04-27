@@ -31,6 +31,17 @@ A single markdown file at `OUTPUT_PATH`, conforming to `TEMPLATE_PATH`. It MUST 
 
 After the frontmatter, write two short prose sections (`## Why these tags`, `## What to expect downstream`) per the template.
 
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any YAML frontmatter or content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by paper-profiler (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- This header is inert (HTML comment) and does NOT affect YAML frontmatter parsing.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
 ## Instructions
 
 1. Read `META_JSON` and `PAPER_TEXT`.

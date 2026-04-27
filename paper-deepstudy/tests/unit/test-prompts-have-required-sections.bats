@@ -430,14 +430,125 @@ check_prompt() {
   grep -qE '/paper:compare attention-is-all-you-need' ../README.md
 }
 
-@test "skills with most-recent-paper auto-detect warn the user" {
+@test "all 9 skills source the resolve-paper helper instead of inline auto-detect" {
+  for f in skills/study-deep/SKILL.md \
+           skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
+           skills/reproduce-check/SKILL.md; do
+    grep -qE 'scripts/lib/resolve-paper\.sh' "$f" || { echo "FAIL: $f does not source resolve-paper.sh"; return 1; }
+    grep -qF 'resolve_paper' "$f" || { echo "FAIL: $f does not call resolve_paper"; return 1; }
+  done
+}
+
+@test "no skill still has inline ls -td papers auto-detect (post-Plan-11)" {
+  # After Plan 11, only the helper has this idiom; skills delegate.
   for f in skills/refine-notes/SKILL.md \
            skills/retitle/SKILL.md \
            skills/reselect-figures/SKILL.md \
            skills/review-round/SKILL.md \
            skills/deep-dive/SKILL.md \
            skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
            skills/reproduce-check/SKILL.md; do
-    grep -qF 'most recently modified' "$f" || { echo "FAIL: $f missing warning"; return 1; }
+    if grep -qE 'ls -td.*claude-papers/papers/\*' "$f"; then
+      echo "FAIL: $f still has inline auto-detect"
+      return 1
+    fi
   done
+  # study-deep gets a free pass — its Stage 0.2 wraps claude-paper:study and may
+  # need a different paper-folder discovery mechanism (most-recently-MODIFIED is
+  # how it picks the freshly-created folder). Leave that as-is.
+}
+
+@test "Plan-10 'most recently modified' assertion now lives in helper, not skills" {
+  grep -qF 'most recently modified' scripts/lib/resolve-paper.sh
+}
+
+@test "all dispatching skills source the log-dispatch helper" {
+  for f in skills/study-deep/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/add-prior-work/SKILL.md \
+           skills/reproduce-check/SKILL.md \
+           skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md; do
+    grep -qE 'scripts/lib/log-dispatch\.sh' "$f" || { echo "FAIL: $f does not source log-dispatch.sh"; return 1; }
+    grep -qF 'log_dispatch' "$f" || { echo "FAIL: $f does not call log_dispatch"; return 1; }
+  done
+}
+
+@test "study-deep logs dispatch for all 11 stage sub-Agents" {
+  # study-deep dispatches: paper-profiler, problem-framer, formalizer, method-analyst,
+  # experiment-critic, prior-work-historian, figure-interpreter, reviewer-synthesizer,
+  # notes-writer, title-generator, xhs-renderer, wechat-renderer (12 total)
+  for agent in paper-profiler problem-framer formalizer method-analyst \
+               experiment-critic prior-work-historian figure-interpreter \
+               reviewer-synthesizer notes-writer title-generator xhs-renderer \
+               wechat-renderer; do
+    grep -qE "log_dispatch[[:space:]]+$agent" skills/study-deep/SKILL.md \
+      || { echo "FAIL: study-deep missing log_dispatch for $agent"; return 1; }
+  done
+}
+
+@test "PAPER_DEEPSTUDY_NO_RUN_LOG documented in at least one user-facing place" {
+  # Document the opt-out env var so users know how to disable logging
+  grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' README.md \
+    || grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' paper-deepstudy/README.md
+}
+
+@test "all 16 sub-Agent prompts mandate provenance HTML comment" {
+  for f in prompts/paper-profiler.md \
+           prompts/problem-framer.md \
+           prompts/formalizer.md \
+           prompts/method-analyst.md \
+           prompts/experiment-critic.md \
+           prompts/prior-work-historian.md \
+           prompts/figure-interpreter.md \
+           prompts/reviewer-synthesizer.md \
+           prompts/review-writer.md \
+           prompts/notes-writer.md \
+           prompts/title-generator.md \
+           prompts/xhs-renderer.md \
+           prompts/wechat-renderer.md \
+           prompts/deep-dive-agent.md \
+           prompts/compare-agent.md \
+           prompts/reproduce-checker.md; do
+    grep -qF 'Generated-by header' "$f" \
+      || grep -qF '<!-- generated:' "$f" \
+      || { echo "FAIL: $f missing provenance directive"; return 1; }
+  done
+}
+
+@test "all 16 templates have a provenance HTML comment placeholder" {
+  for f in templates/analysis/00-paper-profile.md \
+           templates/analysis/01-problem.md \
+           templates/analysis/02-formalization.md \
+           templates/analysis/03-method-deep.md \
+           templates/analysis/04-experiments.md \
+           templates/analysis/05-prior-work.md \
+           templates/analysis/06-figures.md \
+           templates/review.md \
+           templates/review-round.md \
+           templates/deep-dive.md \
+           templates/compare.md \
+           templates/reproduce-check.md \
+           templates/notes/source.md \
+           templates/notes/titles.md \
+           templates/notes/xhs.md \
+           templates/notes/wechat.md; do
+    head -1 "$f" | grep -qE '^<!-- generated:' \
+      || { echo "FAIL: $f missing provenance line on line 1"; return 1; }
+  done
+}
+
+@test "review-round SKILL writes provenance line into round-NN file" {
+  grep -qF '<!-- generated:' skills/review-round/SKILL.md
+  grep -qF 'review-round-orchestrator' skills/review-round/SKILL.md
 }

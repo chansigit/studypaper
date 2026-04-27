@@ -19,7 +19,18 @@ Optional flags:
 
 ### 1.1 Resolve target paper
 
-Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent (most recently modified paper folder). If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` Verify required files:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
+```
+
+If `resolve_paper` returns non-zero, abort with the helper's stderr message. Verify required files:
 - `$PAPER_DIR/analysis/06-figures.md`
 - `$PAPER_DIR/images/` directory (non-empty)
 - `$PAPER_DIR/notes/source.md`
@@ -37,6 +48,13 @@ Set:
 - `SOURCE_PATH=$PAPER_DIR/notes/source.md`
 - `TITLES_PATH=$PAPER_DIR/notes/titles.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 ### 1.2 Optionally re-interpret figures
 
@@ -63,10 +81,15 @@ Agent(
     IMAGES_DIR=$IMAGES_DIR
     OUTPUT_PATH=$FIGURES_MD
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/analysis/06-figures.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
 Wait for completion.
+
+```bash
+log_dispatch figure-interpreter analysis/06-figures.md ok
+```
 
 If `--reinterpret` is not set, skip this step.
 
@@ -153,6 +176,7 @@ Agent(  // xhs
     OUTPUT_PATH=$XHS_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/xhs.md
     SELECTED_FIGURES=<XHS_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 
 Agent(  // wechat
@@ -164,10 +188,20 @@ Agent(  // wechat
     OUTPUT_PATH=$WECHAT_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
     SELECTED_FIGURES=<WECHAT_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
 (Note: `EDIT_INSTRUCTION` and `EXISTING_PATH` are intentionally omitted — this skill re-renders from scratch with new figures. The user's prior body edits will not be preserved. If the user wants to preserve body edits, they should use `/paper:refine-notes` with a figure-swap instruction instead.)
+
+After both complete:
+
+```bash
+log_dispatch xhs-renderer notes/xhs.md ok
+log_dispatch wechat-renderer notes/wechat.md ok
+```
+
+If either failed: log with `failed` status.
 
 ### 3.3 Verify outputs
 

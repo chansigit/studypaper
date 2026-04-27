@@ -20,11 +20,18 @@ Optional flag: `--paper <slug>` (default: most recently modified paper folder).
 
 ### 1.1 Resolve target paper
 
-If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. Otherwise:
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
 ```
+
+If `resolve_paper` returns non-zero, abort with the helper's stderr message.
 
 Verify `$PAPER_DIR/analysis/05-prior-work.md` exists. If not, abort: `"No analysis/05-prior-work.md at $PAPER_DIR. Run /paper:study or /paper:rerun-stage analysis first."`
 
@@ -35,6 +42,13 @@ Set:
 - `PROFILE_PATH=$PAPER_DIR/analysis/00-paper-profile.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `REVIEW_PATH=$PAPER_DIR/review.md` (may not exist yet; see Stage 4)
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 ### 1.2 Capture and classify the reference
 
@@ -80,6 +94,7 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/analysis/05-prior-work.md
     DOMAIN_PACKS=<list — read from PROFILE_PATH frontmatter's domain_packs_selected>
     WEBFETCH allowed (cap 5 fetches)
+    PLUGIN_VERSION=$PLUGIN_VERSION
 
     + Extended instructions for augmentation mode:
     "AUGMENTATION MODE: Do NOT regenerate the entire 05-prior-work.md from scratch.
@@ -102,7 +117,13 @@ Agent(
 )
 ```
 
-Wait for completion. The agent writes the modified file directly to `$PRIOR_WORK_PATH`.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch prior-work-historian analysis/05-prior-work.md ok
+```
+
+If the agent failed: `log_dispatch prior-work-historian analysis/05-prior-work.md failed`
 
 ---
 

@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by paper-profiler (paper-deepstudy v<plugin-version>) -->
 ---
 slug: <slug>
 title: <title>

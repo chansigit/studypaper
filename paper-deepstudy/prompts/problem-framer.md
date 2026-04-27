@@ -20,6 +20,17 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 - `## Why this problem is hard` (bullet list)
 - `## Why prior approaches fall short` (brief, 3-6 bullets)
 
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any YAML frontmatter or content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by problem-framer (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- This header is inert (HTML comment) and does NOT affect YAML frontmatter parsing.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
 ## Instructions
 
 1. Read `PROFILE_PATH` first to understand what kind of paper this is. Use the `domain` and `bio_subfield` to set the right level of jargon (ml-pure → ML reader; ml-bio-hybrid → reader who knows both fields).

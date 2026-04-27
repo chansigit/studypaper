@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by figure-interpreter (paper-deepstudy v<plugin-version>) -->
 ---
 # `figures` is filled in by the figure-interpreter sub-Agent at runtime.
 # Each entry's `file` is the basename of an image in $PAPER_DIR/images/.

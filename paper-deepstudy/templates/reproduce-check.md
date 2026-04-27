@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by reproduce-checker (paper-deepstudy v<plugin-version>) -->
 ---
 slug: <slug>
 created_at: <iso8601-utc>

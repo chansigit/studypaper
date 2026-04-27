@@ -22,7 +22,18 @@ Optional flags:
 
 Parse first positional arg as `PLATFORM` (must be `xhs` or `wechat`). If invalid, abort with usage hint.
 
-Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent (most recently modified paper folder). If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` Verify `notes/source.md`, `notes/titles.md`, and `notes/<platform>.md` all exist; abort with helpful message otherwise.
+**Resolve target paper folder**
+
+Source the shared helper and resolve which paper folder this invocation targets:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/resolve-paper.sh
+resolve_paper "$@"
+# After: $PAPER_DIR, $PAPER_SLUG, $PAPER_AUTODETECTED are set.
+# If $PAPER_AUTODETECTED is "true", the helper already printed a warning to stderr.
+```
+
+If `resolve_paper` returns non-zero, abort with the helper's stderr message. Verify `notes/source.md`, `notes/titles.md`, and `notes/<platform>.md` all exist; abort with helpful message otherwise.
 
 Capture `--style <value>` if present as `STYLE_FILTER`; validate it's one of the 5 allowed values.
 
@@ -31,6 +42,13 @@ Set:
 - `TITLES_PATH=$PAPER_DIR/notes/titles.md`
 - `RENDERING_PATH=$PAPER_DIR/notes/<platform>.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+
+Source the log-dispatch helper and extract plugin version:
+
+```bash
+source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
+```
 
 ### 1.2 Read current title
 
@@ -64,10 +82,19 @@ Agent(
     OUTPUT_PATH=$TITLES_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
     STYLE_FILTER=<STYLE_FILTER if set, else omit>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
-Wait for completion. The generator writes a fresh `titles.md` with new candidates in `## xhs` and `## wechat` sections.
+Wait for completion. Log the dispatch:
+
+```bash
+log_dispatch title-generator notes/titles.md ok
+```
+
+If the generator failed: `log_dispatch title-generator notes/titles.md failed`
+
+The generator writes a fresh `titles.md` with new candidates in `## xhs` and `## wechat` sections.
 
 **Important:** the generator overwrites `titles.md` for both platforms. The other platform's section also gets refreshed. This is intentional — calling retitle bumps both lists, but only the targeted platform's rendering is updated. To preserve the other platform's title selection, the orchestrator extracts and re-applies it after Stage 4 (see Stage 4.2).
 

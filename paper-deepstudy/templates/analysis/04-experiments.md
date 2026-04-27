@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by experiment-critic (paper-deepstudy v<plugin-version>) -->
 # Experiments
 
 ## Setup
