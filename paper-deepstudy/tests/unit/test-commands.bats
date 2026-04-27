@@ -45,3 +45,40 @@ setup() {
 @test "README documents review-rounds folder" {
   grep -qF 'review-rounds/' README.md
 }
+
+@test "refine-notes.md has frontmatter" {
+  head -1 commands/refine-notes.md | grep -qE '^---$'
+}
+
+@test "refine-notes.md mentions both platforms" {
+  grep -qF 'xhs' commands/refine-notes.md
+  grep -qF 'wechat' commands/refine-notes.md
+}
+
+@test "retitle.md has frontmatter" {
+  head -1 commands/retitle.md | grep -qE '^---$'
+}
+
+@test "retitle.md mentions style filter" {
+  grep -qF -e '--style' commands/retitle.md
+}
+
+@test "reselect-figures.md has frontmatter" {
+  head -1 commands/reselect-figures.md | grep -qE '^---$'
+}
+
+@test "reselect-figures.md mentions reinterpret flag" {
+  grep -qF -e '--reinterpret' commands/reselect-figures.md
+}
+
+@test "README documents /paper:refine-notes" {
+  grep -qF '/paper:refine-notes' README.md
+}
+
+@test "README documents /paper:retitle" {
+  grep -qF '/paper:retitle' README.md
+}
+
+@test "README documents /paper:reselect-figures" {
+  grep -qF '/paper:reselect-figures' README.md
+}

@@ -159,3 +159,41 @@ check_prompt() {
 @test "review-round SKILL.md mentions --paper flag" {
   grep -qF -e '--paper' skills/review-round/SKILL.md
 }
+
+@test "refine-notes SKILL.md has YAML frontmatter with name" {
+  head -5 skills/refine-notes/SKILL.md | grep -qF 'name: refine-notes'
+}
+
+@test "refine-notes SKILL.md mentions xhs-renderer and wechat-renderer dispatch" {
+  grep -qF 'xhs-renderer' skills/refine-notes/SKILL.md
+  grep -qF 'wechat-renderer' skills/refine-notes/SKILL.md
+}
+
+@test "refine-notes SKILL.md describes .bak. backup convention" {
+  grep -qF '.bak.' skills/refine-notes/SKILL.md
+}
+
+@test "retitle SKILL.md has YAML frontmatter with name" {
+  head -5 skills/retitle/SKILL.md | grep -qF 'name: retitle'
+}
+
+@test "retitle SKILL.md mentions title-generator dispatch" {
+  grep -qF 'title-generator' skills/retitle/SKILL.md
+}
+
+@test "retitle SKILL.md describes history archival" {
+  grep -qF 'history' skills/retitle/SKILL.md
+}
+
+@test "reselect-figures SKILL.md has YAML frontmatter with name" {
+  head -5 skills/reselect-figures/SKILL.md | grep -qF 'name: reselect-figures'
+}
+
+@test "reselect-figures SKILL.md mentions xhs-renderer and wechat-renderer dispatch" {
+  grep -qF 'xhs-renderer' skills/reselect-figures/SKILL.md
+  grep -qF 'wechat-renderer' skills/reselect-figures/SKILL.md
+}
+
+@test "reselect-figures SKILL.md mentions figure-interpreter for --reinterpret" {
+  grep -qF 'figure-interpreter' skills/reselect-figures/SKILL.md
+}
