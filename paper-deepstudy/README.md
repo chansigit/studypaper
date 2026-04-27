@@ -3,7 +3,7 @@
 Deep paper study for ML and computational-biology papers. Layers on top of `claude-paper:study` to add:
 
 - Deep analysis (problem framing, formal definition, methodology, experiments, prior-work timeline, figure interpretation) — English
-- Iterative review with adversarial review rounds — English (review rounds in Plan 2)
+- Iterative review with adversarial review rounds (`/paper:review-round`) — English
 - Chinese learning notes for Xiaohongshu / WeChat from a unified source — Chinese
 
 ## Install (local dev)
@@ -35,6 +35,16 @@ Requires `claude-paper:study` already installed.
 /paper:rerun-stage profile
 ```
 
+### Adversarial review round
+
+```
+/paper:review-round
+/paper:review-round --paper attention-is-all-you-need
+/paper:review-round --sequential
+```
+
+Interactively raise objections to the paper. The plugin dispatches a defense-agent (arguing for the authors) and a judge-agent (blind to the paper, rules on the defense's logic). You have final say. Accepted objections are appended to `review.md`; every round is persisted at `review-rounds/round-NN-<title>.md`.
+
 ## What you get (12 outputs)
 
 Under `~/claude-papers/papers/<slug>/`:
@@ -49,6 +59,7 @@ analysis/
   05-prior-work.md          # timeline + comparison (English)
   06-figures.md             # per-figure interpretation + scoring (English)
 review.md                   # v1 review report (English)
+review-rounds/              # one file per /paper:review-round invocation (English)
 notes/
   source.md                 # unified source content (Chinese)
   titles.md                 # 5+5 candidate titles (Chinese)
@@ -72,7 +83,7 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 
 ## Roadmap
 
-- **Plan 1 (this):** auto-run pipeline, `ml-pure` and `single-cell` packs.
-- **Plan 2:** `/paper:review-round` adversarial loop.
+- **Plan 1:** auto-run pipeline, `ml-pure` and `single-cell` packs.
+- **Plan 2 (this branch):** `/paper:review-round` adversarial loop. ✓
 - **Plan 3:** seven refinement commands (`refine-notes`, `deep-dive`, `compare`, `reselect-figures`, `retitle`, `add-prior-work`, `reproduce-check`).
 - **Plan 4:** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`).

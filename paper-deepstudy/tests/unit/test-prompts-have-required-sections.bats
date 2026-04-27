@@ -126,3 +126,36 @@ check_prompt() {
   grep -qiF 'skip' skills/study-deep/SKILL.md && \
     grep -qF '.bak.' skills/study-deep/SKILL.md
 }
+
+@test "defense-agent.md has required sections" {
+  run check_prompt prompts/defense-agent.md
+  [ "$status" -eq 0 ]
+}
+
+@test "judge-agent.md has required sections" {
+  run check_prompt prompts/judge-agent.md
+  [ "$status" -eq 0 ]
+}
+
+@test "review-writer.md has required sections" {
+  run check_prompt prompts/review-writer.md
+  [ "$status" -eq 0 ]
+}
+
+@test "review-round SKILL.md has YAML frontmatter with name" {
+  head -5 skills/review-round/SKILL.md | grep -qF 'name: review-round'
+}
+
+@test "review-round SKILL.md describes the 7-step flow" {
+  for s in defense-agent judge-agent review-writer next-round-number.cjs; do
+    grep -qF "$s" skills/review-round/SKILL.md || { echo "missing reference: $s"; return 1; }
+  done
+}
+
+@test "review-round SKILL.md mentions --sequential flag" {
+  grep -qF -e '--sequential' skills/review-round/SKILL.md
+}
+
+@test "review-round SKILL.md mentions --paper flag" {
+  grep -qF -e '--paper' skills/review-round/SKILL.md
+}
