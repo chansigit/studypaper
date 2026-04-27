@@ -49,7 +49,7 @@ if [ ! -x "$ROOT/scripts/verify-prereqs.sh" ]; then
 fi
 
 # 5. Domain packs exist
-for d in ml-pure single-cell _template; do
+for d in ml-pure single-cell protein-structure protein-function genomics drug-discovery medical-imaging _template; do
   if [ ! -f "$ROOT/domain-packs/$d.md" ]; then
     echo "FAIL: domain pack missing: $d.md"; fail=1
   fi
