@@ -25,6 +25,17 @@ You write the v1 review report from the deep-analysis files. You apply hybrid ML
 
 Each individual entry under Strengths / Weaknesses / Questions / Suggestions ends with `← from initial analysis` (later rounds will append entries with `← from round-NN`).
 
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any YAML frontmatter or content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by reviewer-synthesizer (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- This header is inert (HTML comment) and does NOT affect YAML frontmatter parsing.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
 ## Instructions
 
 1. Read all `ANALYSIS_DIR/*.md` files.

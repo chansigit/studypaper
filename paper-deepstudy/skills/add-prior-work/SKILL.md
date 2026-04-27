@@ -43,10 +43,11 @@ Set:
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `REVIEW_PATH=$PAPER_DIR/review.md` (may not exist yet; see Stage 4)
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.2 Capture and classify the reference
@@ -93,6 +94,7 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/analysis/05-prior-work.md
     DOMAIN_PACKS=<list — read from PROFILE_PATH frontmatter's domain_packs_selected>
     WEBFETCH allowed (cap 5 fetches)
+    PLUGIN_VERSION=$PLUGIN_VERSION
 
     + Extended instructions for augmentation mode:
     "AUGMENTATION MODE: Do NOT regenerate the entire 05-prior-work.md from scratch.

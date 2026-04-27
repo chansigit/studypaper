@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by title-generator (paper-deepstudy v<plugin-version>) -->
 # 标题候选
 
 ## xhs

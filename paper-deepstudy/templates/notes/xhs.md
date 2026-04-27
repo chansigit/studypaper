@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by xhs-renderer (paper-deepstudy v<plugin-version>) -->
 ---
 title: <title from titles.md item 1>
 length_target: 1000

@@ -49,10 +49,11 @@ Set:
 - `TITLES_PATH=$PAPER_DIR/notes/titles.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.2 Optionally re-interpret figures
@@ -80,6 +81,7 @@ Agent(
     IMAGES_DIR=$IMAGES_DIR
     OUTPUT_PATH=$FIGURES_MD
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/analysis/06-figures.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -174,6 +176,7 @@ Agent(  // xhs
     OUTPUT_PATH=$XHS_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/xhs.md
     SELECTED_FIGURES=<XHS_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 
 Agent(  // wechat
@@ -185,6 +188,7 @@ Agent(  // wechat
     OUTPUT_PATH=$WECHAT_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
     SELECTED_FIGURES=<WECHAT_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

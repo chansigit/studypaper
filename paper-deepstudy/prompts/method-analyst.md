@@ -19,6 +19,17 @@ You analyze the method in depth, including each component's design rationale, al
 - `## Hyperparameter sensitivity`
 - `## Reproduction risks`
 
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any YAML frontmatter or content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by method-analyst (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- This header is inert (HTML comment) and does NOT affect YAML frontmatter parsing.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
 ## Instructions
 
 1. Read each `DOMAIN_PACKS` file briefly — these tell you what design choices are common in the field.

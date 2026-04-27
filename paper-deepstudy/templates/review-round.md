@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by review-round-orchestrator (paper-deepstudy v<plugin-version>) -->
 ---
 round: <NN>
 created_at: <iso8601-utc>

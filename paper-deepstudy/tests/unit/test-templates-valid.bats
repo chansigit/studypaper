@@ -6,7 +6,8 @@ setup() {
 }
 
 @test "00-paper-profile.md has YAML frontmatter" {
-  head -1 templates/analysis/00-paper-profile.md | grep -qE '^---$'
+  # Line 1 is the provenance comment (Plan 11); YAML frontmatter starts on line 2
+  head -2 templates/analysis/00-paper-profile.md | grep -qE '^---$'
 }
 
 @test "01-problem.md exists with H1 heading" {
@@ -30,7 +31,8 @@ setup() {
 }
 
 @test "06-figures.md has frontmatter for scoring" {
-  head -1 templates/analysis/06-figures.md | grep -qE '^---$'
+  # Line 1 is the provenance comment (Plan 11); YAML frontmatter starts on line 2
+  head -2 templates/analysis/06-figures.md | grep -qE '^---$'
 }
 
 @test "review.md has Score section" {

@@ -17,7 +17,19 @@ You produce a focused deep-dive on a single user-specified topic in the paper. Y
 
 ## Output
 
-A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
+A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly.
+
+**Generated-by header (REQUIRED):** at the very top of OUTPUT_PATH, BEFORE any other content, write a single HTML comment line:
+
+```html
+<!-- generated: <runtime-iso8601-utc> by deep-dive-agent (paper-deepstudy v<plugin-version>) -->
+```
+
+- Use the runtime ISO8601 UTC timestamp at the moment of writing.
+- `<plugin-version>` is the value the orchestrator passed in as `PLUGIN_VERSION`. If absent, write `?`.
+- Do NOT fabricate the date. If you cannot determine it, leave the placeholder `<runtime-timestamp>` and the orchestrator will substitute it.
+
+Then the body:
 
 - `# Deep Dive: <topic>` (replace `<topic>` with the actual topic, capitalized cleanly)
 - Quoting block (one line) crediting `/paper:deep-dive`.

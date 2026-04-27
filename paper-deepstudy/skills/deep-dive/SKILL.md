@@ -45,10 +45,11 @@ Set:
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 - `LANG=<english if user invocation language is English; chinese if Chinese; default english>` — the orchestrator detects the user's invocation language for the current `/paper:deep-dive` call and sets `LANG` accordingly. Falls back to `english` if uncertain.
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.2 Capture the topic
@@ -94,6 +95,7 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/deep-dive.md
     WEBFETCH allowed (cap 3 fetches)
     LANG=$LANG
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

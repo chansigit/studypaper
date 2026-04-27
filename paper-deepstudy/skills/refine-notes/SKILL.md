@@ -52,10 +52,11 @@ Set:
 - `PROMPT_PATH=$PLUGIN_ROOT/prompts/<platform>-renderer.md`
 - `TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/<platform>.md`
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.2 Show current rendering and solicit edit instruction
@@ -154,6 +155,7 @@ Agent(
     SELECTED_FIGURES=<list of figure paths from current frontmatter>
     EDIT_INSTRUCTION=<verbatim user instruction>
     EXISTING_PATH=$BAK_PATH    (so the renderer can read the prior version for context)
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

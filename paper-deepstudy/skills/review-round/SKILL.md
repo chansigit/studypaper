@@ -45,10 +45,11 @@ Set the additional path variables:
 - `ROUNDS_DIR=$PAPER_DIR/review-rounds` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 Read `$ANALYSIS_DIR/00-paper-profile.md` frontmatter to extract `slug` (used in round filenames).
@@ -217,6 +218,7 @@ Agent(
     DIMENSION=<dim>
     SEVERITY=<sev>
     ROUND_NUMBER=<ROUND_NUMBER_<i> from Stage 3.5>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -253,7 +255,11 @@ Example: objection "The baseline comparison in §4 uses a 3x smaller compute bud
 
 ### 5.2 Write file
 
-Read `$PLUGIN_ROOT/templates/review-round.md` and substitute fields. The frontmatter must contain all 12 required fields per the template:
+Read `$PLUGIN_ROOT/templates/review-round.md` and substitute fields. At the very top of the file, before the YAML frontmatter, write the provenance line:
+
+```
+<!-- generated: <runtime-iso8601-utc> by review-round-orchestrator (paper-deepstudy v<plugin-version>) -->
+``` The frontmatter must contain all 12 required fields per the template:
 - `round`: pre-assigned `ROUND_NUMBER_<i>` from Stage 3.5
 - `created_at`: current UTC time as ISO8601 (e.g. `2026-04-27T03:59:24Z`)
 - `objection`: verbatim user text (use YAML literal block `|`)

@@ -61,10 +61,11 @@ Read `$ANALYSIS_DIR/00-paper-profile.md` frontmatter and inspect the `domain` fi
 
 Set `WET_LAB_APPLICABLE=true` for non-ml-pure profiles.
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.3 Backup existing reproduce-check.md if present
@@ -98,6 +99,7 @@ Agent(
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/reproduce-check.md
     WEBFETCH allowed (cap 5 fetches)
     WET_LAB_APPLICABLE=$WET_LAB_APPLICABLE
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

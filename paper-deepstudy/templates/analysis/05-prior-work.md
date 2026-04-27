@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by prior-work-historian (paper-deepstudy v<plugin-version>) -->
 # Prior Work
 
 ## Timeline

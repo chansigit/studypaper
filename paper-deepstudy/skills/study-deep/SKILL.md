@@ -168,6 +168,7 @@ Agent(
     OUTPUT_PATH=$ANALYSIS_DIR/00-paper-profile.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/analysis/00-paper-profile.md
     AVAILABLE_PACKS=ml-pure,single-cell  (list every file in $PLUGIN_ROOT/domain-packs/, excluding _template.md)
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -220,7 +221,7 @@ Take `domain_packs_selected` from the profile. For each, build path: `$PLUGIN_RO
 
 **Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
 
-In **one message**, issue six parallel Agent tool calls. The dispatch table below is authoritative for what each sub-Agent receives. All six get `PAPER_TEXT`, `OUTPUT_PATH`, and `TEMPLATE_PATH`. Most also receive `PROFILE_PATH` (`figure-interpreter` does not — it works directly from `PAPER_TEXT` + `IMAGES_DIR`). Extras vary: `method-analyst` and `experiment-critic` get `DOMAIN_PACKS`; `prior-work-historian` gets `DOMAIN_PACKS` and is allowed up to 5 WebFetch calls; `figure-interpreter` gets `IMAGES_DIR`.
+In **one message**, issue six parallel Agent tool calls. The dispatch table below is authoritative for what each sub-Agent receives. All six get `PAPER_TEXT`, `OUTPUT_PATH`, `TEMPLATE_PATH`, and `PLUGIN_VERSION`. Most also receive `PROFILE_PATH` (`figure-interpreter` does not — it works directly from `PAPER_TEXT` + `IMAGES_DIR`). Extras vary: `method-analyst` and `experiment-critic` get `DOMAIN_PACKS`; `prior-work-historian` gets `DOMAIN_PACKS` and is allowed up to 5 WebFetch calls; `figure-interpreter` gets `IMAGES_DIR`.
 
 For each sub-Agent:
 
@@ -282,6 +283,7 @@ Agent(
     DOMAIN_PACKS=<list>
     OUTPUT_PATH=$PAPER_DIR/review.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/review.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -317,6 +319,7 @@ Agent(
     ANALYSIS_DIR=$ANALYSIS_DIR
     OUTPUT_PATH=$PAPER_DIR/notes/source.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/source.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -342,6 +345,7 @@ Agent(
     SOURCE_PATH=$PAPER_DIR/notes/source.md
     OUTPUT_PATH=$PAPER_DIR/notes/titles.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 
@@ -384,6 +388,7 @@ Agent(  // xhs
     OUTPUT_PATH=$PAPER_DIR/notes/xhs.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/xhs.md
     SELECTED_FIGURES=<XHS_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 
 Agent(  // wechat
@@ -395,6 +400,7 @@ Agent(  // wechat
     OUTPUT_PATH=$PAPER_DIR/notes/wechat.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
     SELECTED_FIGURES=<WECHAT_FIGURES>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

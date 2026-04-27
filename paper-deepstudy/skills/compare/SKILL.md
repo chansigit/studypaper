@@ -90,10 +90,11 @@ Verify it's a different folder from `THIS_PAPER_DIR` (defensive). If they match,
 
 ## Stage 3: Resolve language flag and output path
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 Capture `--lang en` or `--lang zh` (default `en`). Set `LANG=english` or `LANG=chinese`.
@@ -132,6 +133,7 @@ Agent(
     OUTPUT_PATH=$OUTPUT_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/compare.md
     LANG=$LANG
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

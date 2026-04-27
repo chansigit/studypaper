@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by compare-agent (paper-deepstudy v<plugin-version>) -->
 ---
 this_paper: <slug>
 other_paper: <other-slug>

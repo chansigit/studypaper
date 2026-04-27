@@ -43,10 +43,11 @@ Set:
 - `RENDERING_PATH=$PAPER_DIR/notes/<platform>.md`
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
 
-Source the log-dispatch helper:
+Source the log-dispatch helper and extract plugin version:
 
 ```bash
 source $CLAUDE_PLUGIN_ROOT/scripts/lib/log-dispatch.sh
+PLUGIN_VERSION=$(grep -m1 '"version"' $CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json | sed -E 's/.*"version"[^"]*"([^"]+)".*/\1/')
 ```
 
 ### 1.2 Read current title
@@ -81,6 +82,7 @@ Agent(
     OUTPUT_PATH=$TITLES_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
     STYLE_FILTER=<STYLE_FILTER if set, else omit>
+    PLUGIN_VERSION=$PLUGIN_VERSION
 )
 ```
 

@@ -502,3 +502,53 @@ check_prompt() {
   grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' README.md \
     || grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' paper-deepstudy/README.md
 }
+
+@test "all 16 sub-Agent prompts mandate provenance HTML comment" {
+  for f in prompts/paper-profiler.md \
+           prompts/problem-framer.md \
+           prompts/formalizer.md \
+           prompts/method-analyst.md \
+           prompts/experiment-critic.md \
+           prompts/prior-work-historian.md \
+           prompts/figure-interpreter.md \
+           prompts/reviewer-synthesizer.md \
+           prompts/review-writer.md \
+           prompts/notes-writer.md \
+           prompts/title-generator.md \
+           prompts/xhs-renderer.md \
+           prompts/wechat-renderer.md \
+           prompts/deep-dive-agent.md \
+           prompts/compare-agent.md \
+           prompts/reproduce-checker.md; do
+    grep -qF 'Generated-by header' "$f" \
+      || grep -qF '<!-- generated:' "$f" \
+      || { echo "FAIL: $f missing provenance directive"; return 1; }
+  done
+}
+
+@test "all 16 templates have a provenance HTML comment placeholder" {
+  for f in templates/analysis/00-paper-profile.md \
+           templates/analysis/01-problem.md \
+           templates/analysis/02-formalization.md \
+           templates/analysis/03-method-deep.md \
+           templates/analysis/04-experiments.md \
+           templates/analysis/05-prior-work.md \
+           templates/analysis/06-figures.md \
+           templates/review.md \
+           templates/review-round.md \
+           templates/deep-dive.md \
+           templates/compare.md \
+           templates/reproduce-check.md \
+           templates/notes/source.md \
+           templates/notes/titles.md \
+           templates/notes/xhs.md \
+           templates/notes/wechat.md; do
+    head -1 "$f" | grep -qE '^<!-- generated:' \
+      || { echo "FAIL: $f missing provenance line on line 1"; return 1; }
+  done
+}
+
+@test "review-round SKILL writes provenance line into round-NN file" {
+  grep -qF '<!-- generated:' skills/review-round/SKILL.md
+  grep -qF 'review-round-orchestrator' skills/review-round/SKILL.md
+}

@@ -1,3 +1,4 @@
+<!-- generated: <runtime-timestamp> by formalizer (paper-deepstudy v<plugin-version>) -->
 # Formal Problem Definition
 
 ## Notation
