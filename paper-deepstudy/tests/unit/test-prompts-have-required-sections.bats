@@ -287,3 +287,23 @@ check_prompt() {
 @test "compare SKILL.md mentions user's invocation language for chat-facing prose" {
   grep -qF "user's invocation language" skills/compare/SKILL.md
 }
+
+@test "add-prior-work SKILL.md has YAML frontmatter with name" {
+  head -5 skills/add-prior-work/SKILL.md | grep -qF 'name: add-prior-work'
+}
+
+@test "add-prior-work SKILL.md reuses prior-work-historian prompt" {
+  grep -qF 'prior-work-historian' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md backs up 05-prior-work.md before mutation" {
+  grep -qF '.bak.' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md suggests /paper:review-round when prior-work weaknesses might be affected" {
+  grep -qF '/paper:review-round' skills/add-prior-work/SKILL.md
+}
+
+@test "add-prior-work SKILL.md mentions user's invocation language for chat-facing prose" {
+  grep -qF "user's invocation language" skills/add-prior-work/SKILL.md
+}
