@@ -351,3 +351,7 @@ check_prompt() {
 @test "deep-dive-agent.md length cap is 600-2000 words" {
   grep -qF '600-2000' prompts/deep-dive-agent.md
 }
+
+@test "compare-agent.md mandates runtime created_at, not fabricated" {
+  grep -qF 'runtime ISO8601' prompts/compare-agent.md
+}
