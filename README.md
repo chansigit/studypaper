@@ -29,7 +29,7 @@ You have 50 papers in your reading queue. You scan abstracts. You skim figures. 
 
 `studypaper` does the work you wish you had time for.
 
-It is a [Claude Code](https://claude.com/claude-code) plugin that turns any ML or computational-biology paper (PDF or arXiv URL) into a complete, navigable research workspace — one analysis directory, one reviewer-style verdict, one reproducibility audit, one set of social-media notes ready to ship. From a single command. In about twenty minutes.
+It is a [Claude Code](https://claude.com/claude-code) plugin that turns any ML or computational-biology paper (PDF or arXiv URL) into a complete, navigable research workspace — a structured analysis directory, a reviewer-style verdict, and bilingual social-media notes — from one command, in about twenty minutes. Run extension commands (adversarial review, deep-dive, head-to-head compare, reproducibility audit) on top.
 
 ### Why studypaper
 
@@ -43,7 +43,7 @@ It is a [Claude Code](https://claude.com/claude-code) plugin that turns any ML o
 
 ### What you get
 
-Every `/paper:study` produces twelve artifacts under `~/claude-papers/papers/<slug>/`:
+Every `/paper:study` produces these artifacts under `~/claude-papers/papers/<slug>/`:
 
 ```text
 analysis/
@@ -55,16 +55,21 @@ analysis/
   05-prior-work.md          chronological timeline + comparison
   06-figures.md             per-figure interpretation + scoring
 review.md                   academic-reviewer-style verdict (Strengths / Weaknesses / Score)
-review-rounds/              one file per /paper:review-round (objection → defense → judge → ruling)
-deep-dives/                 one file per /paper:deep-dive (focused sub-topic)
-compares/                   one file per /paper:compare (head-to-head with another paper)
-reproduce-check.md          7-dimension reproducibility scorecard
 notes/
   source.md                 unified Chinese source (single point of truth)
   titles.md                 5+5 candidate titles
   xhs.md                    Xiaohongshu rendering (~1000 chars, 1 figure)
   wechat.md                 WeChat rendering (~3000 chars, 2-3 figures)
 ```
+
+The remaining workspace artifacts are produced by **extension commands**, not by `/paper:study`:
+
+| Command | Artifact |
+|---|---|
+| `/paper:review-round` | `review-rounds/round-NN-<title>.md` (one file per round) |
+| `/paper:deep-dive`    | `deep-dives/<topic-slug>.md` |
+| `/paper:compare`      | `compares/vs-<other-slug>.md` |
+| `/paper:reproduce-check` | `reproduce-check.md` |
 
 Every file is regeneratable. Every mutation backs up to `<file>.bak.NN`. Nothing is destructive.
 
@@ -176,7 +181,7 @@ Built on top of [`claude-paper`](https://github.com/alaliqing/claude-paper) by `
 
 `studypaper` 替你做你一直没时间做的事情。
 
-它是一个 [Claude Code](https://claude.com/claude-code) 插件,把任意一篇机器学习或计算生物学论文(PDF 或 arXiv 链接)转换成一个完整、可导航的研究工作区 —— 一份分析目录、一份审稿人视角的判定、一份可复现性审计、一套可直接发布的社交媒体笔记。一条命令搞定。大约二十分钟。
+它是一个 [Claude Code](https://claude.com/claude-code) 插件,把任意一篇机器学习或计算生物学论文(PDF 或 arXiv 链接)转换成一个完整、可导航的研究工作区 —— 一份结构化分析目录、一份审稿人视角的判定、一套双语社交媒体笔记 —— 一条命令搞定,大约二十分钟。扩展命令(对抗性审阅、深挖、正面对比、可复现性审计)按需追加。
 
 ### 为什么是 studypaper
 
@@ -190,7 +195,7 @@ Built on top of [`claude-paper`](https://github.com/alaliqing/claude-paper) by `
 
 ### 你会得到什么
 
-每次 `/paper:study` 在 `~/claude-papers/papers/<slug>/` 下生成 12 个产物:
+每次 `/paper:study` 在 `~/claude-papers/papers/<slug>/` 下生成以下产物:
 
 ```text
 analysis/
@@ -202,16 +207,21 @@ analysis/
   05-prior-work.md          时间线 + 对比
   06-figures.md             逐图解读 + 评分
 review.md                   学术审稿人风格判定(优点 / 缺点 / 分数)
-review-rounds/              每次 /paper:review-round 一个文件(质疑 → 辩护 → 盲审 → 判决)
-deep-dives/                 每次 /paper:deep-dive 一个文件(聚焦子话题)
-compares/                   每次 /paper:compare 一个文件(与另一篇正面对比)
-reproduce-check.md          7 维可复现性评分卡
 notes/
   source.md                 中文统一 source(唯一真源)
   titles.md                 5+5 候选标题
   xhs.md                    小红书渲染(~1000 字,1 张图)
   wechat.md                 微信渲染(~3000 字,2-3 张图)
 ```
+
+其余工作区产物由**扩展命令**生成,不属于 `/paper:study`:
+
+| 命令 | 产物 |
+|---|---|
+| `/paper:review-round` | `review-rounds/round-NN-<title>.md`(每轮一个文件) |
+| `/paper:deep-dive`    | `deep-dives/<topic-slug>.md` |
+| `/paper:compare`      | `compares/vs-<other-slug>.md` |
+| `/paper:reproduce-check` | `reproduce-check.md` |
 
 每个文件都可重新生成。任何修改前都备份成 `<file>.bak.NN`。无破坏性操作。
 
