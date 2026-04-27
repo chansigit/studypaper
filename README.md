@@ -102,7 +102,7 @@ In Claude Code (CLI / IDE / Web):
 /paper:deep-dive "scaled dot-product attention derivation"
 
 # Head-to-head with another paper you've already studied (or auto-study + compare)
-/paper:compare BERT --lang zh
+/paper:compare attention-is-all-you-need --lang zh
 
 # 7-dimension reproducibility audit, with live GitHub link verification
 /paper:reproduce-check
@@ -254,7 +254,7 @@ notes/
 /paper:deep-dive "scaled dot-product attention 推导"
 
 # 与另一篇已研读的论文做正面比较(或自动研读 + 比较)
-/paper:compare BERT --lang zh
+/paper:compare attention-is-all-you-need --lang zh
 
 # 7 维可复现性审计,实时验证 GitHub 链接
 /paper:reproduce-check
