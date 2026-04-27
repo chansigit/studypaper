@@ -24,6 +24,8 @@ If `--paper <slug>` is provided, set `THIS_PAPER_DIR=~/claude-papers/papers/<slu
 THIS_PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
 ```
 
+If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+
 Verify `$THIS_PAPER_DIR/analysis/00-paper-profile.md` exists. If not, abort: `"Focal paper has no analysis directory. Run /paper:study first."`
 
 Read `$THIS_PAPER_DIR/analysis/00-paper-profile.md` frontmatter to extract `THIS_SLUG` (basename of `$THIS_PAPER_DIR`).

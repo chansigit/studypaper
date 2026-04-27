@@ -22,7 +22,7 @@ Optional flags:
 
 Parse first positional arg as `PLATFORM` (must be `xhs` or `wechat`). If invalid, abort with usage hint.
 
-Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent. Verify `notes/source.md`, `notes/titles.md`, and `notes/<platform>.md` all exist; abort with helpful message otherwise.
+Resolve `PAPER_DIR` from `--paper <slug>` or default to most recent (most recently modified paper folder). If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` Verify `notes/source.md`, `notes/titles.md`, and `notes/<platform>.md` all exist; abort with helpful message otherwise.
 
 Capture `--style <value>` if present as `STYLE_FILTER`; validate it's one of the 5 allowed values.
 

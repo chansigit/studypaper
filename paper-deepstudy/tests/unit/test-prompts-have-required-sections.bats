@@ -414,3 +414,20 @@ check_prompt() {
 @test "title-generator.md disambiguates STYLE_FILTER behavior" {
   grep -qF 'all 5 candidates use that style' prompts/title-generator.md
 }
+
+@test "verify-prereqs.sh glob does not hardcode marketplace name" {
+  ! grep -qE '\$HOME/\.claude/plugins/cache/claude-paper/claude-paper/' scripts/verify-prereqs.sh
+  grep -qE '\$HOME/\.claude/plugins/cache/\*/claude-paper/' scripts/verify-prereqs.sh
+}
+
+@test "skills with most-recent-paper auto-detect warn the user" {
+  for f in skills/refine-notes/SKILL.md \
+           skills/retitle/SKILL.md \
+           skills/reselect-figures/SKILL.md \
+           skills/review-round/SKILL.md \
+           skills/deep-dive/SKILL.md \
+           skills/compare/SKILL.md \
+           skills/reproduce-check/SKILL.md; do
+    grep -qF 'most recently modified' "$f" || { echo "FAIL: $f missing warning"; return 1; }
+  done
+}

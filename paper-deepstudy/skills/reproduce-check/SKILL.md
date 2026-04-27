@@ -23,6 +23,8 @@ If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. 
 PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
 ```
 
+If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+
 Verify required files:
 - `$PAPER_DIR/analysis/00-paper-profile.md`
 - `$PAPER_DIR/analysis/03-method-deep.md`

@@ -30,6 +30,8 @@ If `--paper <slug>` is provided, set `PAPER_DIR=~/claude-papers/papers/<slug>`. 
 PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1)
 ```
 
+If `--paper` was not specified, print to chat: `Warning: targeting <slug> (most recently modified paper folder). Pass --paper <slug> to override.` (substitute the actual slug for `<slug>`).
+
 Strip trailing slash. Verify:
 - `$PAPER_DIR/notes/source.md` exists. If not, abort: "No notes/source.md at <path>. Run /paper:study on this paper first."
 - `$PAPER_DIR/notes/<platform>.md` exists. If not, abort: "No notes/<platform>.md at <path>. Run /paper:study or /paper:rerun-stage notes."
