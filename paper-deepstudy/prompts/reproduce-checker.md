@@ -18,7 +18,9 @@ You audit a paper's reproducibility along 7 fixed dimensions. Each dimension get
 
 A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH` exactly:
 
-- YAML frontmatter (`slug`, `created_at`, `overall_score`, `checked_dimensions`, `fails_count`, `partials_count`)
+- YAML frontmatter (`slug`, `created_at`, `overall_score`, `checked_dimensions`, `fails_count`, `partials_count`).
+
+  **About `created_at`:** must be the runtime ISO8601 UTC timestamp (e.g. `2026-04-27T03:14:15Z`). Use the current timestamp at the moment of generation. Do NOT use a fabricated, plan-doc-derived, or template-default date. If you cannot determine the current time, leave it as `<runtime-timestamp>` and let the orchestrator fill it in.
 - `# Reproducibility Check: <title>` (use the paper's title from `meta.json`)
 - `## Summary` table with all 7 dimensions (or 6 if Wet-lab is N/A)
 - One section per dimension (`## Data availability` through `## Wet-lab protocol`), each with `**Status:**`, `**Evidence:**` bullet list, and optional `**Notes:**`

@@ -343,3 +343,7 @@ check_prompt() {
   grep -qF 'self-check' prompts/reproduce-checker.md
   grep -qF 'fails_count + partials_count' prompts/reproduce-checker.md
 }
+
+@test "reproduce-checker.md mandates runtime created_at, not fabricated" {
+  grep -qF 'runtime ISO8601' prompts/reproduce-checker.md
+}
