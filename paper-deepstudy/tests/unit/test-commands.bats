@@ -45,3 +45,12 @@ setup() {
 @test "README documents review-rounds folder" {
   grep -qF 'review-rounds/' README.md
 }
+
+@test "refine-notes.md has frontmatter" {
+  head -1 commands/refine-notes.md | grep -qE '^---$'
+}
+
+@test "refine-notes.md mentions both platforms" {
+  grep -qF 'xhs' commands/refine-notes.md
+  grep -qF 'wechat' commands/refine-notes.md
+}
