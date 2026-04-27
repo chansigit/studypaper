@@ -4,6 +4,7 @@ Deep paper study for ML and computational-biology papers. Layers on top of `clau
 
 - Deep analysis (problem framing, formal definition, methodology, experiments, prior-work timeline, figure interpretation) — English
 - Iterative review with adversarial review rounds (`/paper:review-round`) — English
+- Analysis extension commands (`/paper:deep-dive`, `/paper:compare`, `/paper:add-prior-work`) — augment the auto-run analysis with deep dives, comparisons, and missed prior-work entries
 - Chinese learning notes for Xiaohongshu / WeChat from a unified source — Chinese
 
 ## Install (local dev)
@@ -60,6 +61,24 @@ After /paper:study has produced notes/xhs.md and notes/wechat.md, you can iterat
 
 All three commands back up the prior version as `notes/<file>.bak.NN` before mutating, so you can roll back any time.
 
+### Analysis extensions
+
+After /paper:study has produced the analysis directory, three commands let you go deeper:
+
+```
+/paper:deep-dive "contrastive loss derivation"             # focused topic deep-dive
+/paper:compare attention-is-all-you-need                   # head-to-head with another studied paper
+/paper:compare ~/Downloads/scvi.pdf                        # auto-studies the PDF first, then compares
+/paper:compare attention-is-all-you-need --lang zh         # Chinese prose
+/paper:add-prior-work https://arxiv.org/abs/1706.03762     # add a missed prior-work entry (arXiv URL)
+/paper:add-prior-work "@article{vaswani2017,...}"          # BibTeX
+```
+
+Outputs land at `~/claude-papers/papers/<slug>/`:
+- `deep-dives/<topic-slug>.md` per `/paper:deep-dive`
+- `compares/vs-<other-slug>.md` per `/paper:compare`
+- `analysis/05-prior-work.md` is augmented in place by `/paper:add-prior-work` (with `.bak.NN` backup)
+
 ## What you get (12 outputs)
 
 Under `~/claude-papers/papers/<slug>/`:
@@ -75,6 +94,8 @@ analysis/
   06-figures.md             # per-figure interpretation + scoring (English)
 review.md                   # v1 review report (English)
 review-rounds/              # one file per /paper:review-round invocation (English)
+deep-dives/                 # one file per /paper:deep-dive invocation (English)
+compares/                   # one file per /paper:compare invocation (English by default, Chinese with --lang zh)
 notes/
   source.md                 # unified source content (Chinese)
   titles.md                 # 5+5 candidate titles (Chinese)
@@ -99,8 +120,9 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 ## Roadmap
 
 - **Plan 1 ✓ (shipped):** auto-run pipeline, `ml-pure` and `single-cell` packs.
-- **Plan 2 (this branch):** `/paper:review-round` adversarial loop. ✓
-- **Plan 3a (this branch):** notes UX commands — `refine-notes`, `retitle`, `reselect-figures`. ✓
-- **Plan 3b (future):** analysis-extension commands — `deep-dive`, `compare`, `add-prior-work`.
+- **Plan 2 ✓ (shipped):** `/paper:review-round` adversarial loop.
+- **Plan 3a ✓ (shipped):** notes UX commands — `refine-notes`, `retitle`, `reselect-figures`.
+- **Plan 3b ✓ (this branch):** analysis-extension commands — `deep-dive`, `compare`, `add-prior-work`.
 - **Plan 3c (future):** `reproduce-check` audit command.
-- **Plan 4 (this branch):** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`). ✓
+- **Plan 4 ✓ (shipped):** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`).
+- **Plan 5 ✓ (shipped):** cross-plan polish — Stage 0.2 invocation, --only/--paper flag wiring, helpers + tests.

@@ -108,3 +108,15 @@ setup() {
     grep -qiF "$kind" commands/add-prior-work.md || { echo "missing kind: $kind"; return 1; }
   done
 }
+
+@test "README documents /paper:deep-dive" {
+  grep -qF '/paper:deep-dive' README.md
+}
+
+@test "README documents /paper:compare" {
+  grep -qF '/paper:compare' README.md
+}
+
+@test "README documents /paper:add-prior-work" {
+  grep -qF '/paper:add-prior-work' README.md
+}
