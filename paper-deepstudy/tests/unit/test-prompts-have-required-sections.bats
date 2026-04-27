@@ -172,3 +172,15 @@ check_prompt() {
 @test "refine-notes SKILL.md describes .bak. backup convention" {
   grep -qF '.bak.' skills/refine-notes/SKILL.md
 }
+
+@test "retitle SKILL.md has YAML frontmatter with name" {
+  head -5 skills/retitle/SKILL.md | grep -qF 'name: retitle'
+}
+
+@test "retitle SKILL.md mentions title-generator dispatch" {
+  grep -qF 'title-generator' skills/retitle/SKILL.md
+}
+
+@test "retitle SKILL.md describes history archival" {
+  grep -qF 'history' skills/retitle/SKILL.md
+}
