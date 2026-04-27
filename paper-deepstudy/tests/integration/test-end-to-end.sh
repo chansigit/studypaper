@@ -89,4 +89,35 @@ if [ $fail -ne 0 ]; then
   echo "Integration smoke test: FAILED"; exit 1
 fi
 
+echo ""
+echo "=== Schema validation against examples/ ==="
+PLUGIN_ROOT="$(pwd)"
+EXAMPLES_DIR="$(cd ../examples/string-database-2025 && pwd)"
+SCHEMA_FAILURES=0
+for pair in \
+  "analysis/00-paper-profile.md:paper-profile" \
+  "review.md:review" \
+  "review-rounds/round-01-string-baseline-comparison.md:review-round" \
+  "deep-dives/the-fava-co-expression-integration.md:deep-dive" \
+  "compares/vs-attention-is-all-you-need.md:compare" \
+  "reproduce-check.md:reproduce-check" \
+  "notes/xhs.md:xhs" \
+  "notes/wechat.md:wechat"; do
+  rel="${pair%%:*}"
+  type="${pair##*:}"
+  if bash "$PLUGIN_ROOT/scripts/lib/validate-artifact.sh" "$EXAMPLES_DIR/$rel" "$type" >/dev/null 2>&1; then
+    echo "  ✓ $rel ($type)"
+  else
+    echo "  ✗ $rel ($type)"
+    bash "$PLUGIN_ROOT/scripts/lib/validate-artifact.sh" "$EXAMPLES_DIR/$rel" "$type" 2>&1 | sed 's/^/      /'
+    SCHEMA_FAILURES=$((SCHEMA_FAILURES + 1))
+  fi
+done
+
+if [ $SCHEMA_FAILURES -ne 0 ]; then
+  echo ""
+  echo "ERROR: $SCHEMA_FAILURES schema validation failure(s)"
+  exit 1
+fi
+
 echo "Integration smoke test: PASSED"

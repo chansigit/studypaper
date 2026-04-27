@@ -14,7 +14,9 @@ function parseJudgeOutput(text) {
     return FALLBACK('empty or non-string input');
   }
 
-  const fenceMatch = text.match(/```yaml\s*\n([\s\S]*?)\n```/);
+  // Accept ```yaml, ```yml, ```YAML, or ```yaml with trailing attributes (e.g. linenums="1").
+  // Use [ \t]+ (not \s+) for trailing attrs so we don't consume the newline after the fence marker.
+  const fenceMatch = text.match(/```(?:yaml|yml|YAML)(?:[ \t]+[^\n]*)?\n([\s\S]*?)\n```/);
   if (!fenceMatch) {
     return FALLBACK('no yaml-fenced block found');
   }
