@@ -21,12 +21,13 @@
 
 ## File Structure
 
-The plugin source lives at `/Users/chensijie/Projects/studypaper/paper-deepstudy/`:
+The plugin source lives at `/Users/chensijie/Projects/studypaper/paper-deepstudy/`.
+
+> **Test paths convention:** Tests live inside the plugin under `paper-deepstudy/tests/` so they ship with the plugin. All bats file content uses paths relative to `paper-deepstudy/` (no `paper-deepstudy/` prefix). Each bats file includes a `setup()` that `cd`s to the plugin root using `$BATS_TEST_DIRNAME/../..` so tests pass regardless of the invoker's cwd. Bats invocations work both as `bats paper-deepstudy/tests/unit/<file>.bats` from the repo root and as `bats tests/unit/<file>.bats` from `paper-deepstudy/`.
 
 ```
 paper-deepstudy/
 ├── .claude-plugin/plugin.json
-├── PLUGIN.json
 ├── README.md
 ├── .gitignore
 ├── package.json
@@ -108,43 +109,43 @@ Before starting tasks, ensure: `bats-core` installed (`brew install bats-core`),
 
 **Files:**
 - Create: `paper-deepstudy/.claude-plugin/plugin.json`
-- Create: `paper-deepstudy/PLUGIN.json`
 - Create: `paper-deepstudy/README.md`
 - Create: `paper-deepstudy/.gitignore`
 - Create: `paper-deepstudy/package.json`
 
 - [ ] **Step 1: Write a smoke test that the plugin manifest validates as JSON**
 
-`tests/unit/test-prereqs.bats`:
+`paper-deepstudy/tests/unit/test-prereqs.bats` (paths inside the file are relative to `paper-deepstudy/`; the `setup()` block makes tests work from any cwd):
 
 ```bash
 #!/usr/bin/env bats
 
-@test "plugin.json is valid JSON" {
-  run python3 -c "import json,sys; json.load(open('paper-deepstudy/.claude-plugin/plugin.json'))"
-  [ "$status" -eq 0 ]
+# Ensure tests run from the plugin root regardless of where bats was invoked.
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
 }
 
-@test "PLUGIN.json is valid JSON" {
-  run python3 -c "import json,sys; json.load(open('paper-deepstudy/PLUGIN.json'))"
+@test "plugin.json is valid JSON" {
+  run python3 -c "import json,sys; json.load(open('.claude-plugin/plugin.json'))"
   [ "$status" -eq 0 ]
 }
 
 @test "package.json is valid JSON" {
-  run python3 -c "import json,sys; json.load(open('paper-deepstudy/package.json'))"
+  run python3 -c "import json,sys; json.load(open('package.json'))"
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run the test, verify it fails (files don't exist)**
 
-Run: `cd /Users/chensijie/Projects/studypaper && bats tests/unit/test-prereqs.bats`
-Expected: 3 failures with "No such file or directory".
+Run: `cd /Users/chensijie/Projects/studypaper/paper-deepstudy && bats tests/unit/test-prereqs.bats`
+Expected: 2 failures with "No such file or directory".
 
 - [ ] **Step 3: Create the directory tree and manifests**
 
 ```bash
-mkdir -p paper-deepstudy/{.claude-plugin,commands,skills/study-deep,prompts,domain-packs,templates/analysis,templates/notes,scripts,tests/fixtures/tiny-paper,tests/unit,tests/integration}
+mkdir -p paper-deepstudy/{.claude-plugin,commands,skills/study-deep,prompts,domain-packs,templates/analysis,templates/notes,scripts}
+mkdir -p paper-deepstudy/tests/{unit,integration,fixtures/tiny-paper}
 ```
 
 `paper-deepstudy/.claude-plugin/plugin.json`:
@@ -154,18 +155,8 @@ mkdir -p paper-deepstudy/{.claude-plugin,commands,skills/study-deep,prompts,doma
   "name": "paper-deepstudy",
   "version": "0.1.0",
   "description": "Deep paper study for ML and computational-biology papers. Layers on claude-paper:study to add deep analysis, iterative review, and Chinese notes for Xiaohongshu/WeChat.",
-  "author": "Sijie Chen",
+  "author": {"name": "Sijie Chen", "email": "chansigit@gmail.com"},
   "dependencies": ["claude-paper"]
-}
-```
-
-`paper-deepstudy/PLUGIN.json`:
-
-```json
-{
-  "name": "paper-deepstudy",
-  "version": "0.1.0",
-  "main_skill": "study-deep"
 }
 ```
 
@@ -183,7 +174,8 @@ Deep paper study for ML and computational-biology papers. Layers on top of `clau
 ## Install (local dev)
 
 ```
-/plugin install /Users/chensijie/Projects/studypaper/paper-deepstudy
+# from this repo's root:
+/plugin install ./paper-deepstudy
 ```
 
 Requires `claude-paper:study` already installed.
@@ -205,7 +197,7 @@ node_modules/
 .DS_Store
 ```
 
-`paper-deepstudy/package.json`:
+`paper-deepstudy/package.json` (Task 17 will re-extend `test:unit` to also run the node test):
 
 ```json
 {
@@ -215,20 +207,20 @@ node_modules/
   "type": "commonjs",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test:unit": "bats tests/unit && node tests/unit/test-select-figures.cjs"
+    "test:unit": "bats tests/unit"
   }
 }
 ```
 
 - [ ] **Step 4: Re-run tests, verify pass**
 
-Run: `bats tests/unit/test-prereqs.bats`
-Expected: 3 tests pass.
+Run: `bats paper-deepstudy/tests/unit/test-prereqs.bats`
+Expected: 2 tests pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/.claude-plugin paper-deepstudy/PLUGIN.json paper-deepstudy/README.md paper-deepstudy/.gitignore paper-deepstudy/package.json tests/unit/test-prereqs.bats
+git add paper-deepstudy/.claude-plugin paper-deepstudy/README.md paper-deepstudy/.gitignore paper-deepstudy/package.json paper-deepstudy/tests/unit/test-prereqs.bats
 git commit -m "feat(paper-deepstudy): plugin scaffolding"
 ```
 
@@ -238,26 +230,26 @@ git commit -m "feat(paper-deepstudy): plugin scaffolding"
 
 **Files:**
 - Create: `paper-deepstudy/scripts/verify-prereqs.sh`
-- Modify: `tests/unit/test-prereqs.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prereqs.bats`
 
 - [ ] **Step 1: Add the failing test**
 
-Append to `tests/unit/test-prereqs.bats`:
+Append to `paper-deepstudy/tests/unit/test-prereqs.bats` (paths relative to `paper-deepstudy/`):
 
 ```bash
 @test "verify-prereqs.sh exists and is executable" {
-  [ -x paper-deepstudy/scripts/verify-prereqs.sh ]
+  [ -x scripts/verify-prereqs.sh ]
 }
 
 @test "verify-prereqs.sh succeeds when all deps present" {
-  run paper-deepstudy/scripts/verify-prereqs.sh
+  run scripts/verify-prereqs.sh
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-prereqs.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prereqs.bats`
 Expected: the two new tests fail.
 
 - [ ] **Step 3: Create the script**
@@ -295,6 +287,11 @@ if ! command -v python3 > /dev/null 2>&1; then
   exit 3
 fi
 
+# 4. pdftotext (optional but recommended; falls back to PDF read by Read tool)
+if ! command -v pdftotext > /dev/null 2>&1; then
+  echo "WARN: pdftotext not found; full-text extraction will fall back to direct PDF reads (slower)." >&2
+fi
+
 echo "OK: prerequisites satisfied."
 exit 0
 ```
@@ -305,13 +302,13 @@ chmod +x paper-deepstudy/scripts/verify-prereqs.sh
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-prereqs.bats`
-Expected: all 5 tests pass.
+Run: `bats paper-deepstudy/tests/unit/test-prereqs.bats`
+Expected: all 4 tests pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/scripts/verify-prereqs.sh tests/unit/test-prereqs.bats
+git add paper-deepstudy/scripts/verify-prereqs.sh paper-deepstudy/tests/unit/test-prereqs.bats
 git commit -m "feat(paper-deepstudy): prereq verification script"
 ```
 
@@ -322,14 +319,18 @@ git commit -m "feat(paper-deepstudy): prereq verification script"
 **Files:**
 - Create: `paper-deepstudy/domain-packs/_template.md`
 - Create: `paper-deepstudy/domain-packs/ml-pure.md`
-- Create: `tests/unit/test-domain-packs.bats`
+- Create: `paper-deepstudy/tests/unit/test-domain-packs.bats`
 
 - [ ] **Step 1: Write failing structural test**
 
-`tests/unit/test-domain-packs.bats`:
+`paper-deepstudy/tests/unit/test-domain-packs.bats` (paths relative to `paper-deepstudy/`; `setup()` cds to plugin root):
 
 ```bash
 #!/usr/bin/env bats
+
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
 
 required_sections=(
   "# Pack:"
@@ -348,19 +349,19 @@ check_pack() {
 }
 
 @test "_template.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/_template.md
+  run check_pack domain-packs/_template.md
   [ "$status" -eq 0 ]
 }
 
 @test "ml-pure.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/ml-pure.md
+  run check_pack domain-packs/ml-pure.md
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-domain-packs.bats`
+Run: `bats paper-deepstudy/tests/unit/test-domain-packs.bats`
 Expected: 2 failures.
 
 - [ ] **Step 3: Write `_template.md`**
@@ -455,13 +456,13 @@ General machine-learning papers without a strong domain-specific component (NLP,
 
 - [ ] **Step 5: Run tests, verify pass**
 
-Run: `bats tests/unit/test-domain-packs.bats`
+Run: `bats paper-deepstudy/tests/unit/test-domain-packs.bats`
 Expected: 2 pass.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add paper-deepstudy/domain-packs/_template.md paper-deepstudy/domain-packs/ml-pure.md tests/unit/test-domain-packs.bats
+git add paper-deepstudy/domain-packs/_template.md paper-deepstudy/domain-packs/ml-pure.md paper-deepstudy/tests/unit/test-domain-packs.bats
 git commit -m "feat(paper-deepstudy): domain pack template and ml-pure pack"
 ```
 
@@ -471,22 +472,22 @@ git commit -m "feat(paper-deepstudy): domain pack template and ml-pure pack"
 
 **Files:**
 - Create: `paper-deepstudy/domain-packs/single-cell.md`
-- Modify: `tests/unit/test-domain-packs.bats`
+- Modify: `paper-deepstudy/tests/unit/test-domain-packs.bats`
 
 - [ ] **Step 1: Add failing test**
 
-Append to `tests/unit/test-domain-packs.bats`:
+Append to `paper-deepstudy/tests/unit/test-domain-packs.bats`:
 
 ```bash
 @test "single-cell.md has required sections" {
-  run check_pack paper-deepstudy/domain-packs/single-cell.md
+  run check_pack domain-packs/single-cell.md
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-domain-packs.bats`
+Run: `bats paper-deepstudy/tests/unit/test-domain-packs.bats`
 Expected: 1 failure on the new test.
 
 - [ ] **Step 3: Write the pack**
@@ -551,13 +552,13 @@ Papers about single-cell RNA sequencing (scRNA-seq), single-cell ATAC-seq, multi
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-domain-packs.bats`
+Run: `bats paper-deepstudy/tests/unit/test-domain-packs.bats`
 Expected: 3 pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/domain-packs/single-cell.md tests/unit/test-domain-packs.bats
+git add paper-deepstudy/domain-packs/single-cell.md paper-deepstudy/tests/unit/test-domain-packs.bats
 git commit -m "feat(paper-deepstudy): single-cell domain pack"
 ```
 
@@ -573,47 +574,51 @@ git commit -m "feat(paper-deepstudy): single-cell domain pack"
 - Create: `paper-deepstudy/templates/analysis/04-experiments.md`
 - Create: `paper-deepstudy/templates/analysis/05-prior-work.md`
 - Create: `paper-deepstudy/templates/analysis/06-figures.md`
-- Create: `tests/unit/test-templates-valid.bats`
+- Create: `paper-deepstudy/tests/unit/test-templates-valid.bats`
 
 - [ ] **Step 1: Failing test for templates**
 
-`tests/unit/test-templates-valid.bats`:
+`paper-deepstudy/tests/unit/test-templates-valid.bats` (paths relative to `paper-deepstudy/`; `setup()` cds to plugin root):
 
 ```bash
 #!/usr/bin/env bats
 
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
+
 @test "00-paper-profile.md has YAML frontmatter" {
-  head -1 paper-deepstudy/templates/analysis/00-paper-profile.md | grep -qE '^---$'
+  head -1 templates/analysis/00-paper-profile.md | grep -qE '^---$'
 }
 
 @test "01-problem.md exists with H1 heading" {
-  grep -qE '^# ' paper-deepstudy/templates/analysis/01-problem.md
+  grep -qE '^# ' templates/analysis/01-problem.md
 }
 
 @test "02-formalization.md has Notation section" {
-  grep -qF '## Notation' paper-deepstudy/templates/analysis/02-formalization.md
+  grep -qF '## Notation' templates/analysis/02-formalization.md
 }
 
 @test "03-method-deep.md has Components section" {
-  grep -qF '## Components' paper-deepstudy/templates/analysis/03-method-deep.md
+  grep -qF '## Components' templates/analysis/03-method-deep.md
 }
 
 @test "04-experiments.md has Critique section" {
-  grep -qF '## Critique' paper-deepstudy/templates/analysis/04-experiments.md
+  grep -qF '## Critique' templates/analysis/04-experiments.md
 }
 
 @test "05-prior-work.md has Timeline section" {
-  grep -qF '## Timeline' paper-deepstudy/templates/analysis/05-prior-work.md
+  grep -qF '## Timeline' templates/analysis/05-prior-work.md
 }
 
 @test "06-figures.md has frontmatter for scoring" {
-  head -1 paper-deepstudy/templates/analysis/06-figures.md | grep -qE '^---$'
+  head -1 templates/analysis/06-figures.md | grep -qE '^---$'
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-templates-valid.bats`
+Run: `bats paper-deepstudy/tests/unit/test-templates-valid.bats`
 Expected: 7 failures.
 
 - [ ] **Step 3: Write all 7 templates**
@@ -806,16 +811,20 @@ claims_summary:
 (Citations the authors should have made but didn't.)
 ```
 
-`templates/analysis/06-figures.md`:
+`templates/analysis/06-figures.md` (filenames are placeholders set at runtime by the figure-interpreter; real ones from `claude-paper:study` look like `page_3_img_1.png`):
 
 ```markdown
 ---
+# `figures` is filled in by the figure-interpreter sub-Agent at runtime.
+# Each entry's `file` is the basename of an image in $PAPER_DIR/images/.
+# Real filenames from claude-paper:study look like `page_3_img_1.png`,
+# not `figure-1.png` — the placeholders below are illustrative only.
 figures:
-  - file: figure-1.png
+  - file: <basename-from-images-dir>
     caption: "<caption>"
     importance: 0.0  # 0.0–1.0, set by interpreter
     role: architecture | pipeline | main-result | ablation | qualitative | other
-  - file: figure-2.png
+  - file: <another-basename>
     caption: ""
     importance: 0.0
     role: other
@@ -834,13 +843,13 @@ figures:
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-templates-valid.bats`
+Run: `bats paper-deepstudy/tests/unit/test-templates-valid.bats`
 Expected: 7 pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/templates/analysis tests/unit/test-templates-valid.bats
+git add paper-deepstudy/templates/analysis paper-deepstudy/tests/unit/test-templates-valid.bats
 git commit -m "feat(paper-deepstudy): analysis output templates"
 ```
 
@@ -854,39 +863,39 @@ git commit -m "feat(paper-deepstudy): analysis output templates"
 - Create: `paper-deepstudy/templates/notes/titles.md`
 - Create: `paper-deepstudy/templates/notes/xhs.md`
 - Create: `paper-deepstudy/templates/notes/wechat.md`
-- Modify: `tests/unit/test-templates-valid.bats`
+- Modify: `paper-deepstudy/tests/unit/test-templates-valid.bats`
 
 - [ ] **Step 1: Add failing tests**
 
-Append to `tests/unit/test-templates-valid.bats`:
+Append to `paper-deepstudy/tests/unit/test-templates-valid.bats`:
 
 ```bash
 @test "review.md has Score section" {
-  grep -qF '## Score' paper-deepstudy/templates/review.md
+  grep -qF '## Score' templates/review.md
 }
 
 @test "notes/source.md has 9 sections" {
-  count=$(grep -cE '^## ' paper-deepstudy/templates/notes/source.md)
+  count=$(grep -cE '^## ' templates/notes/source.md)
   [ "$count" -eq 9 ]
 }
 
 @test "notes/titles.md has xhs and wechat groups" {
-  grep -qF '## xhs' paper-deepstudy/templates/notes/titles.md
-  grep -qF '## wechat' paper-deepstudy/templates/notes/titles.md
+  grep -qF '## xhs' templates/notes/titles.md
+  grep -qF '## wechat' templates/notes/titles.md
 }
 
 @test "notes/xhs.md has frontmatter with title" {
-  head -3 paper-deepstudy/templates/notes/xhs.md | grep -qF 'title:'
+  head -3 templates/notes/xhs.md | grep -qF 'title:'
 }
 
 @test "notes/wechat.md has frontmatter with title" {
-  head -3 paper-deepstudy/templates/notes/wechat.md | grep -qF 'title:'
+  head -3 templates/notes/wechat.md | grep -qF 'title:'
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-templates-valid.bats`
+Run: `bats paper-deepstudy/tests/unit/test-templates-valid.bats`
 Expected: 5 new failures.
 
 - [ ] **Step 3: Write the 5 templates**
@@ -1071,13 +1080,13 @@ figures:
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-templates-valid.bats`
+Run: `bats paper-deepstudy/tests/unit/test-templates-valid.bats`
 Expected: all 12 pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/templates/review.md paper-deepstudy/templates/notes tests/unit/test-templates-valid.bats
+git add paper-deepstudy/templates/review.md paper-deepstudy/templates/notes paper-deepstudy/tests/unit/test-templates-valid.bats
 git commit -m "feat(paper-deepstudy): review and notes output templates"
 ```
 
@@ -1087,14 +1096,18 @@ git commit -m "feat(paper-deepstudy): review and notes output templates"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/paper-profiler.md`
-- Create: `tests/unit/test-prompts-have-required-sections.bats`
+- Create: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Failing test**
 
-`tests/unit/test-prompts-have-required-sections.bats`:
+`paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats` (paths relative to `paper-deepstudy/`; `setup()` cds to plugin root):
 
 ```bash
 #!/usr/bin/env bats
+
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
 
 required_in_prompt=(
   "## Role"
@@ -1111,14 +1124,14 @@ check_prompt() {
 }
 
 @test "paper-profiler.md has all required sections" {
-  run check_prompt paper-deepstudy/prompts/paper-profiler.md
+  run check_prompt prompts/paper-profiler.md
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-prompts-have-required-sections.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 Expected: 1 fail.
 
 - [ ] **Step 3: Write the prompt**
@@ -1176,17 +1189,18 @@ After the frontmatter, write two short prose sections (`## Why these tags`, `## 
 
 - Every frontmatter field present and from the allowed enum (where enums apply).
 - Tag choice is defensible from the abstract alone — i.e. another reader could follow your reasoning in `## Why these tags`.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-prompts-have-required-sections.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 Expected: 1 pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/paper-profiler.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/paper-profiler.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): paper-profiler prompt"
 ```
 
@@ -1196,22 +1210,22 @@ git commit -m "feat(paper-deepstudy): paper-profiler prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/problem-framer.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
-Append to `tests/unit/test-prompts-have-required-sections.bats`:
+Append to `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`:
 
 ```bash
 @test "problem-framer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/problem-framer.md
+  run check_prompt prompts/problem-framer.md
   [ "$status" -eq 0 ]
 }
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `bats tests/unit/test-prompts-have-required-sections.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 Expected: 1 new fail.
 
 - [ ] **Step 3: Write the prompt**
@@ -1256,17 +1270,18 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 - A reader unfamiliar with the field can read this section and understand what the paper is about.
 - No equations (those go to `02-formalization.md`).
 - No specific paper citations (those go to `05-prior-work.md`).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `bats tests/unit/test-prompts-have-required-sections.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 Expected: 2 pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/problem-framer.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/problem-framer.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): problem-framer prompt"
 ```
 
@@ -1276,13 +1291,13 @@ git commit -m "feat(paper-deepstudy): problem-framer prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/formalizer.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "formalizer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/formalizer.md
+  run check_prompt prompts/formalizer.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1329,6 +1344,7 @@ You extract and clarify the paper's formal problem definition: notation, inputs,
 - LaTeX renders without errors (no unbalanced braces).
 - A reader who knows the field can re-derive the optimization target from this file alone.
 - If the paper omits a formal definition (some empirical / system papers), say so explicitly and write what the implicit definition would be.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1336,7 +1352,7 @@ You extract and clarify the paper's formal problem definition: notation, inputs,
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/formalizer.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/formalizer.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): formalizer prompt"
 ```
 
@@ -1346,13 +1362,13 @@ git commit -m "feat(paper-deepstudy): formalizer prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/method-analyst.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "method-analyst.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/method-analyst.md
+  run check_prompt prompts/method-analyst.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1403,6 +1419,7 @@ You analyze the method in depth, including each component's design rationale, al
 - Design rationale section answers "why this design choice?" not "what does this component do?"
 - Alternatives are named, not vague ("could be different" is not an alternative).
 - Pseudocode is implementable, not handwavy.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1410,7 +1427,7 @@ You analyze the method in depth, including each component's design rationale, al
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/method-analyst.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/method-analyst.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): method-analyst prompt"
 ```
 
@@ -1420,13 +1437,13 @@ git commit -m "feat(paper-deepstudy): method-analyst prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/experiment-critic.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "experiment-critic.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/experiment-critic.md
+  run check_prompt prompts/experiment-critic.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1476,6 +1493,7 @@ You audit the experimental section. Your output should answer: "do the experimen
 
 - Critique is specific: "ResNet-50 baseline used a 3x smaller compute budget" rather than "baselines may be unfair".
 - Domain pack checklist questions all addressed (or marked N/A with reason).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1483,7 +1501,7 @@ You audit the experimental section. Your output should answer: "do the experimen
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/experiment-critic.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/experiment-critic.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): experiment-critic prompt"
 ```
 
@@ -1493,13 +1511,13 @@ git commit -m "feat(paper-deepstudy): experiment-critic prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/prior-work-historian.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "prior-work-historian.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/prior-work-historian.md
+  run check_prompt prompts/prior-work-historian.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1546,6 +1564,7 @@ You build a chronological lineage of the paper: what came before, what this pape
 
 - Timeline entries are real papers (don't fabricate). If unsure, mark with `?` and explain.
 - Comparison table cells are concrete (no vague "scales better"; say what scales how).
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1553,7 +1572,7 @@ You build a chronological lineage of the paper: what came before, what this pape
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/prior-work-historian.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/prior-work-historian.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): prior-work-historian prompt"
 ```
 
@@ -1563,13 +1582,13 @@ git commit -m "feat(paper-deepstudy): prior-work-historian prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/figure-interpreter.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "figure-interpreter.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/figure-interpreter.md
+  run check_prompt prompts/figure-interpreter.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1622,6 +1641,7 @@ After frontmatter, one `## Figure N` section per figure, in the same order as th
 - Importance scores are usable for picking 1 figure (xhs) and 2-3 figures (wechat). Exactly one figure should be ≥ 0.9 (the most important one).
 - Caption field is verbatim text, not a paraphrase.
 - Explanation tells a non-specialist why the figure matters.
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1629,7 +1649,7 @@ After frontmatter, one `## Figure N` section per figure, in the same order as th
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/figure-interpreter.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/figure-interpreter.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): figure-interpreter prompt"
 ```
 
@@ -1639,13 +1659,13 @@ git commit -m "feat(paper-deepstudy): figure-interpreter prompt"
 
 **Files:**
 - Create: `paper-deepstudy/prompts/reviewer-synthesizer.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "reviewer-synthesizer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/reviewer-synthesizer.md
+  run check_prompt prompts/reviewer-synthesizer.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1704,6 +1724,7 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 
 - No bullet point references the paper directly; every claim is grounded in an analysis file. If you can't ground it, drop it.
 - If a section in the analysis files is `<!-- FAILED: ... -->`, mention this gap in `## Suggestions` (e.g. "Re-run prior-work analysis; comparison with X is missing").
+- Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.
 ```
 
 - [ ] **Step 4: Run, verify pass**
@@ -1711,7 +1732,7 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/reviewer-synthesizer.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/reviewer-synthesizer.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): reviewer-synthesizer prompt"
 ```
 
@@ -1722,18 +1743,18 @@ git commit -m "feat(paper-deepstudy): reviewer-synthesizer prompt"
 **Files:**
 - Create: `paper-deepstudy/prompts/notes-writer.md`
 - Create: `paper-deepstudy/prompts/title-generator.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing tests**
 
 ```bash
 @test "notes-writer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/notes-writer.md
+  run check_prompt prompts/notes-writer.md
   [ "$status" -eq 0 ]
 }
 
 @test "title-generator.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/title-generator.md
+  run check_prompt prompts/title-generator.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1840,7 +1861,7 @@ You generate Chinese title candidates for both xhs (Xiaohongshu) and wechat (公
 - [ ] **Step 6: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/notes-writer.md paper-deepstudy/prompts/title-generator.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/notes-writer.md paper-deepstudy/prompts/title-generator.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): notes-writer and title-generator prompts"
 ```
 
@@ -1851,18 +1872,18 @@ git commit -m "feat(paper-deepstudy): notes-writer and title-generator prompts"
 **Files:**
 - Create: `paper-deepstudy/prompts/xhs-renderer.md`
 - Create: `paper-deepstudy/prompts/wechat-renderer.md`
-- Modify: `tests/unit/test-prompts-have-required-sections.bats`
+- Modify: `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 
 - [ ] **Step 1: Add failing tests**
 
 ```bash
 @test "xhs-renderer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/xhs-renderer.md
+  run check_prompt prompts/xhs-renderer.md
   [ "$status" -eq 0 ]
 }
 
 @test "wechat-renderer.md has required sections" {
-  run check_prompt paper-deepstudy/prompts/wechat-renderer.md
+  run check_prompt prompts/wechat-renderer.md
   [ "$status" -eq 0 ]
 }
 ```
@@ -1979,7 +2000,7 @@ Render the source notes into a WeChat 公众号-style article. Consume `source.m
 - [ ] **Step 6: Commit**
 
 ```bash
-git add paper-deepstudy/prompts/xhs-renderer.md paper-deepstudy/prompts/wechat-renderer.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/prompts/xhs-renderer.md paper-deepstudy/prompts/wechat-renderer.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): xhs and wechat renderer prompts"
 ```
 
@@ -1989,22 +2010,24 @@ git commit -m "feat(paper-deepstudy): xhs and wechat renderer prompts"
 
 **Files:**
 - Create: `paper-deepstudy/scripts/select-figures.cjs`
-- Create: `tests/unit/test-select-figures.cjs`
+- Create: `paper-deepstudy/tests/unit/test-select-figures.cjs`
+- Modify: `paper-deepstudy/package.json` (re-extend `test:unit`)
 
 - [ ] **Step 1: Write the failing node test**
 
-`tests/unit/test-select-figures.cjs`:
+`paper-deepstudy/tests/unit/test-select-figures.cjs` (`require()` paths are relative to this file's location):
 
 ```javascript
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
-const { selectFigures } = require('../../paper-deepstudy/scripts/select-figures.cjs');
+const { selectFigures } = require('../../scripts/select-figures.cjs');
 
 // Create a temp dir with a fake 06-figures.md
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pds-test-'));
-const figuresMd = `---
+try {
+  const figuresMd = `---
 figures:
   - file: figure-1.png
     caption: "Architecture overview"
@@ -2026,18 +2049,18 @@ figures:
 
 # Figures
 `;
-fs.writeFileSync(path.join(tmp, '06-figures.md'), figuresMd);
+  fs.writeFileSync(path.join(tmp, '06-figures.md'), figuresMd);
 
-// Test xhs (1 figure): should pick the highest-importance one
-const xhsPicks = selectFigures(path.join(tmp, '06-figures.md'), 1);
-assert.deepEqual(xhsPicks.map(p => p.file), ['figure-1.png']);
+  // Test xhs (1 figure): should pick the highest-importance one
+  const xhsPicks = selectFigures(path.join(tmp, '06-figures.md'), 1);
+  assert.deepEqual(xhsPicks.map(p => p.file), ['figure-1.png']);
 
-// Test wechat (3 figures): should pick top-3 by importance
-const wechatPicks = selectFigures(path.join(tmp, '06-figures.md'), 3);
-assert.deepEqual(wechatPicks.map(p => p.file), ['figure-1.png', 'figure-2.png', 'figure-3.png']);
+  // Test wechat (3 figures): should pick top-3 by importance
+  const wechatPicks = selectFigures(path.join(tmp, '06-figures.md'), 3);
+  assert.deepEqual(wechatPicks.map(p => p.file), ['figure-1.png', 'figure-2.png', 'figure-3.png']);
 
-// Test wechat with only 2 high-importance: should pick what's available, dedup low
-const figuresMd2 = `---
+  // Test wechat with only 2 high-importance: should pick what's available, dedup low
+  const figuresMd2 = `---
 figures:
   - file: f1.png
     caption: ""
@@ -2049,21 +2072,22 @@ figures:
     role: main-result
 ---
 `;
-fs.writeFileSync(path.join(tmp, 'few-figs.md'), figuresMd2);
-const fewPicks = selectFigures(path.join(tmp, 'few-figs.md'), 3);
-assert.deepEqual(fewPicks.map(p => p.file), ['f1.png', 'f2.png']);
+  fs.writeFileSync(path.join(tmp, 'few-figs.md'), figuresMd2);
+  const fewPicks = selectFigures(path.join(tmp, 'few-figs.md'), 3);
+  assert.deepEqual(fewPicks.map(p => p.file), ['f1.png', 'f2.png']);
 
-// Test bad path: throws
-assert.throws(() => selectFigures('/no/such/file', 1));
+  // Test bad path: throws
+  assert.throws(() => selectFigures('/no/such/file', 1));
 
-// Cleanup
-fs.rmSync(tmp, { recursive: true });
-console.log('select-figures: all tests passed');
+  console.log('select-figures: all tests passed');
+} finally {
+  fs.rmSync(tmp, { recursive: true });
+}
 ```
 
 - [ ] **Step 2: Run, verify fail**
 
-Run: `node tests/unit/test-select-figures.cjs`
+Run: `node paper-deepstudy/tests/unit/test-select-figures.cjs`
 Expected: `Cannot find module ... select-figures.cjs`.
 
 - [ ] **Step 3: Write the script**
@@ -2131,13 +2155,23 @@ chmod +x paper-deepstudy/scripts/select-figures.cjs
 
 - [ ] **Step 4: Run, verify pass**
 
-Run: `node tests/unit/test-select-figures.cjs`
+Run: `node paper-deepstudy/tests/unit/test-select-figures.cjs`
 Expected: `select-figures: all tests passed`.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Re-extend `paper-deepstudy/package.json`'s `test:unit` script**
+
+Edit the script back to its full form (it was minimized in Task 1 because `test-select-figures.cjs` did not exist yet):
+
+```json
+"test:unit": "bats tests/unit && node tests/unit/test-select-figures.cjs"
+```
+
+Verify: `cd paper-deepstudy && npm run test:unit` runs both bats and node tests successfully.
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add paper-deepstudy/scripts/select-figures.cjs tests/unit/test-select-figures.cjs
+git add paper-deepstudy/scripts/select-figures.cjs paper-deepstudy/tests/unit/test-select-figures.cjs paper-deepstudy/package.json
 git commit -m "feat(paper-deepstudy): figure selection helper script and tests"
 ```
 
@@ -2192,10 +2226,27 @@ Set these environment-style variables (use them in subsequent dispatches):
 
 - `PAPER_DIR=~/claude-papers/papers/<slug>`
 - `META_JSON=$PAPER_DIR/meta.json`
-- `PAPER_TEXT=$PAPER_DIR/summary.md` *(claude-paper:study writes the extracted text into summary.md or a similar file; confirm and use the actual extracted-text file)*
+- `PAPER_PDF=$PAPER_DIR/paper.pdf`
+- `PAPER_TEXT=$PAPER_DIR/paper.txt` (extracted from `paper.pdf` — see Stage 0.3.1 below)
 - `IMAGES_DIR=$PAPER_DIR/images`
 - `ANALYSIS_DIR=$PAPER_DIR/analysis` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+
+### 0.3.1 Extract full paper text
+
+`claude-paper:study` does not persist the extracted full text to disk; only `paper.pdf` is reliably available. We need full text for Stage 1 sub-Agents.
+
+If `$PAPER_TEXT` (i.e. `$PAPER_DIR/paper.txt`) does not already exist, run:
+
+```bash
+pdftotext -layout "$PAPER_PDF" "$PAPER_TEXT"
+```
+
+If `pdftotext` is not installed or the conversion fails:
+- Fallback A: use `python3 -c "from pypdf import PdfReader; ..."` if `pypdf` is available (`claude-paper:study` requires `pymupdf` so `pypdf` may be installed too).
+- Fallback B: pass `$PAPER_PDF` directly as `PAPER_TEXT` to sub-Agents — Claude Code's Read tool can read PDFs natively, so sub-Agents can read it. In this fallback, set `PAPER_TEXT=$PAPER_PDF`.
+
+Record which path was used in the final summary (so users know to install `pdftotext` if they got the fallback path).
 
 ### 0.4 Dispatch paper-profiler
 
@@ -2217,6 +2268,8 @@ Agent(
 Wait for completion. Read `$ANALYSIS_DIR/00-paper-profile.md` and parse its YAML frontmatter.
 
 ### 0.5 Confirm with user
+
+**Chat-facing prose:** Always reply to the user in the user's invocation language. The English/Chinese language matrix applies only to written artifacts (`analysis/`, `review.md`, `notes/`). The example block below stays English-shaped to show structure; translate the labels and prompt into the user's language at runtime.
 
 If `--yes` flag is NOT set:
 
@@ -2247,7 +2300,7 @@ Take `domain_packs_selected` from the profile. For each, build path: `$PLUGIN_RO
 
 ### 1.2 Dispatch six sub-Agents in parallel
 
-In **one message**, issue six parallel Agent tool calls. Each gets paper text + profile path + output path + template path. Two get domain packs (`method-analyst`, `experiment-critic`); one is encouraged to use them (`prior-work-historian`); three do not (`problem-framer`, `formalizer`, `figure-interpreter`).
+In **one message**, issue six parallel Agent tool calls. The dispatch table below is authoritative for what each sub-Agent receives. All six get `PAPER_TEXT`, `OUTPUT_PATH`, and `TEMPLATE_PATH`. Most also receive `PROFILE_PATH` (`figure-interpreter` does not — it works directly from `PAPER_TEXT` + `IMAGES_DIR`). Extras vary: `method-analyst` and `experiment-critic` get `DOMAIN_PACKS`; `prior-work-historian` gets `DOMAIN_PACKS` and is allowed up to 5 WebFetch calls; `figure-interpreter` gets `IMAGES_DIR`.
 
 For each sub-Agent:
 
@@ -2261,14 +2314,14 @@ Agent(
 
 Concrete dispatch table:
 
-| Sub-Agent | OUTPUT_PATH | TEMPLATE_PATH | Extra inputs |
+| Sub-Agent | Inputs | OUTPUT_PATH | TEMPLATE_PATH |
 |---|---|---|---|
-| problem-framer | `$ANALYSIS_DIR/01-problem.md` | `templates/analysis/01-problem.md` | — |
-| formalizer | `$ANALYSIS_DIR/02-formalization.md` | `templates/analysis/02-formalization.md` | — |
-| method-analyst | `$ANALYSIS_DIR/03-method-deep.md` | `templates/analysis/03-method-deep.md` | DOMAIN_PACKS |
-| experiment-critic | `$ANALYSIS_DIR/04-experiments.md` | `templates/analysis/04-experiments.md` | DOMAIN_PACKS |
-| prior-work-historian | `$ANALYSIS_DIR/05-prior-work.md` | `templates/analysis/05-prior-work.md` | DOMAIN_PACKS, WEBFETCH allowed |
-| figure-interpreter | `$ANALYSIS_DIR/06-figures.md` | `templates/analysis/06-figures.md` | IMAGES_DIR |
+| problem-framer | PAPER_TEXT, PROFILE_PATH | `$ANALYSIS_DIR/01-problem.md` | `$PLUGIN_ROOT/templates/analysis/01-problem.md` |
+| formalizer | PAPER_TEXT, PROFILE_PATH | `$ANALYSIS_DIR/02-formalization.md` | `$PLUGIN_ROOT/templates/analysis/02-formalization.md` |
+| method-analyst | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS | `$ANALYSIS_DIR/03-method-deep.md` | `$PLUGIN_ROOT/templates/analysis/03-method-deep.md` |
+| experiment-critic | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS | `$ANALYSIS_DIR/04-experiments.md` | `$PLUGIN_ROOT/templates/analysis/04-experiments.md` |
+| prior-work-historian | PAPER_TEXT, PROFILE_PATH, DOMAIN_PACKS (WebFetch allowed, cap 5) | `$ANALYSIS_DIR/05-prior-work.md` | `$PLUGIN_ROOT/templates/analysis/05-prior-work.md` |
+| figure-interpreter | PAPER_TEXT, IMAGES_DIR | `$ANALYSIS_DIR/06-figures.md` | `$PLUGIN_ROOT/templates/analysis/06-figures.md` |
 
 ### 1.3 Collect results
 
@@ -2289,33 +2342,33 @@ Record failures in a `STAGE1_FAILURES` list for the final summary.
 
 - [ ] **Step 2: Smoke-test that the skill file is well-formed**
 
-Add to `tests/unit/test-prompts-have-required-sections.bats`:
+Add to `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats` (paths relative to `paper-deepstudy/`):
 
 ```bash
 @test "study-deep SKILL.md has YAML frontmatter with name" {
-  head -5 paper-deepstudy/skills/study-deep/SKILL.md | grep -qF 'name: study-deep'
+  head -5 skills/study-deep/SKILL.md | grep -qF 'name: study-deep'
 }
 
 @test "study-deep SKILL.md mentions paper-profiler dispatch" {
-  grep -qF 'paper-profiler' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF 'paper-profiler' skills/study-deep/SKILL.md
 }
 
 @test "study-deep SKILL.md mentions all 6 Stage 1 sub-agents" {
   for s in problem-framer formalizer method-analyst experiment-critic prior-work-historian figure-interpreter; do
-    grep -qF "$s" paper-deepstudy/skills/study-deep/SKILL.md || return 1
+    grep -qF "$s" skills/study-deep/SKILL.md || return 1
   done
 }
 ```
 
 - [ ] **Step 3: Run, verify pass**
 
-Run: `bats tests/unit/test-prompts-have-required-sections.bats`
+Run: `bats paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`
 Expected: all pass.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add paper-deepstudy/skills/study-deep/SKILL.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/skills/study-deep/SKILL.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): study-deep skill stages 0 and 1"
 ```
 
@@ -2328,15 +2381,15 @@ git commit -m "feat(paper-deepstudy): study-deep skill stages 0 and 1"
 
 - [ ] **Step 1: Add failing test**
 
-Add to `tests/unit/test-prompts-have-required-sections.bats`:
+Add to `paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats`:
 
 ```bash
 @test "study-deep SKILL.md has Stage 2 section" {
-  grep -qF '## Stage 2: Review generation' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF '## Stage 2: Review generation' skills/study-deep/SKILL.md
 }
 
 @test "study-deep SKILL.md mentions reviewer-synthesizer dispatch" {
-  grep -qF 'reviewer-synthesizer' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF 'reviewer-synthesizer' skills/study-deep/SKILL.md
 }
 ```
 
@@ -2387,7 +2440,7 @@ If `$PAPER_DIR/review.md` does not exist, write `<!-- FAILED: reviewer-synthesiz
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/skills/study-deep/SKILL.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/skills/study-deep/SKILL.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): study-deep skill Stage 2"
 ```
 
@@ -2402,17 +2455,17 @@ git commit -m "feat(paper-deepstudy): study-deep skill Stage 2"
 
 ```bash
 @test "study-deep SKILL.md has Stage 3 section" {
-  grep -qF '## Stage 3: Notes generation' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF '## Stage 3: Notes generation' skills/study-deep/SKILL.md
 }
 
 @test "study-deep SKILL.md mentions all 4 Stage 3 sub-agents" {
   for s in notes-writer title-generator xhs-renderer wechat-renderer; do
-    grep -qF "$s" paper-deepstudy/skills/study-deep/SKILL.md || return 1
+    grep -qF "$s" skills/study-deep/SKILL.md || return 1
   done
 }
 
 @test "study-deep SKILL.md mentions select-figures.cjs" {
-  grep -qF 'select-figures.cjs' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF 'select-figures.cjs' skills/study-deep/SKILL.md
 }
 ```
 
@@ -2506,7 +2559,7 @@ Each of `notes/{source,titles,xhs,wechat}.md` must exist. Missing ones get `<!--
 
 ## Final summary
 
-After Stage 3 completes, print a summary to chat:
+After Stage 3 completes, print a summary to chat. The structure (sections, file list, refinement command list) stays as below, but the headings and prose should be translated into the user's invocation language; only the file paths and command names stay verbatim.
 
 ```
 ✓ paper-deepstudy complete for <slug>
@@ -2549,7 +2602,7 @@ Available refinements:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/skills/study-deep/SKILL.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/skills/study-deep/SKILL.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): study-deep skill Stage 3 and final summary"
 ```
 
@@ -2564,16 +2617,16 @@ git commit -m "feat(paper-deepstudy): study-deep skill Stage 3 and final summary
 
 ```bash
 @test "study-deep SKILL.md documents --force flag" {
-  grep -qF '--force' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF '--force' skills/study-deep/SKILL.md
 }
 
 @test "study-deep SKILL.md documents --yes flag" {
-  grep -qF '--yes' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qF '--yes' skills/study-deep/SKILL.md
 }
 
 @test "study-deep SKILL.md describes skip-existing default" {
-  grep -qiF 'skip' paper-deepstudy/skills/study-deep/SKILL.md
-  grep -qF '.bak.' paper-deepstudy/skills/study-deep/SKILL.md
+  grep -qiF 'skip' skills/study-deep/SKILL.md && \
+    grep -qF '.bak.' skills/study-deep/SKILL.md
 }
 ```
 
@@ -2584,7 +2637,7 @@ git commit -m "feat(paper-deepstudy): study-deep skill Stage 3 and final summary
 After Stage 0's intro and before Stage 0.1, insert:
 
 ```markdown
-## Idempotence and re-runs
+### Idempotence and re-runs
 
 Default behavior (no flags): for each output file, if it already exists, skip the corresponding sub-Agent dispatch. Skipped files are reported in the final summary.
 
@@ -2609,7 +2662,7 @@ If OUTPUT_PATH exists and --force is set, copy to OUTPUT_PATH.bak.NN first, then
 - [ ] **Step 6: Commit**
 
 ```bash
-git add paper-deepstudy/skills/study-deep/SKILL.md tests/unit/test-prompts-have-required-sections.bats
+git add paper-deepstudy/skills/study-deep/SKILL.md paper-deepstudy/tests/unit/test-prompts-have-required-sections.bats
 git commit -m "feat(paper-deepstudy): idempotence and --force/--yes flags in study-deep"
 ```
 
@@ -2619,21 +2672,25 @@ git commit -m "feat(paper-deepstudy): idempotence and --force/--yes flags in stu
 
 **Files:**
 - Create: `paper-deepstudy/commands/study.md`
-- Create: `tests/unit/test-commands.bats`
+- Create: `paper-deepstudy/tests/unit/test-commands.bats`
 
 - [ ] **Step 1: Failing test**
 
-`tests/unit/test-commands.bats`:
+`paper-deepstudy/tests/unit/test-commands.bats` (paths relative to `paper-deepstudy/`; `setup()` cds to plugin root):
 
 ```bash
 #!/usr/bin/env bats
 
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
+
 @test "study.md exists with frontmatter" {
-  head -1 paper-deepstudy/commands/study.md | grep -qE '^---$'
+  head -1 commands/study.md | grep -qE '^---$'
 }
 
 @test "study.md invokes the study-deep skill" {
-  grep -qF 'study-deep' paper-deepstudy/commands/study.md
+  grep -qF 'study-deep' commands/study.md
 }
 ```
 
@@ -2668,7 +2725,7 @@ Use the `study-deep` skill with the user-provided argument. Pass through `--yes`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/commands/study.md tests/unit/test-commands.bats
+git add paper-deepstudy/commands/study.md paper-deepstudy/tests/unit/test-commands.bats
 git commit -m "feat(paper-deepstudy): /paper:study command"
 ```
 
@@ -2678,18 +2735,18 @@ git commit -m "feat(paper-deepstudy): /paper:study command"
 
 **Files:**
 - Create: `paper-deepstudy/commands/rerun-stage.md`
-- Modify: `tests/unit/test-commands.bats`
+- Modify: `paper-deepstudy/tests/unit/test-commands.bats`
 
 - [ ] **Step 1: Add failing test**
 
 ```bash
 @test "rerun-stage.md has frontmatter" {
-  head -1 paper-deepstudy/commands/rerun-stage.md | grep -qE '^---$'
+  head -1 commands/rerun-stage.md | grep -qE '^---$'
 }
 
 @test "rerun-stage.md mentions all 4 stages" {
   for s in profile analysis review notes; do
-    grep -qF "$s" paper-deepstudy/commands/rerun-stage.md || return 1
+    grep -qF "$s" commands/rerun-stage.md || return 1
   done
 }
 ```
@@ -2727,7 +2784,7 @@ Implementation: invoke `study-deep` skill with `--only <stage>`.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add paper-deepstudy/commands/rerun-stage.md tests/unit/test-commands.bats
+git add paper-deepstudy/commands/rerun-stage.md paper-deepstudy/tests/unit/test-commands.bats
 git commit -m "feat(paper-deepstudy): /paper:rerun-stage command"
 ```
 
@@ -2736,9 +2793,9 @@ git commit -m "feat(paper-deepstudy): /paper:rerun-stage command"
 ### Task 24: Integration test harness (smoke)
 
 **Files:**
-- Create: `tests/integration/test-end-to-end.sh`
-- Create: `tests/fixtures/tiny-paper/meta.json`
-- Create: `tests/fixtures/tiny-paper/summary.md`
+- Create: `paper-deepstudy/tests/integration/test-end-to-end.sh`
+- Create: `paper-deepstudy/tests/fixtures/tiny-paper/meta.json`
+- Create: `paper-deepstudy/tests/fixtures/tiny-paper/summary.md`
 
 This test does not actually invoke Claude (which would require a live LLM). It:
 1. Verifies the plugin's static contract is intact (all files referenced by the skill exist).
@@ -2749,15 +2806,16 @@ Live LLM end-to-end testing is a manual step described in the README.
 
 - [ ] **Step 1: Failing test**
 
-`tests/integration/test-end-to-end.sh`:
+`paper-deepstudy/tests/integration/test-end-to-end.sh` — script lives at `paper-deepstudy/tests/integration/`, so `$(dirname "$0")/../..` resolves to the plugin root (`paper-deepstudy/`):
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Resolve to plugin root: tests/integration/ -> tests/ -> paper-deepstudy/
 cd "$(dirname "$0")/../.."
 
-ROOT=paper-deepstudy
+ROOT=.
 SKILL=$ROOT/skills/study-deep/SKILL.md
 
 fail=0
@@ -2811,10 +2869,10 @@ echo "Integration smoke test: PASSED"
 ```
 
 ```bash
-chmod +x tests/integration/test-end-to-end.sh
+chmod +x paper-deepstudy/tests/integration/test-end-to-end.sh
 ```
 
-`tests/fixtures/tiny-paper/meta.json`:
+`paper-deepstudy/tests/fixtures/tiny-paper/meta.json`:
 
 ```json
 {
@@ -2826,7 +2884,7 @@ chmod +x tests/integration/test-end-to-end.sh
 }
 ```
 
-`tests/fixtures/tiny-paper/summary.md`:
+`paper-deepstudy/tests/fixtures/tiny-paper/summary.md`:
 
 ```markdown
 # A Tiny Test Paper
@@ -2836,13 +2894,13 @@ This is the extracted text fixture for static testing. Real integration tests ag
 
 - [ ] **Step 2: Run, verify pass (since prior tasks created the prerequisites)**
 
-Run: `tests/integration/test-end-to-end.sh`
+Run: `paper-deepstudy/tests/integration/test-end-to-end.sh`
 Expected: `Integration smoke test: PASSED`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add tests/integration/test-end-to-end.sh tests/fixtures/tiny-paper
+git add paper-deepstudy/tests/integration/test-end-to-end.sh paper-deepstudy/tests/fixtures/tiny-paper
 git commit -m "test(paper-deepstudy): integration smoke harness and fixtures"
 ```
 
@@ -2855,13 +2913,15 @@ git commit -m "test(paper-deepstudy): integration smoke harness and fixtures"
 
 - [ ] **Step 1: Failing test**
 
+Append to `paper-deepstudy/tests/unit/test-commands.bats` (paths relative to `paper-deepstudy/`):
+
 ```bash
 @test "README mentions live integration steps" {
-  grep -qF 'Manual integration test' paper-deepstudy/README.md
+  grep -qF 'Manual integration test' README.md
 }
 
 @test "README lists 12 expected outputs" {
-  grep -qF '12 outputs' paper-deepstudy/README.md
+  grep -qF '12 outputs' README.md
 }
 ```
 
@@ -2883,7 +2943,8 @@ Deep paper study for ML and computational-biology papers. Layers on top of `clau
 ## Install (local dev)
 
 ```
-/plugin install /Users/chensijie/Projects/studypaper/paper-deepstudy
+# from this repo's root:
+/plugin install ./paper-deepstudy
 ```
 
 Requires `claude-paper:study` already installed.
@@ -2954,14 +3015,14 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 - [ ] **Step 4: Run, verify pass**
 
 ```bash
-bats tests/unit/test-commands.bats
-tests/integration/test-end-to-end.sh
+bats paper-deepstudy/tests/unit/test-commands.bats
+paper-deepstudy/tests/integration/test-end-to-end.sh
 ```
 
 - [ ] **Step 5: Final commit**
 
 ```bash
-git add paper-deepstudy/README.md tests/unit/test-commands.bats
+git add paper-deepstudy/README.md paper-deepstudy/tests/unit/test-commands.bats
 git commit -m "docs(paper-deepstudy): README with 12 outputs, manual integration recipe, and roadmap"
 ```
 
@@ -2970,9 +3031,9 @@ git commit -m "docs(paper-deepstudy): README with 12 outputs, manual integration
 ## Self-Review checklist (run after Plan 1 complete)
 
 - [ ] All 12 expected outputs (7 analysis + review + 4 notes) generated for at least one ML and one comp-bio paper.
-- [ ] `bats tests/unit/*.bats` passes.
-- [ ] `node tests/unit/test-select-figures.cjs` passes.
-- [ ] `tests/integration/test-end-to-end.sh` passes.
+- [ ] `bats paper-deepstudy/tests/unit/*.bats` passes (or `cd paper-deepstudy && npm run test:unit`).
+- [ ] `node paper-deepstudy/tests/unit/test-select-figures.cjs` passes.
+- [ ] `paper-deepstudy/tests/integration/test-end-to-end.sh` passes.
 - [ ] `--yes` skips Stage 0 confirmation.
 - [ ] `--force` backs up existing files to `.bak.NN`.
 - [ ] Default re-run skips existing files.

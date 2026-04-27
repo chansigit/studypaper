@@ -1,0 +1,31 @@
+#!/usr/bin/env bats
+
+setup() {
+  cd "$BATS_TEST_DIRNAME/../.."
+}
+
+@test "study.md exists with frontmatter" {
+  head -1 commands/study.md | grep -qE '^---$'
+}
+
+@test "study.md invokes the study-deep skill" {
+  grep -qF 'study-deep' commands/study.md
+}
+
+@test "rerun-stage.md has frontmatter" {
+  head -1 commands/rerun-stage.md | grep -qE '^---$'
+}
+
+@test "rerun-stage.md mentions all 4 stages" {
+  for s in profile analysis review notes; do
+    grep -qF "$s" commands/rerun-stage.md || return 1
+  done
+}
+
+@test "README mentions live integration steps" {
+  grep -qF 'Manual integration test' README.md
+}
+
+@test "README lists 12 expected outputs" {
+  grep -qF '12 outputs' README.md
+}
