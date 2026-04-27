@@ -159,3 +159,16 @@ check_prompt() {
 @test "review-round SKILL.md mentions --paper flag" {
   grep -qF -e '--paper' skills/review-round/SKILL.md
 }
+
+@test "refine-notes SKILL.md has YAML frontmatter with name" {
+  head -5 skills/refine-notes/SKILL.md | grep -qF 'name: refine-notes'
+}
+
+@test "refine-notes SKILL.md mentions xhs-renderer and wechat-renderer dispatch" {
+  grep -qF 'xhs-renderer' skills/refine-notes/SKILL.md
+  grep -qF 'wechat-renderer' skills/refine-notes/SKILL.md
+}
+
+@test "refine-notes SKILL.md describes .bak. backup convention" {
+  grep -qF '.bak.' skills/refine-notes/SKILL.md
+}
