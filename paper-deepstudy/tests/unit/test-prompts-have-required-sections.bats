@@ -126,3 +126,8 @@ check_prompt() {
   grep -qiF 'skip' skills/study-deep/SKILL.md && \
     grep -qF '.bak.' skills/study-deep/SKILL.md
 }
+
+@test "defense-agent.md has required sections" {
+  run check_prompt prompts/defense-agent.md
+  [ "$status" -eq 0 ]
+}
