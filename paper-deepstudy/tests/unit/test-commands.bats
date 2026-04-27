@@ -130,3 +130,7 @@ setup() {
     grep -qiF "$d" commands/reproduce-check.md || { echo "missing dimension: $d"; return 1; }
   done
 }
+
+@test "README documents /paper:reproduce-check" {
+  grep -qF '/paper:reproduce-check' README.md
+}

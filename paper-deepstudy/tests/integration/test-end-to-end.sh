@@ -19,16 +19,16 @@ for p in paper-profiler problem-framer formalizer method-analyst experiment-crit
   fi
 done
 
-# 1a. Plan 2 and Plan 3b prompts exist (defense-agent, judge-agent, review-writer, deep-dive-agent, compare-agent)
-for p in defense-agent judge-agent review-writer deep-dive-agent compare-agent; do
+# 1a. Plan 2, Plan 3b, and Plan 3c prompts exist
+for p in defense-agent judge-agent review-writer deep-dive-agent compare-agent reproduce-checker; do
   if [ ! -f "$ROOT/prompts/$p.md" ]; then
-    echo "FAIL: prompt file missing: $ROOT/prompts/$p.md"; fail=1
+    echo "FAIL: Plan 2/3b/3c prompt file missing: $ROOT/prompts/$p.md"; fail=1
   fi
 done
 
 
 # 2. All template files referenced by the skill exist
-for t in templates/analysis/00-paper-profile.md templates/analysis/01-problem.md templates/analysis/02-formalization.md templates/analysis/03-method-deep.md templates/analysis/04-experiments.md templates/analysis/05-prior-work.md templates/analysis/06-figures.md templates/review.md templates/review-round.md templates/deep-dive.md templates/compare.md templates/notes/source.md templates/notes/titles.md templates/notes/xhs.md templates/notes/wechat.md; do
+for t in templates/analysis/00-paper-profile.md templates/analysis/01-problem.md templates/analysis/02-formalization.md templates/analysis/03-method-deep.md templates/analysis/04-experiments.md templates/analysis/05-prior-work.md templates/analysis/06-figures.md templates/review.md templates/review-round.md templates/deep-dive.md templates/compare.md templates/reproduce-check.md templates/notes/source.md templates/notes/titles.md templates/notes/xhs.md templates/notes/wechat.md; do
   if [ ! -f "$ROOT/$t" ]; then
     echo "FAIL: template missing: $ROOT/$t"; fail=1
   fi
@@ -64,7 +64,7 @@ for d in ml-pure single-cell protein-structure protein-function genomics drug-di
 done
 
 # 6. Commands exist
-for c in study rerun-stage review-round refine-notes retitle reselect-figures deep-dive compare add-prior-work; do
+for c in study rerun-stage review-round refine-notes retitle reselect-figures deep-dive compare add-prior-work reproduce-check; do
   if [ ! -f "$ROOT/commands/$c.md" ]; then
     echo "FAIL: command missing: $c.md"; fail=1
   fi
@@ -78,8 +78,8 @@ if ! grep -qF 'defense-agent' "$ROOT/skills/review-round/SKILL.md" 2>/dev/null; 
   echo "FAIL: review-round SKILL.md does not mention defense-agent dispatch"; fail=1
 fi
 
-# 8. Plan 3a + 3b skills exist
-for s in refine-notes retitle reselect-figures deep-dive compare add-prior-work; do
+# 8. Plan 3a + 3b + 3c skills exist
+for s in refine-notes retitle reselect-figures deep-dive compare add-prior-work reproduce-check; do
   if [ ! -f "$ROOT/skills/$s/SKILL.md" ]; then
     echo "FAIL: skill $s missing"; fail=1
   fi
