@@ -292,7 +292,7 @@ node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 1
 node $PLUGIN_ROOT/scripts/select-figures.cjs $ANALYSIS_DIR/06-figures.md 3
 ```
 
-Capture each as JSON; transform to absolute paths under `$IMAGES_DIR`. Set:
+Capture each as JSON; keep them as **paper-folder-relative paths** (e.g. `images/page_1_img_1.jpeg`, NOT `$IMAGES_DIR/page_1_img_1.jpeg`). The renderer prompts then embed those paths directly so committed/shared notes don't leak the author's home directory. Set:
 - `XHS_FIGURES`: 1 path
 - `WECHAT_FIGURES`: up to 3 paths
 

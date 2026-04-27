@@ -388,3 +388,16 @@ check_prompt() {
 @test "review-writer.md mandates runtime Last-updated date" {
   grep -qF 'runtime ISO8601' prompts/review-writer.md
 }
+
+@test "study-deep SKILL.md uses paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' skills/study-deep/SKILL.md
+  ! grep -qF 'transform to absolute paths' skills/study-deep/SKILL.md
+}
+
+@test "xhs-renderer.md mandates paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' prompts/xhs-renderer.md
+}
+
+@test "wechat-renderer.md mandates paper-folder-relative figure paths" {
+  grep -qF 'paper-folder-relative' prompts/wechat-renderer.md
+}

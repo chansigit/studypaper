@@ -3,9 +3,9 @@ title: STRING 12.5：用微调语言模型为蛋白质网络添加调控方向�
 length_target: 3000
 length_max: 4000
 figures:
-  - /Users/chensijie/claude-papers/papers/string-database-2025/images/page_1_img_1.jpeg
-  - /Users/chensijie/claude-papers/papers/string-database-2025/images/page_4_img_1.jpeg
-  - /Users/chensijie/claude-papers/papers/string-database-2025/images/page_6_img_1.jpeg
+  - images/page_1_img_1.jpeg
+  - images/page_4_img_1.jpeg
+  - images/page_6_img_1.jpeg
 ---
 
 # STRING 12.5：用微调语言模型为蛋白质网络添加调控方向和符号
@@ -24,7 +24,7 @@ figures:
 
 这些自动提取的关系随后与来自策展数据库（SIGNOR、KEGG、Reactome）的高置信度关系进行整合。关键的创新在于置信度评分机制，它收集来自文本挖掘、策展数据库、共表达和实验四个独立证据通道的信息，将每个通道的原始度量转换为概率分数，然后使用基于概率独立性假设的"嘈杂或"公式组合这些分数，最终生成0-1之间的调控置信度。这种方法既保留了高质量的手工标注关系，又利用了大规模语言模型的覆盖优势。
 
-![架构示意图](file:///Users/chensijie/claude-papers/papers/string-database-2025/images/page_1_img_1.jpeg)
+![架构示意图](images/page_1_img_1.jpeg)
 
 与此同时，STRING 12.5改进了富集分析的统计方法。传统的方法是对所有数千个基因本体术语进行均匀的多重假设检验，这对小规模查询集会导致统计检验力不足。新方法首先计算给定查询大小和背景下哪些术语大小在理论上可能显示富集，只测试这个"可行窗口"内的术语，然后应用Benjamini-Hochberg FDR修正，再通过Jaccard相似度过滤移除高度重叠的冗余术语，最后按"信号"度量（富集比与-log(FDR)的调和平均值）重新排序结果。
 
@@ -34,7 +34,7 @@ figures:
 
 整个工作流包含四个主要步骤。第一步是大规模调控关系提取，使用微调RoBERTa逐句处理所有12亿个句子对。对每个蛋白质对，模型输出多标签预测，因为一个句子可以同时描述多种调控关系（例如某个蛋白既参与磷酸化也参与正调控）。这一步自动识别和分类了八种调控关系类型，从而保留了关系的细粒度信息。
 
-![主要方法流程图](file:///Users/chensijie/claude-papers/papers/string-database-2025/images/page_4_img_1.jpeg)
+![主要方法流程图](images/page_4_img_1.jpeg)
 
 第二步是多通道证据聚合和置信度评分。对于每条提取的交互，系统从四个独立通道收集信息。设每个通道$i$的原始证据为$e_i$，经过校准后得到概率$p_i \in [0,1]$，综合置信度为：
 
@@ -54,7 +54,7 @@ $$P = 1 - \prod_{i} (1 - p_i)$$
 
 关于跨物种蛋白质嵌入对齐，作者已生成了可供所有真核生物蛋白质下载的预计算嵌入。论文声称这增强了跨物种蛋白质预测，特别在亚细胞定位和功能预测任务中表现更好，虽然具体的定量性能指标未在论文中详细公布。
 
-![数据流和结果展示](file:///Users/chensijie/claude-papers/papers/string-database-2025/images/page_6_img_1.jpeg)
+![数据流和结果展示](images/page_6_img_1.jpeg)
 
 ## 局限和未来
 

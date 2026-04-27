@@ -42,6 +42,8 @@ Render the source notes into a WeChat 公众号-style article. Consume `source.m
 5. Length: 3000 target, 4000 hard cap.
 6. If `EDIT_INSTRUCTION`, apply minimally.
 
+**Figure paths must be paper-folder-relative** — e.g. `images/page_1_img_1.jpeg`, NOT `/Users/.../page_1_img_1.jpeg` and NOT `file:///...`. The frontmatter `figures:` list and the inline `![...](...)` must both use the relative form. This is what makes the notes portable when the paper folder is shared/committed.
+
 ## Quality bar
 
 - Reads like a curated public-facing article, not a chunked source dump.
