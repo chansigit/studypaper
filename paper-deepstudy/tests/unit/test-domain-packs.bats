@@ -35,3 +35,34 @@ check_pack() {
   run check_pack domain-packs/single-cell.md
   [ "$status" -eq 0 ]
 }
+
+@test "protein-structure.md has required sections" {
+  run check_pack domain-packs/protein-structure.md
+  [ "$status" -eq 0 ]
+}
+
+@test "protein-function.md has required sections" {
+  run check_pack domain-packs/protein-function.md
+  [ "$status" -eq 0 ]
+}
+
+@test "genomics.md has required sections" {
+  run check_pack domain-packs/genomics.md
+  [ "$status" -eq 0 ]
+}
+
+@test "drug-discovery.md has required sections" {
+  run check_pack domain-packs/drug-discovery.md
+  [ "$status" -eq 0 ]
+}
+
+@test "medical-imaging.md has required sections" {
+  run check_pack domain-packs/medical-imaging.md
+  [ "$status" -eq 0 ]
+}
+
+@test "paper-profiler prompt mentions all 7 domain packs in AVAILABLE_PACKS examples" {
+  for pack in ml-pure single-cell protein-structure protein-function genomics drug-discovery medical-imaging; do
+    grep -qF "$pack" prompts/paper-profiler.md || { echo "missing pack reference: $pack"; return 1; }
+  done
+}

@@ -13,7 +13,7 @@ You will be told two file paths:
 You will also be given:
 - `OUTPUT_PATH`: where to write `00-paper-profile.md`.
 - `TEMPLATE_PATH`: path to the profile template; copy its frontmatter shape exactly.
-- `AVAILABLE_PACKS`: list of available domain pack slugs (e.g. `ml-pure`, `single-cell`, `protein-structure`, ...).
+- `AVAILABLE_PACKS`: list of available domain pack slugs. Currently shipping: `ml-pure`, `single-cell`, `protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`.
 
 ## Output
 

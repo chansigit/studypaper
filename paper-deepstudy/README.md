@@ -86,4 +86,4 @@ The included `tests/integration/test-end-to-end.sh` is a static smoke test only.
 - **Plan 1:** auto-run pipeline, `ml-pure` and `single-cell` packs.
 - **Plan 2 (this branch):** `/paper:review-round` adversarial loop. ✓
 - **Plan 3:** seven refinement commands (`refine-notes`, `deep-dive`, `compare`, `reselect-figures`, `retitle`, `add-prior-work`, `reproduce-check`).
-- **Plan 4:** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`).
+- **Plan 4 (this branch):** five more domain packs (`protein-structure`, `protein-function`, `genomics`, `drug-discovery`, `medical-imaging`). ✓
