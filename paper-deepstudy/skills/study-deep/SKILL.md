@@ -60,7 +60,7 @@ Default behavior (no flags): for each output file, if it already exists, skip th
 
 `--yes`: skip the Stage 0 confirmation prompt. Use the auto-detected profile.
 
-`--only <stage>` (used by `/paper:rerun-<stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
+`--only <stage>` (used by `/paper:rerun-stage <stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
 
 ### Per-dispatch idempotence rule
 
@@ -359,7 +359,7 @@ Outputs (under $PAPER_DIR):
   notes/xhs.md                 <✓ or FAILED>
   notes/wechat.md              <✓ or FAILED>
 
-If anything failed, retry that stage with /paper:rerun-<stage>.
+If anything failed, retry that stage with /paper:rerun-stage <stage>.
 
 Available refinements:
   /paper:review-round       — adversarial review

@@ -374,3 +374,8 @@ check_prompt() {
 @test "study-deep SKILL.md allowed-tools includes Skill tool" {
   grep -qE '^allowed-tools:.*\bSkill\b' skills/study-deep/SKILL.md
 }
+
+@test "study-deep SKILL.md uses correct rerun-stage command name" {
+  ! grep -qE '/paper:rerun-<stage>' skills/study-deep/SKILL.md
+  grep -qE '/paper:rerun-stage <stage>' skills/study-deep/SKILL.md
+}
