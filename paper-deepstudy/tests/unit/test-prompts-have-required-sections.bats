@@ -401,3 +401,7 @@ check_prompt() {
 @test "wechat-renderer.md mandates paper-folder-relative figure paths" {
   grep -qF 'paper-folder-relative' prompts/wechat-renderer.md
 }
+
+@test "study.md argument-hint documents --paper flag" {
+  grep -qF -- '--paper' commands/study.md
+}
