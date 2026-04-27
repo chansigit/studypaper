@@ -36,6 +36,7 @@ Set:
 - `PAPER_PDF=$PAPER_DIR/paper.pdf`
 - `DEEP_DIVES_DIR=$PAPER_DIR/deep-dives` (mkdir if absent)
 - `PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}`
+- `LANG=<english if user invocation language is English; chinese if Chinese; default english>` — the orchestrator detects the user's invocation language for the current `/paper:deep-dive` call and sets `LANG` accordingly. Falls back to `english` if uncertain.
 
 ### 1.2 Capture the topic
 
@@ -79,6 +80,7 @@ Agent(
     OUTPUT_PATH=$OUTPUT_PATH
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/deep-dive.md
     WEBFETCH allowed (cap 3 fetches)
+    LANG=$LANG
 )
 ```
 
@@ -105,6 +107,6 @@ Run /paper:deep-dive again with another topic to continue the deep-dive series.
 
 ## Notes
 
-- **Translation:** All chat-facing prose (the final summary, error messages) is rendered in the user's invocation language. The deep-dive output file itself is English per spec §8.
+- **Translation:** All chat-facing prose (the final summary, error messages) is rendered in the user's invocation language. Per spec §8, the deep-dive output file itself follows the user's invocation language too — the orchestrator sets `LANG` accordingly when dispatching the agent. Section headings stay English so downstream tooling can grep them.
 - **Idempotence:** Each invocation produces a new file. Same topic re-dived → adds `-2`, `-3`, ... suffix. The orchestrator does NOT overwrite existing deep-dives.
 - **Failure mode:** Agent produces empty output → orchestrator surfaces warning, leaves no file behind.

@@ -13,6 +13,7 @@ You produce a focused deep-dive on a single user-specified topic in the paper. Y
 - `OUTPUT_PATH`: where to write `deep-dives/<topic-slug>.md`.
 - `TEMPLATE_PATH`: path to `templates/deep-dive.md`.
 - `WEBFETCH`: optional. You may use WebFetch to look up cited works (cap 3 fetches total).
+- `LANG`: `english` (default) or `chinese`. Set by the orchestrator based on the user's invocation language. Affects only the prose output, not the section structure.
 
 ## Output
 
@@ -42,4 +43,4 @@ A markdown file at `OUTPUT_PATH` following `TEMPLATE_PATH`'s structure exactly:
 - Length: 600-1500 words total.
 - Every load-bearing claim cites a specific paper section, equation, figure, or analysis-file passage.
 - Math / pseudocode is implementable, not handwavy.
-- Output language: English.
+- Output language: per `LANG` input. If `LANG=chinese`, all prose is Chinese; section headings (`## What is this topic`, etc.) stay English so downstream tooling can grep them. If `LANG=english` (default), the entire file is English.

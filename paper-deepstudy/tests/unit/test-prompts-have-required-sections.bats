@@ -270,8 +270,8 @@ check_prompt() {
   grep -qF 'compare-agent' skills/compare/SKILL.md
 }
 
-@test "compare SKILL.md handles three input types for other-paper" {
-  for kind in 'slug' 'PDF path' 'URL'; do
+@test "compare SKILL.md handles all four input types for other-paper" {
+  for kind in 'slug' 'paper folder path' 'PDF path' 'URL'; do
     grep -qF "$kind" skills/compare/SKILL.md || { echo "missing: $kind"; return 1; }
   done
 }
