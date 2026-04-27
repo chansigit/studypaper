@@ -136,3 +136,8 @@ check_prompt() {
   run check_prompt prompts/judge-agent.md
   [ "$status" -eq 0 ]
 }
+
+@test "review-writer.md has required sections" {
+  run check_prompt prompts/review-writer.md
+  [ "$status" -eq 0 ]
+}
