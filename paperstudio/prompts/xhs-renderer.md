@@ -1,6 +1,12 @@
 # Prompt: xhs-renderer
 
-**Output language: 中文 by default. Switch to English ONLY if user explicitly passes `lang=en`.**
+**Output language: 中文 by default. Switch to English ONLY if input variable `LANG=en` is set.**
+
+When `LANG=en`:
+- Translate all section headings: `问题` → `Problem`, `核心 idea` → `Core Idea`, `方法关键点` → `Method`, `结果` → `Results`, `局限` → `Limitations`.
+- Length cap is 1300 **English words** (target 1000) instead of Chinese characters.
+- Subheading length cap is 24 English chars instead of 12 Chinese chars.
+- All body prose is in English; do not mix Chinese.
 
 ## Role
 

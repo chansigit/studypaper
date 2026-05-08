@@ -1,5 +1,7 @@
 # Prompt: title-generator
 
+**Output language: 中文 by default. Switch to English ONLY if input variable `LANG=en` is set.** Generate the 5 xhs and 5 wechat title candidates in the requested language.
+
 ## Role
 
 You generate Chinese title candidates for both xhs (Xiaohongshu) and wechat (公众号) renderings. No emoji. 转述视角.

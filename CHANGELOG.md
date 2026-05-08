@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-05-08
+
+### Added
+
+- **`--lang en` flag** plumbed end-to-end. `/paperstudio:study <input> --lang en` renders Stage 3 outputs (`notes/source.md`, `titles.md`, `xhs.md`, `wechat.md`) in English with translated section headings and English-word length counting. All 4 Stage 3 sub-Agents (notes-writer, title-generator, xhs-renderer, wechat-renderer) now receive `LANG` as a prompt input. Default and unset → 中文.
+- **`CLAUDE_PAPERS_ROOT` env var** plumbed through `study-deep`. Paper folders default to `~/claude-papers/papers/`; override by exporting `CLAUDE_PAPERS_ROOT=/some/other/dir`. The skill resolves the root once at start as `PAPERS_ROOT="${CLAUDE_PAPERS_ROOT:-$HOME/claude-papers/papers}"` and uses it for both `--paper <slug>` resolution and the `ls -td` auto-detect path.
+- **arXiv search picker now interactive.** The Stage 0.2 placeholder is replaced with a concrete pick-1-of-5 flow. With `--yes`, auto-pick `[1]`. User may type `cancel` to abort; an invalid number aborts with an error message. Bilingual prompt phrasing.
+
 ## [0.4.1] — 2026-05-08
 
 ### Added
@@ -93,7 +101,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/chansigit/studypaper/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/chansigit/studypaper/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/chansigit/studypaper/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/chansigit/studypaper/compare/v0.2.1...v0.3.0

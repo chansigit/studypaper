@@ -10,6 +10,18 @@ allowed-tools: Bash, Read, Write, Edit, Agent, Skill
 Invoke with a PDF path or arXiv URL. Optional flags:
 - `--yes`: skip Stage 0 confirmation prompt (auto-accept profile).
 - `--force`: re-run all stages, backing up existing outputs.
+- `--lang en`: render Stage 3 outputs (`notes/source.md`, `notes/titles.md`, `notes/xhs.md`, `notes/wechat.md`) in English. Default is 中文.
+
+## Paper root
+
+Outputs land under a configurable paper root, defaulting to `~/claude-papers/papers/`. Override by exporting `CLAUDE_PAPERS_ROOT=/some/other/dir` in the user's shell environment (or `.envrc` etc.). This skill resolves the root once at start:
+
+```bash
+PAPERS_ROOT="${CLAUDE_PAPERS_ROOT:-$HOME/claude-papers/papers}"
+mkdir -p "$PAPERS_ROOT"
+```
+
+All subsequent path expressions in this document use `${PAPERS_ROOT}` to mean that root. The shorthand `~/claude-papers/papers/` shown in user-facing messages is the default-case display string — when `CLAUDE_PAPERS_ROOT` is set, substitute the override in any path you print or write.
 
 ## Flag dispatch
 
@@ -17,9 +29,9 @@ This skill is invoked by `/paperstudio:study <pdf-or-url> [flags]` and `/paperst
 
 ### `--paper <slug>`
 
-If set, skip Stage 0.2 (claude-paper:study invocation) and skip Stage 0.3 path resolution. Set `PAPER_DIR=~/claude-papers/papers/<slug>` directly. Verify `$PAPER_DIR/meta.json` exists; abort if not.
+If set, skip Stage 0.2 (claude-paper:study invocation) and skip Stage 0.3 path resolution. Set `PAPER_DIR=${PAPERS_ROOT}/<slug>` directly. Verify `$PAPER_DIR/meta.json` exists; abort if not.
 
-If `--paper` is **not** set, the orchestrator either runs Stage 0.2 (for `/paperstudio:study`) or auto-detects the most recent paper folder via `ls -td ~/claude-papers/papers/*/ | head -1` (for `/paperstudio:rerun-stage`).
+If `--paper` is **not** set, the orchestrator either runs Stage 0.2 (for `/paperstudio:study`) or auto-detects the most recent paper folder via `ls -td ${PAPERS_ROOT}/*/ | head -1` (for `/paperstudio:rerun-stage`).
 
 ### `--only <stage>` (used by `/paperstudio:rerun-stage`)
 
@@ -102,14 +114,38 @@ else
   # Title search via arXiv
   echo "No URL or path detected — searching arXiv for: \"$RAW\""
   results=$("${CLAUDE_PLUGIN_ROOT}/scripts/search-arxiv.sh" "$RAW" 5) || {
-    echo "No arXiv results. Pass a PDF path / URL instead, or refine the query."
+    echo "No arXiv results, or arXiv API unreachable. Pass a PDF path / URL instead, or refine the query."
     exit 1
   }
   # Display results (TSV: id, year, authors, title, pdf_url) numbered 1..5.
+  echo "Top arXiv results:"
   echo "$results" | awk -F'\t' '{ printf "  [%d] %s (%s) — %s\n      %s\n", NR, $4, $2, $3, $5 }'
-  # Ask user to pick. If --yes flag is set, default to [1].
-  # On user pick N, set RESOLVED to the corresponding pdf_url.
+
+  if [[ "$YES_FLAG" == "1" ]]; then
+    pick=1
+    echo "(--yes set; auto-picking [1].)"
+  else
+    # Prompt the user for a number 1..5 (or 'cancel'). The orchestrator does
+    # this via chat — do NOT block on `read` from stdin; ask in chat and wait
+    # for the user's reply. The user may also paste a different URL or path,
+    # in which case treat the reply as a new $RAW and re-enter Stage 0.2.
+    #
+    # Phrase the prompt in the user's invocation language (中/英). For example:
+    #   English: "Pick a result [1-5], or 'cancel': "
+    #   中文:    "请选择 [1-5],或输入 'cancel' 取消:"
+    pick=<user choice>
+  fi
+
+  if [[ "$pick" == "cancel" ]]; then
+    echo "Cancelled."
+    exit 0
+  fi
   RESOLVED=$(echo "$results" | awk -F'\t' -v n="$pick" 'NR==n {print $5}')
+  if [[ -z "$RESOLVED" ]]; then
+    echo "Invalid selection: $pick. Aborting."
+    exit 1
+  fi
+  echo "Selected: $RESOLVED"
 fi
 ```
 
@@ -124,7 +160,7 @@ Skill(skill: "claude-paper:study", args: "$RESOLVED")
 After the Skill returns, locate the new paper folder. The most reliable way is to take the most recently modified subdirectory:
 
 ```bash
-PAPER_DIR=$(ls -td ~/claude-papers/papers/*/ 2>/dev/null | head -1 | sed 's:/$::')
+PAPER_DIR=$(ls -td ${PAPERS_ROOT}/*/ 2>/dev/null | head -1 | sed 's:/$::')
 ```
 
 Verify required outputs exist:
@@ -141,7 +177,7 @@ Read `$PAPER_DIR/meta.json` and confirm its `slug` field matches the basename of
 
 Set these environment-style variables (use them in subsequent dispatches):
 
-- `PAPER_DIR=~/claude-papers/papers/<slug>`
+- `PAPER_DIR=${PAPERS_ROOT}/<slug>`
 - `META_JSON=$PAPER_DIR/meta.json`
 - `PAPER_PDF=$PAPER_DIR/paper.pdf`
 - `PAPER_TEXT=$PAPER_DIR/paper.txt` (extracted from `paper.pdf` — see Stage 0.3.1 below)
@@ -338,6 +374,8 @@ Otherwise, proceed.
 
 Stage 3 has two sequential sub-stages then two parallel renderers.
 
+**Language flag**: parse `--lang` from the user's invocation. Set `LANG_FLAG=zh` (default) or `LANG_FLAG=en`. All four Stage 3 sub-Agents (notes-writer, title-generator, xhs-renderer, wechat-renderer) receive `LANG=$LANG_FLAG` as a prompt input. Their prompts already contain the directive: `Output language: 中文 by default. Switch to English ONLY if user explicitly passes lang=en.`
+
 ### 3.1 Dispatch notes-writer (sequential, must finish first)
 
 **Skipped if `--only` is set and this stage is not the named stage.** See `## Flag dispatch` for full routing.
@@ -351,6 +389,7 @@ Agent(
     OUTPUT_PATH=$PAPER_DIR/notes/source.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/source.md
     PLUGIN_VERSION=$PLUGIN_VERSION
+    LANG=$LANG_FLAG
 )
 ```
 
@@ -377,6 +416,7 @@ Agent(
     OUTPUT_PATH=$PAPER_DIR/notes/titles.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/titles.md
     PLUGIN_VERSION=$PLUGIN_VERSION
+    LANG=$LANG_FLAG
 )
 ```
 
@@ -420,6 +460,7 @@ Agent(  // xhs
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/xhs.md
     SELECTED_FIGURES=<XHS_FIGURES>
     PLUGIN_VERSION=$PLUGIN_VERSION
+    LANG=$LANG_FLAG
 )
 
 Agent(  // wechat
@@ -432,6 +473,7 @@ Agent(  // wechat
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/notes/wechat.md
     SELECTED_FIGURES=<WECHAT_FIGURES>
     PLUGIN_VERSION=$PLUGIN_VERSION
+    LANG=$LANG_FLAG
 )
 ```
 

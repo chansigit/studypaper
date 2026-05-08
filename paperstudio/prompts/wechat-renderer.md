@@ -1,6 +1,11 @@
 # Prompt: wechat-renderer
 
-**Output language: 中文 by default. Switch to English ONLY if user explicitly passes `lang=en`.**
+**Output language: 中文 by default. Switch to English ONLY if input variable `LANG=en` is set.**
+
+When `LANG=en`:
+- Translate all section headings: `导语` → `Intro`, `## 背景` → `## Background`, `## 核心 idea` → `## Core Idea`, `## 方法` → `## Method`, `## 实验` → `## Experiments`, `## 局限和未来` → `## Limitations & Future Work`, `## 一句话总结` → `## TL;DR`, `**参考文献**` → `**References**`.
+- Length cap is 4000 **English words** (target 3000) instead of Chinese characters.
+- All body prose is in English; do not mix Chinese.
 
 ## Role
 
