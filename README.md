@@ -4,9 +4,9 @@
 
 <p>
   <a href="https://github.com/chansigit/studypaper/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-F59E0B.svg?style=flat-square"></a>
-  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.5.0-7C3AED?style=flat-square">
+  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.5.1-7C3AED?style=flat-square">
   <!-- maintainer: rebuild badge by running paperstudio/scripts/count-tests.sh --badge-format -->
-  <img alt="Tests passing" src="https://img.shields.io/badge/tests-229%20passing-22C55E?style=flat-square">
+  <img alt="Tests passing" src="https://img.shields.io/badge/tests-246%20passing-22C55E?style=flat-square">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-plugin-A78BFA?style=flat-square&logo=anthropic&logoColor=white">
   <img alt="Domain packs" src="https://img.shields.io/badge/domain%20packs-7-22D3EE?style=flat-square">
   <a href="https://github.com/chansigit/studypaper/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/chansigit/studypaper?style=flat-square&color=FBBF24"></a>
@@ -33,7 +33,7 @@ In any [Claude Code](https://claude.com/claude-code) session (CLI / IDE / Web), 
 
 <div align="center">
 
-[English](#english-) · [中文](#中文-) · [Quick start](#quick-start) · [Examples](examples/) · [Changelog](CHANGELOG.md)
+[English](#english-) · [中文](#中文-) · [Design](#design--prompt-as-code) · [Quick start](#quick-start) · [Examples](examples/) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -104,6 +104,103 @@ In Claude Code (CLI / IDE / Web):
 - `pdftotext` (from `poppler-utils`) on `PATH` for full-text extraction. *Optional* — without it, the orchestrator falls back to passing the PDF directly to sub-agents.
   - macOS: `brew install poppler`
   - Debian/Ubuntu: `sudo apt install poppler-utils`
+
+### Design · prompt-as-code <a id="design--prompt-as-code"></a>
+
+`paperstudio` is **not a typical software project** — it is an LLM orchestration system written almost entirely in Markdown. The "code" is constraints, templates, and dispatch instructions that the model interprets at runtime. Understanding it requires switching frames: **Markdown is the program; the model is the runtime**.
+
+**Five layers, top to bottom:**
+
+```text
+[1] commands/      ×10   Slash-command entry points. Just argument hints +
+                         "go run that skill". No business logic.
+[2] skills/        ×9    The orchestrators ("directors"). Stage ordering, flag
+                         parsing, idempotence rules, who-dispatches-whom.
+                         This is where the project's control flow lives.
+[3] prompts/       ×18   Sub-agent scripts ("actors"). Each one is the full
+                         prompt for a single specialized sub-agent (paper-profiler,
+                         method-analyst, reviewer-synthesizer, …). They never
+                         talk to each other directly — they exchange data via
+                         files on disk that the skill layer routes.
+[4] templates/     ×16   Output skeletons with <runtime-timestamp>,
+                         <fill-this> placeholders. Sub-agents copy + fill.
+                         Job: enforce uniform structure (required H2 sections,
+                         frontmatter keys) so downstream parsing is reliable.
+[5] scripts/             Deterministic bits (cjs + sh): things the model
+                         shouldn't do (URL normalization, schema validation,
+                         JSONL log writing, figure ranking, slugification).
+```
+
+**Two filesystem coordinate systems** — keep them straight:
+
+| | **Plugin code** (read-only, in Git) | **User data** (read/write, not in Git) |
+|---|---|---|
+| Location | `~/.claude/plugins/cache/studypaper/paperstudio/<ver>/` | `$CLAUDE_PAPERS_ROOT` (default `~/claude-papers/papers/<slug>/`) |
+| Owns | the prompts, templates, scripts | the paper, all generated artifacts, dispatch log |
+| Stable | yes (versioned) | no (one folder per paper studied) |
+
+**Four cross-cutting abstractions you'll see everywhere:**
+
+1. **Provenance.** Every generated file's line 1 is `<!-- generated: <ts> by <agent> (paperstudio v<ver>) -->`. Audit-by-grep: any artifact tells you who, when, with which version. Enforced by `validate-artifact.sh`.
+2. **Idempotence.** If an output already exists, the dispatching skill skips that sub-agent (no token re-burn). `--force` backs up to `<file>.bak.NN` before overwrite. `--only <stage>` re-runs just one stage. The whole pipeline is safe to interrupt and resume.
+3. **Dispatch log.** `<paper>/.deepstudy/run.jsonl` — one JSONL line per sub-agent dispatch, with status + timestamp + plugin version. The only runtime observability signal. Local only; opt out with `PAPER_DEEPSTUDY_NO_RUN_LOG=1`.
+4. **Domain packs.** `domain-packs/{single-cell,protein-structure,ml-pure,…}.md` are not docs — they are knowledge-injection text. The `paper-profiler` picks 1–N relevant packs at Stage 0; later sub-agents prepend the chosen pack contents to their own prompts. Multi-domain adaptation by *concatenation*, not by maintaining per-domain prompt forks.
+
+**Walking through one `/paperstudio:study` call:**
+
+```text
+user types  /paperstudio:study https://arxiv.org/abs/1706.03762
+                  │
+                  ▼
+[command]  commands/study.md  ──── dispatches ───▶  Skill(study-deep)
+                  │
+                  ▼
+[skill]    skills/study-deep/SKILL.md  (the orchestrator wakes up)
+            ├── 0.1  verify-prereqs.sh
+            ├── 0.2  normalize URL → claude-paper:study downloads PDF
+            ├── 0.3  resolve paper folder, set $PAPER_DIR
+            ├── 0.4  Agent(paper-profiler)  → analysis/00-paper-profile.md
+            │
+            ├── Stage 1 (6 parallel Agent calls, one prompt each):
+            │     problem-framer / formalizer / method-analyst /
+            │     experiment-critic / prior-work-historian / figure-interpreter
+            │     → analysis/01–06
+            │
+            ├── Stage 2: Agent(reviewer-synthesizer) → review.md
+            │
+            └── Stage 3:
+                  Agent(notes-writer)     → notes/source.md
+                  Agent(title-generator)  → notes/titles.md
+                  select-figures.cjs      (deterministic figure pick)
+                  Agent(xhs-renderer) ║ Agent(wechat-renderer)  parallel
+                  → notes/xhs.md, notes/wechat.md
+```
+
+After every Agent call: `log_dispatch <agent> <output> ok` appends a JSONL line. After every Stage: idempotence rule decides skip-or-overwrite.
+
+**Why this architecture is worth it:**
+
+- Iterating on model behavior = editing Markdown, not redeploying code.
+- Source and docs are the same file — onboarding is reading the prompts.
+- Layers have crisp responsibilities → small bug-fix radius.
+
+**What you give up:**
+
+- No stack traces. Debugging = reading `.deepstudy/run.jsonl` + diffing produced artifacts.
+- No static guarantees. Correctness = constraints in prompts + schema validation + golden-snapshot behavior tests (`tests/behavior/`). The discipline of catching drift falls on the test suite.
+- A prompt change can silently shift output style across the whole pipeline. The 17-assertion golden-snapshot test is the safety net for this.
+
+**Where to extend:**
+
+| You want to add… | Touch this |
+|---|---|
+| A new slash command | `commands/<name>.md` + `skills/<name>/SKILL.md` |
+| A new sub-agent role | `prompts/<role>.md` + dispatch it from some `SKILL.md` |
+| A new domain | `domain-packs/<x>.md` + add detection rule to `paper-profiler.md` |
+| A new artifact type | `templates/<x>.md` + new schema arm in `validate-artifact.sh` |
+| A new paper-host URL | regex case in `scripts/normalize-paper-url.sh` |
+
+If you only remember one thing: **constraints + templates + schema validation + behavior tests are how this project tames an otherwise unpredictable runtime (the model)**. Take any one of those four away and the whole thing collapses into "creative drift".
 
 ### Quick start
 
@@ -256,6 +353,100 @@ notes/
 - `pdftotext`(来自 `poppler-utils`)在 `PATH` 中用于全文抽取。*可选* —— 缺失时 orchestrator 会退化为把 PDF 直接传给 sub-agent。
   - macOS:`brew install poppler`
   - Debian/Ubuntu:`sudo apt install poppler-utils`
+
+### 设计 · prompt-as-code
+
+`paperstudio` **不是常规软件项目** —— 它是一个**几乎完全用 Markdown 写成的 LLM 编排系统**。"代码"是约束、模板和派发指令,由模型在运行时解释。理解它需要切换思维:**Markdown 是程序;模型是运行时**。
+
+**自顶向下五层:**
+
+```text
+[1] commands/      ×10   斜杠命令入口。只有 argument-hint + "去跑下面那个 skill"。
+                         不含业务逻辑。
+[2] skills/        ×9    编排器("导演")。stage 顺序、flag 解析、幂等规则、
+                         谁派给谁。项目控制流的所在。
+[3] prompts/       ×18   子 Agent 脚本("演员")。每个文件是一个专职子 Agent
+                         (paper-profiler / method-analyst / reviewer-synthesizer …)
+                         的完整 prompt。它们彼此不直接通信 —— 通过磁盘文件
+                         交接,skill 层负责路由。
+[4] templates/     ×16   产物骨架,带 <runtime-timestamp> / <fill-this> 占位符。
+                         子 Agent 复制并填空。目的:统一结构(必需的 H2 小节、
+                         frontmatter key),让下游解析可靠。
+[5] scripts/             确定性逻辑(cjs + sh):模型不擅长做的事
+                         (URL 归一化、schema 校验、JSONL 日志、图表排序、
+                         slug 生成)。
+```
+
+**两套文件系统坐标 —— 必须分清:**
+
+| | **插件代码**(只读,跟 Git) | **用户数据**(读写,不进 Git) |
+|---|---|---|
+| 位置 | `~/.claude/plugins/cache/studypaper/paperstudio/<ver>/` | `$CLAUDE_PAPERS_ROOT`(默认 `~/claude-papers/papers/<slug>/`) |
+| 拥有 | prompts、templates、scripts | 论文、所有产物、dispatch log |
+| 稳定性 | 是(版本化) | 否(每篇论文一个文件夹) |
+
+**4 个横切抽象,你会反复见到:**
+
+1. **Provenance(留痕)。** 每个产物 line 1 必为 `<!-- generated: <ts> by <agent> (paperstudio v<ver>) -->`。grep 即审计:任何文件都告诉你"谁、什么时候、用哪版插件"。`validate-artifact.sh` 强制。
+2. **幂等。** 产物已存在 → skill 跳过对应子 Agent(不重烧 token)。`--force` 备份成 `<file>.bak.NN` 再覆盖。`--only <stage>` 只重跑一个 stage。整条流水线随时可中断、可续跑。
+3. **Dispatch log。** `<paper>/.deepstudy/run.jsonl` —— 每次子 Agent 派发追加一行 JSONL,带状态 + 时间戳 + 插件版本。**唯一的运行时可观测信号**。仅本地;`PAPER_DEEPSTUDY_NO_RUN_LOG=1` 可关。
+4. **Domain pack。** `domain-packs/{single-cell,protein-structure,ml-pure,…}.md` 不是文档,是**知识注入文本**。`paper-profiler` 在 Stage 0 选出 1–N 个相关 pack;后续每个子 Agent 把所选 pack 内容拼到自己 prompt 前面再发。**多领域适配靠拼接,不靠维护多份 prompt 分支**。
+
+**一次 `/paperstudio:study` 的调用走向:**
+
+```text
+用户敲     /paperstudio:study https://arxiv.org/abs/1706.03762
+                  │
+                  ▼
+[命令]     commands/study.md  ──── 派发 ───▶  Skill(study-deep)
+                  │
+                  ▼
+[skill]    skills/study-deep/SKILL.md  (orchestrator 醒来)
+            ├── 0.1  verify-prereqs.sh
+            ├── 0.2  归一化 URL → claude-paper:study 下载 PDF
+            ├── 0.3  解析 paper folder,设置 $PAPER_DIR
+            ├── 0.4  Agent(paper-profiler) → analysis/00-paper-profile.md
+            │
+            ├── Stage 1(6 个子 Agent 并行,每个一份 prompt):
+            │     problem-framer / formalizer / method-analyst /
+            │     experiment-critic / prior-work-historian / figure-interpreter
+            │     → analysis/01–06
+            │
+            ├── Stage 2:Agent(reviewer-synthesizer) → review.md
+            │
+            └── Stage 3:
+                  Agent(notes-writer)     → notes/source.md
+                  Agent(title-generator)  → notes/titles.md
+                  select-figures.cjs      (确定性选图)
+                  Agent(xhs-renderer) ║ Agent(wechat-renderer)  并行
+                  → notes/xhs.md, notes/wechat.md
+```
+
+每次 Agent 调用后:`log_dispatch <agent> <output> ok` 追加 JSONL。每个 Stage 后:幂等规则决定跳过还是覆盖。
+
+**为什么这种架构值得:**
+
+- 迭代模型行为 = 改 Markdown,不需重新部署代码
+- 源码和文档是同一份文件,新人 onboard 就是读 prompt
+- 各层职责清晰,bug 半径小
+
+**代价:**
+
+- 没有 stack trace。调试 = 读 `.deepstudy/run.jsonl` + diff 产物
+- 没有静态正确性保证。正确性 = prompt 里的约束 + schema 校验 + golden-snapshot 行为测试(`tests/behavior/`)。抓漂移的纪律全押在测试套件上
+- prompt 一改,整条流水线产出风格可能静默漂移。17 条 golden-snapshot 测试是这条的安全网
+
+**扩展点:**
+
+| 想加什么 | 改哪 |
+|---|---|
+| 新的斜杠命令 | `commands/<name>.md` + `skills/<name>/SKILL.md` |
+| 新的子 Agent 角色 | `prompts/<role>.md` + 在某个 `SKILL.md` 里 dispatch 它 |
+| 新领域 | `domain-packs/<x>.md` + 在 `paper-profiler.md` 加识别规则 |
+| 新的产物类型 | `templates/<x>.md` + 在 `validate-artifact.sh` 加 schema arm |
+| 新的论文 host URL | 在 `scripts/normalize-paper-url.sh` 加正则 |
+
+只需记住一件事:**约束 + 模板 + schema 校验 + 行为测试,这四件事一起驯服了一个本来不可预测的运行时(模型)**。少了任何一个,整套就坍缩成"创意漂移"。
 
 ### 快速上手
 
