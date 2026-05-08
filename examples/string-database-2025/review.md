@@ -1,7 +1,7 @@
-<!-- generated: 2026-04-25T00:00:00Z by reviewer-synthesizer (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
+<!-- generated: 2026-04-25T00:00:00Z by reviewer-synthesizer (paperstudio v0.1.0) [Plan 7 retrofit] -->
 # Review: The STRING database in 2025: protein networks with directionality of regulation
 
-**Reviewer:** paper-deepstudy (auto-generated v1; refined via /paper:review-round)
+**Reviewer:** paperstudio (auto-generated v1; refined via /paperstudio:review-round)
 **Last updated:** 2026-04-25
 **Domain packs applied:** ml-pure, protein-function
 

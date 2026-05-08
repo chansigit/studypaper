@@ -1,4 +1,4 @@
-<!-- generated: 2026-04-25T00:00:00Z by xhs-renderer (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
+<!-- generated: 2026-04-25T00:00:00Z by xhs-renderer (paperstudio v0.1.0) [Plan 7 retrofit] -->
 ---
 title: 蛋白质网络终于有了"谁调谁"的答案
 length_target: 1000

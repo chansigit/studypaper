@@ -8,8 +8,8 @@
   },
   "plugins": [
     {
-      "name": "paper-deepstudy",
-      "version": "0.2.1",
+      "name": "paperstudio",
+      "version": "0.3.0",
       "description": "Deep paper study for ML and computational-biology papers. Adversarial review rounds, reproducibility audit, deep-dives, head-to-head comparisons, and Chinese social-media notes (Xiaohongshu / WeChat) generated from a single source.",
       "author": {
         "name": "Sijie Chen",
@@ -25,7 +25,7 @@
         "reproducibility",
         "notes"
       ],
-      "source": "./paper-deepstudy",
+      "source": "./paperstudio",
       "homepage": "https://github.com/chansigit/studypaper"
     }
   ]

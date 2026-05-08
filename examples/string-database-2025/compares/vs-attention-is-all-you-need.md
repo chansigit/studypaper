@@ -1,4 +1,4 @@
-<!-- generated: 2026-04-25T00:00:00Z by compare-agent (paper-deepstudy v0.1.0) [Plan 7 retrofit] -->
+<!-- generated: 2026-04-25T00:00:00Z by compare-agent (paperstudio v0.1.0) [Plan 7 retrofit] -->
 ---
 this_paper: string-database-2025
 other_paper: attention-is-all-you-need

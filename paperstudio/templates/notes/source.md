@@ -1,0 +1,22 @@
+<!-- generated: <runtime-timestamp> by notes-writer (paperstudio v<plugin-version>) -->
+# 学习笔记原料
+
+> 内部文件,中文,转述视角。两个 renderer 从这里取材。
+
+## 1. 一句话讲清楚这篇 paper 在干嘛
+
+## 2. 它要解决的问题是什么
+
+## 3. 现有方案为什么不够
+
+## 4. 这篇的核心 idea
+
+## 5. 方法是怎么 work 的
+
+## 6. 实验结果
+
+## 7. 它和前人工作的关系
+
+## 8. 局限 / 没解决的问题
+
+## 9. 一句话总结 take-away

@@ -5,7 +5,7 @@
 <p>
   <a href="https://github.com/chansigit/studypaper/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-F59E0B.svg?style=flat-square"></a>
   <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.2.0-7C3AED?style=flat-square">
-  <!-- maintainer: rebuild badge by running paper-deepstudy/scripts/count-tests.sh --badge-format -->
+  <!-- maintainer: rebuild badge by running paperstudio/scripts/count-tests.sh --badge-format -->
   <img alt="Tests passing" src="https://img.shields.io/badge/tests-212%20passing-22C55E?style=flat-square">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-plugin-A78BFA?style=flat-square&logo=anthropic&logoColor=white">
   <img alt="Domain packs" src="https://img.shields.io/badge/domain%20packs-7-22D3EE?style=flat-square">
@@ -26,7 +26,7 @@ In any [Claude Code](https://claude.com/claude-code) session (CLI / IDE / Web), 
 
 ```text
 /plugin marketplace add chansigit/studypaper
-/plugin install paper-deepstudy@studypaper
+/plugin install paperstudio@studypaper
 ```
 
 > Requires [`claude-paper`](https://github.com/alaliqing/claude-paper) installed first — the marketplace does not auto-install dependencies yet. · 需先装 [`claude-paper`](https://github.com/alaliqing/claude-paper)。
@@ -59,7 +59,7 @@ It is a [Claude Code](https://claude.com/claude-code) plugin that turns any ML o
 
 ### What you get
 
-Every `/paper:study` produces these artifacts under `~/claude-papers/papers/<slug>/`:
+Every `/paperstudio:study` produces these artifacts under `~/claude-papers/papers/<slug>/`:
 
 ```text
 analysis/
@@ -78,14 +78,14 @@ notes/
   wechat.md                 WeChat rendering (~3000 chars, 2-3 figures)
 ```
 
-The remaining workspace artifacts are produced by **extension commands**, not by `/paper:study`:
+The remaining workspace artifacts are produced by **extension commands**, not by `/paperstudio:study`:
 
 | Command | Artifact |
 |---|---|
-| `/paper:review-round` | `review-rounds/round-NN-<title>.md` (one file per round) |
-| `/paper:deep-dive`    | `deep-dives/<topic-slug>.md` |
-| `/paper:compare`      | `compares/vs-<other-slug>.md` |
-| `/paper:reproduce-check` | `reproduce-check.md` |
+| `/paperstudio:review-round` | `review-rounds/round-NN-<title>.md` (one file per round) |
+| `/paperstudio:deep-dive`    | `deep-dives/<topic-slug>.md` |
+| `/paperstudio:compare`      | `compares/vs-<other-slug>.md` |
+| `/paperstudio:reproduce-check` | `reproduce-check.md` |
 
 Every file is regeneratable. Every mutation backs up to `<file>.bak.NN`. Nothing is destructive.
 
@@ -95,7 +95,7 @@ In Claude Code (CLI / IDE / Web):
 
 ```text
 /plugin marketplace add chansigit/studypaper
-/plugin install paper-deepstudy@studypaper
+/plugin install paperstudio@studypaper
 ```
 
 **Prerequisites**
@@ -109,37 +109,37 @@ In Claude Code (CLI / IDE / Web):
 
 ```text
 # One-shot full pipeline — fetch, analyze, review, render notes
-/paper:study https://arxiv.org/abs/1706.03762
+/paperstudio:study https://arxiv.org/abs/1706.03762
 
 # An adversarial review round — you raise an objection, defense and blind judge respond
-/paper:review-round
+/paperstudio:review-round
 
 # Drill into a sub-topic that the analysis brushed over
-/paper:deep-dive "scaled dot-product attention derivation"
+/paperstudio:deep-dive "scaled dot-product attention derivation"
 
 # Head-to-head with another paper you've already studied (or auto-study + compare)
-/paper:compare attention-is-all-you-need --lang zh
+/paperstudio:compare attention-is-all-you-need --lang zh
 
 # 7-dimension reproducibility audit, with live GitHub link verification
-/paper:reproduce-check
+/paperstudio:reproduce-check
 ```
 
 ### Commands at a glance
 
 | Command | What it does |
 |---|---|
-| `/paper:study <pdf-or-url>` | One-shot full pipeline |
-| `/paper:rerun-stage <stage>` | Re-run a single stage (`analysis` / `review` / `notes` / `profile`) |
-| `/paper:review-round` | Adversarial review round (objection → defense → blind judge → user verdict) |
-| `/paper:refine-notes <variant>` | Apply an edit instruction to `xhs.md` or `wechat.md` |
-| `/paper:retitle <variant>` | Regenerate 5 title candidates |
-| `/paper:reselect-figures` | Re-pick which figures get embedded |
-| `/paper:deep-dive <topic>` | Focused sub-topic write-up |
-| `/paper:compare <target>` | Head-to-head comparison with another paper |
-| `/paper:add-prior-work <ref>` | Append a missed prior-work entry (arXiv URL / BibTeX) |
-| `/paper:reproduce-check` | 7-dimension reproducibility audit |
+| `/paperstudio:study <pdf-or-url>` | One-shot full pipeline |
+| `/paperstudio:rerun-stage <stage>` | Re-run a single stage (`analysis` / `review` / `notes` / `profile`) |
+| `/paperstudio:review-round` | Adversarial review round (objection → defense → blind judge → user verdict) |
+| `/paperstudio:refine-notes <variant>` | Apply an edit instruction to `xhs.md` or `wechat.md` |
+| `/paperstudio:retitle <variant>` | Regenerate 5 title candidates |
+| `/paperstudio:reselect-figures` | Re-pick which figures get embedded |
+| `/paperstudio:deep-dive <topic>` | Focused sub-topic write-up |
+| `/paperstudio:compare <target>` | Head-to-head comparison with another paper |
+| `/paperstudio:add-prior-work <ref>` | Append a missed prior-work entry (arXiv URL / BibTeX) |
+| `/paperstudio:reproduce-check` | 7-dimension reproducibility audit |
 
-Run any command without arguments for inline help, or see [`paper-deepstudy/README.md`](paper-deepstudy/README.md) for the full reference.
+Run any command without arguments for inline help, or see [`paperstudio/README.md`](paperstudio/README.md) for the full reference.
 
 ### Examples
 
@@ -153,7 +153,7 @@ Real outputs from running the pipeline on actual papers:
 studypaper/
 ├── .claude-plugin/
 │   └── marketplace.json          marketplace registration — what makes /plugin install work
-├── paper-deepstudy/              the plugin
+├── paperstudio/              the plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                 10 slash commands
 │   ├── skills/                   orchestration skills (study-deep, review-round, …)
@@ -172,7 +172,7 @@ studypaper/
 The project follows test-driven development. Run the suite:
 
 ```bash
-cd paper-deepstudy
+cd paperstudio
 npm install      # one-time, installs bats-core
 npm run test:unit
 ```
@@ -211,7 +211,7 @@ Built on top of [`claude-paper`](https://github.com/alaliqing/claude-paper) by `
 
 ### 你会得到什么
 
-每次 `/paper:study` 在 `~/claude-papers/papers/<slug>/` 下生成以下产物:
+每次 `/paperstudio:study` 在 `~/claude-papers/papers/<slug>/` 下生成以下产物:
 
 ```text
 analysis/
@@ -230,14 +230,14 @@ notes/
   wechat.md                 微信渲染(~3000 字,2-3 张图)
 ```
 
-其余工作区产物由**扩展命令**生成,不属于 `/paper:study`:
+其余工作区产物由**扩展命令**生成,不属于 `/paperstudio:study`:
 
 | 命令 | 产物 |
 |---|---|
-| `/paper:review-round` | `review-rounds/round-NN-<title>.md`(每轮一个文件) |
-| `/paper:deep-dive`    | `deep-dives/<topic-slug>.md` |
-| `/paper:compare`      | `compares/vs-<other-slug>.md` |
-| `/paper:reproduce-check` | `reproduce-check.md` |
+| `/paperstudio:review-round` | `review-rounds/round-NN-<title>.md`(每轮一个文件) |
+| `/paperstudio:deep-dive`    | `deep-dives/<topic-slug>.md` |
+| `/paperstudio:compare`      | `compares/vs-<other-slug>.md` |
+| `/paperstudio:reproduce-check` | `reproduce-check.md` |
 
 每个文件都可重新生成。任何修改前都备份成 `<file>.bak.NN`。无破坏性操作。
 
@@ -247,7 +247,7 @@ notes/
 
 ```text
 /plugin marketplace add chansigit/studypaper
-/plugin install paper-deepstudy@studypaper
+/plugin install paperstudio@studypaper
 ```
 
 **前置要求**
@@ -261,37 +261,37 @@ notes/
 
 ```text
 # 一键全自动 —— 下载、分析、审稿、渲染笔记
-/paper:study https://arxiv.org/abs/1706.03762
+/paperstudio:study https://arxiv.org/abs/1706.03762
 
 # 一轮对抗式审稿 —— 你提质疑,辩护方和盲审 judge 应答
-/paper:review-round
+/paperstudio:review-round
 
 # 钻入一个分析没展开的子话题
-/paper:deep-dive "scaled dot-product attention 推导"
+/paperstudio:deep-dive "scaled dot-product attention 推导"
 
 # 与另一篇已研读的论文做正面比较(或自动研读 + 比较)
-/paper:compare attention-is-all-you-need --lang zh
+/paperstudio:compare attention-is-all-you-need --lang zh
 
 # 7 维可复现性审计,实时验证 GitHub 链接
-/paper:reproduce-check
+/paperstudio:reproduce-check
 ```
 
 ### 命令一览
 
 | 命令 | 用途 |
 |---|---|
-| `/paper:study <pdf-or-url>` | 一键全自动 pipeline |
-| `/paper:rerun-stage <stage>` | 重跑单个 stage(`analysis` / `review` / `notes` / `profile`) |
-| `/paper:review-round` | 对抗式审稿(质疑 → 辩护 → 盲审 → 用户拍板) |
-| `/paper:refine-notes <variant>` | 对 `xhs.md` 或 `wechat.md` 应用一条修改指令 |
-| `/paper:retitle <variant>` | 重新生成 5 个候选标题 |
-| `/paper:reselect-figures` | 重新选取嵌入哪些图 |
-| `/paper:deep-dive <topic>` | 子话题深度展开 |
-| `/paper:compare <target>` | 与另一篇论文正面对比 |
-| `/paper:add-prior-work <ref>` | 增补一条先前工作(arXiv URL / BibTeX) |
-| `/paper:reproduce-check` | 7 维可复现性审计 |
+| `/paperstudio:study <pdf-or-url>` | 一键全自动 pipeline |
+| `/paperstudio:rerun-stage <stage>` | 重跑单个 stage(`analysis` / `review` / `notes` / `profile`) |
+| `/paperstudio:review-round` | 对抗式审稿(质疑 → 辩护 → 盲审 → 用户拍板) |
+| `/paperstudio:refine-notes <variant>` | 对 `xhs.md` 或 `wechat.md` 应用一条修改指令 |
+| `/paperstudio:retitle <variant>` | 重新生成 5 个候选标题 |
+| `/paperstudio:reselect-figures` | 重新选取嵌入哪些图 |
+| `/paperstudio:deep-dive <topic>` | 子话题深度展开 |
+| `/paperstudio:compare <target>` | 与另一篇论文正面对比 |
+| `/paperstudio:add-prior-work <ref>` | 增补一条先前工作(arXiv URL / BibTeX) |
+| `/paperstudio:reproduce-check` | 7 维可复现性审计 |
 
-不带参数运行任何命令可看 inline help,完整参考见 [`paper-deepstudy/README.md`](paper-deepstudy/README.md)。
+不带参数运行任何命令可看 inline help,完整参考见 [`paperstudio/README.md`](paperstudio/README.md)。
 
 ### 示例
 
@@ -305,7 +305,7 @@ notes/
 studypaper/
 ├── .claude-plugin/
 │   └── marketplace.json          marketplace 注册 —— 让 /plugin install 能识别的关键
-├── paper-deepstudy/              插件本体
+├── paperstudio/              插件本体
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                 10 个 slash 命令
 │   ├── skills/                   orchestration 技能(study-deep, review-round, …)
@@ -324,7 +324,7 @@ studypaper/
 项目遵循 TDD。运行测试套件:
 
 ```bash
-cd paper-deepstudy
+cd paperstudio
 npm install      # 一次性,装 bats-core
 npm run test:unit
 ```
