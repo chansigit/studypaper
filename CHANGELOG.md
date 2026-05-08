@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-05-08
+
+### Fixed
+
+- Removed non-standard `dependencies` field from `paper-deepstudy/.claude-plugin/plugin.json`. The field was not part of the Claude Code plugin manifest schema and caused the plugin's commands and skills to be silently skipped on install — `/paper:*` slash commands and `paper-deepstudy:*` skills were not registered after `/plugin install`. The `claude-paper` upstream is still required at runtime; users should install it from its own marketplace.
+
 ## [0.2.0] — 2026-04-27
 
 The "quality + foundations" release. Hardens the v0.1.0 pipeline with structured observability, refactors duplicated paper-resolution logic into shared helpers, and turns the test suite from grep-based structural checks into schema-validated behavioral coverage.
@@ -63,6 +69,7 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paper:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/chansigit/studypaper/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/chansigit/studypaper/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/chansigit/studypaper/releases/tag/v0.1.0
