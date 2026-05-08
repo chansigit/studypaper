@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-05-08
+
+### Changed
+
+- **SKILL.md hardening (Plan A + B from the recent self-review).**
+  - Every SKILL.md now starts with a 6-line `## Hard rules` block (provenance / idempotence / log / paths / failure / chat-language). The rules are non-negotiable invariants — exceptions must be stated inline with a one-line "why".
+  - Repeated dispatch boilerplate (the `--force` / skip / `.bak.NN` / `Skipped dispatches still count` paragraphs that were duplicated across 9 skills) is extracted to a single `paperstudio/skills/_shared/dispatch-rules.md`. Each SKILL points there for the full text.
+  - `study-deep/SKILL.md`'s "Idempotence and re-runs" + "Per-dispatch idempotence rule" sections collapsed (rules now live in `_shared/`); only study-deep–specific notes remain inline (e.g. `--yes` semantics).
+  - `test-idempotence-skip.bats` updated to look for the rules in either `study-deep/SKILL.md` or `_shared/dispatch-rules.md`. All 242 bats + 4 node tests still pass.
+
 ## [0.5.1] — 2026-05-08
 
 ### Added
@@ -112,7 +122,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/chansigit/studypaper/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/chansigit/studypaper/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/chansigit/studypaper/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/chansigit/studypaper/compare/v0.4.0...v0.4.1

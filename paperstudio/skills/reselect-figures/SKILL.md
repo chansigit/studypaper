@@ -7,6 +7,22 @@ allowed-tools: Bash, Read, Write, Edit, Agent
 
 # paperstudio: reselect-figures workflow
 
+
+## Hard rules (non-negotiable, enforced by tests)
+
+These apply to **every** Agent dispatch in this skill. Stage-local exceptions must be stated inline with a one-line "why".
+
+1. **Provenance** — every output line 1: `<!-- generated: <ts> by <agent> (paperstudio v<ver>) -->`
+2. **Idempotence** — `OUTPUT_PATH` exists + no `--force` ⇒ skip; exists + `--force` ⇒ `cp $f $f.bak.NN` first, then dispatch.
+3. **Log** — after every dispatch (success or fail), call `log_dispatch <subagent> <output-path> <ok|failed>`. Never on a skip.
+4. **Paths** — paper root is `${PAPERS_ROOT}`, resolved once from `${CLAUDE_PAPERS_ROOT:-$HOME/claude-papers/papers}`. Never hard-code `~/claude-papers/papers/` in writes.
+5. **Failure** — Agent failure: log `failed`, do NOT delete partial output, do NOT auto-retry, surface the actionable rerun command, continue independent stages.
+6. **Chat language** — reply in the user's invocation language. Artifact language is governed by the prompt's `LANG=` input.
+
+Full text + rationale: see [`paperstudio/skills/_shared/dispatch-rules.md`](../_shared/dispatch-rules.md).
+
+---
+
 Invoke after `/paperstudio:study` has produced `analysis/06-figures.md` plus the notes set. Both `notes/xhs.md` and `notes/wechat.md` are re-rendered with the new figure selections; their prior versions are backed up.
 
 Optional flags:

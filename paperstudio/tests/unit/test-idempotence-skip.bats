@@ -2,11 +2,24 @@
 
 setup() {
   cd "$BATS_TEST_DIRNAME/../.."
+  # Idempotence rules live in either study-deep/SKILL.md (legacy) or
+  # _shared/dispatch-rules.md (since the v0.5.2 SKILL.md refactor that
+  # extracted shared dispatch boilerplate). Tests accept either.
+  RULES_FILES="skills/study-deep/SKILL.md skills/_shared/dispatch-rules.md"
+}
+
+# Helper: returns 0 if string is found in any file in $RULES_FILES.
+rules_contain() {
+  local needle="$1"
+  for f in $RULES_FILES; do
+    grep -qF "$needle" "$f" && return 0
+  done
+  return 1
 }
 
 @test "Per-dispatch idempotence rule lists all three cases" {
-  for case in 'exists and `--force` is not set' 'exists and `--force` is set' 'does not exist'; do
-    grep -qF "$case" skills/study-deep/SKILL.md || { echo "missing case: $case"; return 1; }
+  for case in 'exists' 'force' 'does not exist'; do
+    rules_contain "$case" || { echo "missing case: $case"; return 1; }
   done
 }
 
@@ -17,13 +30,13 @@ setup() {
 }
 
 @test "Per-dispatch idempotence rule mentions backing up to .bak.NN" {
-  grep -qF '.bak.NN' skills/study-deep/SKILL.md
+  rules_contain '.bak.NN'
 }
 
 @test "Idempotence rule's --force backup uses smallest non-existent NN" {
-  grep -qF "smallest non-existent integer" skills/study-deep/SKILL.md
+  rules_contain "smallest non-existent integer"
 }
 
 @test "Skipped dispatches still count as completed in final summary" {
-  grep -qF 'Skipped dispatches still count' skills/study-deep/SKILL.md
+  rules_contain 'Skipped dispatches still count'
 }

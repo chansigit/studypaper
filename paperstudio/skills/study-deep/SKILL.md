@@ -7,6 +7,23 @@ allowed-tools: Bash, Read, Write, Edit, Agent, Skill
 
 # paperstudio: study-deep workflow
 
+## Hard rules (non-negotiable, enforced by tests)
+
+These apply to **every** Agent dispatch in this skill. Stage-local exceptions must be stated inline with a one-line "why".
+
+1. **Provenance** — every output line 1: `<!-- generated: <ts> by <agent> (paperstudio v<ver>) -->`
+2. **Idempotence** — `OUTPUT_PATH` exists + no `--force` ⇒ skip; exists + `--force` ⇒ `cp $f $f.bak.NN` first, then dispatch.
+3. **Log** — after every dispatch (success or fail), call `log_dispatch <subagent> <output-path> <ok|failed>`. Never on a skip.
+4. **Paths** — paper root is `${PAPERS_ROOT}`, resolved once from `${CLAUDE_PAPERS_ROOT:-$HOME/claude-papers/papers}`. Never hard-code `~/claude-papers/papers/` in writes.
+5. **Failure** — Agent failure: log `failed`, do NOT delete partial output, do NOT auto-retry, surface the actionable rerun command, continue independent stages.
+6. **Chat language** — reply in the user's invocation language. Artifact language is governed by `--lang` (Rule 4 of `_shared/dispatch-rules.md`).
+
+Full text + rationale: see [`paperstudio/skills/_shared/dispatch-rules.md`](../_shared/dispatch-rules.md).
+
+---
+
+## Invocation
+
 Invoke with a PDF path or arXiv URL. Optional flags:
 - `--yes`: skip Stage 0 confirmation prompt (auto-accept profile).
 - `--force`: re-run all stages, backing up existing outputs.
@@ -66,23 +83,7 @@ For each output file in any stage that runs: if the file exists, back it up to `
 
 ### Idempotence and re-runs
 
-Default behavior (no flags): for each output file, if it already exists, skip the corresponding sub-Agent dispatch. Skipped files are reported in the final summary.
-
-`--force`: for each output file that exists, copy it to `<file>.bak.NN` (where NN is the smallest non-existent integer ≥ 1) before re-running.
-
-`--yes`: skip the Stage 0 confirmation prompt. Use the auto-detected profile.
-
-`--only <stage>` (used by `/paperstudio:rerun-stage <stage>`): rerun only the named stage (`profile | analysis | review | notes`), backing up its outputs first. Implemented as `--force` scoped to that stage's output paths.
-
-### Per-dispatch idempotence rule
-
-This rule applies uniformly to every Agent dispatch in Stages 0.4, 1.2, 2.1, 3.1, 3.2, and 3.4 below. Before issuing each Agent call:
-
-- If `OUTPUT_PATH` exists and `--force` is not set, log `skipping <subagent> (output exists)` and do not dispatch.
-- If `OUTPUT_PATH` exists and `--force` is set, copy `OUTPUT_PATH` to `OUTPUT_PATH.bak.NN` (smallest non-existent integer ≥ 1) first, then dispatch.
-- If `OUTPUT_PATH` does not exist, dispatch normally.
-
-Skipped dispatches still count as ✓ in the final summary (the existing file is the output).
+See **Hard rules §2 + Rule 2** in `_shared/dispatch-rules.md`. Stage-specific note: `--yes` is study-deep–only and only affects Stage 0.5's user-confirmation prompt — it is independent of `--force` / `--only`.
 
 ### 0.1 Verify prerequisites
 
