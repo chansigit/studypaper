@@ -80,12 +80,43 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/verify-prereqs.sh
 
 If exit ≠ 0, abort with the script's error message.
 
-### 0.2 Run claude-paper:study (baseline)
+### 0.2 Resolve user input → PDF URL or path
 
-Invoke `claude-paper:study` via the Skill tool with the user's input as args:
+Before dispatching `claude-paper:study`, resolve the user's argument into a downloadable PDF URL or a local path. Three input shapes are supported:
+
+1. **Local path** (starts with `/`, `~`, or `./`): pass through unchanged.
+2. **URL** (starts with `http://` or `https://`): run it through the URL normalizer to convert known paper-host pages into direct PDF URLs (bioRxiv / medRxiv / OpenReview / ACL Anthology / HuggingFace papers / arXiv abs). Unknown hosts pass through unchanged.
+3. **Free-text title / query** (anything else): run an arXiv title search and ask the user to pick a result.
+
+```bash
+RAW="<user-input>"
+
+if [[ "$RAW" =~ ^(/|~|\./) ]]; then
+  RESOLVED="$RAW"   # local path
+elif [[ "$RAW" =~ ^https?:// ]]; then
+  RESOLVED=$("${CLAUDE_PLUGIN_ROOT}/scripts/normalize-paper-url.sh" "$RAW")
+  if [[ "$RESOLVED" != "$RAW" ]]; then
+    echo "Normalized URL: $RAW → $RESOLVED"
+  fi
+else
+  # Title search via arXiv
+  echo "No URL or path detected — searching arXiv for: \"$RAW\""
+  results=$("${CLAUDE_PLUGIN_ROOT}/scripts/search-arxiv.sh" "$RAW" 5) || {
+    echo "No arXiv results. Pass a PDF path / URL instead, or refine the query."
+    exit 1
+  }
+  # Display results (TSV: id, year, authors, title, pdf_url) numbered 1..5.
+  echo "$results" | awk -F'\t' '{ printf "  [%d] %s (%s) — %s\n      %s\n", NR, $4, $2, $3, $5 }'
+  # Ask user to pick. If --yes flag is set, default to [1].
+  # On user pick N, set RESOLVED to the corresponding pdf_url.
+  RESOLVED=$(echo "$results" | awk -F'\t' -v n="$pick" 'NR==n {print $5}')
+fi
+```
+
+Then invoke `claude-paper:study` with `$RESOLVED`:
 
 ```
-Skill(skill: "claude-paper:study", args: "<user-input-pdf-path-or-url>")
+Skill(skill: "claude-paper:study", args: "$RESOLVED")
 ```
 
 `claude-paper:study` will download / parse the PDF and produce a paper folder under `~/claude-papers/papers/<slug>/`. The slug is auto-derived from the paper title.

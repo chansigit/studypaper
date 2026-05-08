@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-05-08
+
+### Added
+
+- **Expanded paper-intake URL support.** `/paperstudio:study` now accepts paper-host URLs beyond arXiv and converts them to direct PDF URLs before dispatching the downloader. Supported: arXiv (`abs/` and `pdf/`), bioRxiv / medRxiv / chemRxiv content pages, OpenReview `forum?id=`, ACL Anthology pages, HuggingFace papers (mapped to arXiv). Unknown URLs pass through unchanged. Implemented in `scripts/normalize-paper-url.sh`.
+- **arXiv title search.** `/paperstudio:study "<title or query>"` (no path / no URL) hits the public arXiv API and returns the top 5 hits; user picks one to proceed. Implemented in `scripts/search-arxiv.sh`. No API key required; identifies itself with a `paperstudio/<ver>` User-Agent.
+- **Default output language directive.** `xhs-renderer` and `wechat-renderer` prompts now declare `Output language: 中文 by default` explicitly at the top, with `lang=en` as the only override. Previously this was implicit (Chinese subheadings, Chinese-char length counting).
+- 12 new bats tests covering all URL normalization rules + the empty-arg error path.
+
 ## [0.3.0] — 2026-05-08
 
 ### Changed (breaking)
@@ -77,7 +86,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/chansigit/studypaper/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/chansigit/studypaper/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/chansigit/studypaper/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/chansigit/studypaper/compare/v0.1.0...v0.2.0
