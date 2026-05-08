@@ -44,7 +44,7 @@ fi
 # Examples:
 #   https://www.biorxiv.org/content/10.1101/2024.01.01.123456v1
 #   https://www.biorxiv.org/content/10.1101/2024.01.01.123456v1.full
-if [[ "$url" =~ ^https?://(www\.)?(biorxiv|medrxiv|chemrxiv)\.org/content/(.+) ]]; then
+if [[ "$url" =~ ^https?://(www\.)?(biorxiv|medrxiv)\.org/content/(.+) ]]; then
   host="${BASH_REMATCH[2]}"
   path="${BASH_REMATCH[3]}"
   # strip trailing .full / .abstract if present

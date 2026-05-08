@@ -11,9 +11,12 @@ cd "$PLUGIN_ROOT"
 
 # Bats: count `@test "..."` lines across all .bats files
 bats_count=0
-if [ -d tests/unit ]; then
-  bats_count=$(grep -hE '^@test ' tests/unit/*.bats 2>/dev/null | wc -l | tr -d ' ')
-fi
+for d in tests/unit tests/behavior; do
+  if [ -d "$d" ]; then
+    n=$(grep -hE '^@test ' "$d"/*.bats 2>/dev/null | wc -l | tr -d ' ')
+    bats_count=$((bats_count + n))
+  fi
+done
 
 # Node: count `console.log\(.*passed.*\)` markers — each test file emits one
 # "<helper>: all tests passed" line per pass. We approximate one-per-file.

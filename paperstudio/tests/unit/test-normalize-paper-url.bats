@@ -42,6 +42,12 @@ setup() {
   [ "$output" = "https://www.medrxiv.org/content/10.1101/2024.01.01.999999v1.full.pdf" ]
 }
 
+@test "normalize-paper-url: ChemRxiv article-details page passes through unchanged" {
+  run "$SCRIPT" "https://chemrxiv.org/engage/chemrxiv/article-details/63051dfe1945ad17cee4202c"
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://chemrxiv.org/engage/chemrxiv/article-details/63051dfe1945ad17cee4202c" ]
+}
+
 @test "normalize-paper-url: OpenReview forum?id= becomes pdf?id=" {
   run "$SCRIPT" "https://openreview.net/forum?id=abc123XYZ"
   [ "$status" -eq 0 ]

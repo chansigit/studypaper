@@ -149,7 +149,7 @@ else
 fi
 ```
 
-Then invoke `claude-paper:study` with `$RESOLVED`:
+Then invoke `claude-paper:study` with `$RESOLVED`. Use the Skill tool directly; do not proxy this through a generic Agent or shell command:
 
 ```
 Skill(skill: "claude-paper:study", args: "$RESOLVED")

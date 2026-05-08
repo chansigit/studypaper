@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-05-08
+
+### Added
+
+- **Behavior-invariant test suite** at `tests/behavior/test-golden-string-database.bats` — 17 content-level assertions over the committed STRING-2025 golden snapshot. Pins invariants (frontmatter keys, required H2 sections, lookup-table consistency for `reproduce-check`, figure-embed counts, paper-folder-relative figure paths, line-1 provenance) that must hold on any future regeneration. The integration smoke test now runs these after schema validation. File header documents the manual "regenerate golden" workflow.
+- `count-tests.sh` now folds in `tests/behavior/` automatically.
+
+### Fixed
+
+- Removed the false ChemRxiv page-normalization claim/rule. ChemRxiv article pages are not bioRxiv-style `/content/...` URLs, so the normalizer now passes them through instead of fabricating invalid `.full.pdf` URLs.
+
 ## [0.5.0] — 2026-05-08
 
 ### Added
@@ -101,7 +112,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/chansigit/studypaper/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/chansigit/studypaper/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/chansigit/studypaper/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/chansigit/studypaper/compare/v0.3.0...v0.4.0

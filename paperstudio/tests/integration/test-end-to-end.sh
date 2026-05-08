@@ -120,4 +120,19 @@ if [ $SCHEMA_FAILURES -ne 0 ]; then
   exit 1
 fi
 
+# Behavior assertions over the golden snapshot — content invariants beyond schema.
+# Pinned in tests/behavior/test-golden-string-database.bats. See that file's
+# header for how to refresh the snapshot when prompt changes are intentional.
+if command -v bats >/dev/null 2>&1; then
+  echo ""
+  echo "=== Behavior assertions (golden snapshot) ==="
+  if ! bats "$PLUGIN_ROOT/tests/behavior/" 2>&1 | tail -3; then
+    echo "ERROR: golden behavior assertions failed"
+    exit 1
+  fi
+else
+  echo ""
+  echo "(skipping behavior assertions: bats not in PATH)"
+fi
+
 echo "Integration smoke test: PASSED"

@@ -4,9 +4,9 @@
 
 <p>
   <a href="https://github.com/chansigit/studypaper/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-F59E0B.svg?style=flat-square"></a>
-  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.2.0-7C3AED?style=flat-square">
+  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-v0.5.0-7C3AED?style=flat-square">
   <!-- maintainer: rebuild badge by running paperstudio/scripts/count-tests.sh --badge-format -->
-  <img alt="Tests passing" src="https://img.shields.io/badge/tests-212%20passing-22C55E?style=flat-square">
+  <img alt="Tests passing" src="https://img.shields.io/badge/tests-229%20passing-22C55E?style=flat-square">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-plugin-A78BFA?style=flat-square&logo=anthropic&logoColor=white">
   <img alt="Domain packs" src="https://img.shields.io/badge/domain%20packs-7-22D3EE?style=flat-square">
   <a href="https://github.com/chansigit/studypaper/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/chansigit/studypaper?style=flat-square&color=FBBF24"></a>
@@ -161,7 +161,7 @@ studypaper/
 │   ├── templates/                output templates for every artifact
 │   ├── domain-packs/             7 domain knowledge packs
 │   ├── scripts/                  helper scripts (verify-prereqs, parse-judge-output, …)
-│   └── tests/                    146 bats + 4 node + integration smoke
+│   └── tests/                    225 bats + 4 node + integration smoke
 ├── examples/                     curated real-paper outputs
 ├── assets/                       logo + banner SVGs
 └── docs/                         design specs and implementation plans
@@ -173,7 +173,7 @@ The project follows test-driven development. Run the suite:
 
 ```bash
 cd paperstudio
-npm install      # one-time, installs bats-core
+npm install      # one-time, installs Bats
 npm run test:unit
 ```
 
@@ -313,7 +313,7 @@ studypaper/
 │   ├── templates/                所有产物的模板
 │   ├── domain-packs/             7 个领域知识包
 │   ├── scripts/                  辅助脚本
-│   └── tests/                    146 bats + 4 node + 集成 smoke
+│   └── tests/                    225 bats + 4 node + 集成 smoke
 ├── examples/                     精选真实论文产物
 ├── assets/                       logo + banner SVG
 └── docs/                         设计 spec 和实现 plan
@@ -325,7 +325,7 @@ studypaper/
 
 ```bash
 cd paperstudio
-npm install      # 一次性,装 bats-core
+npm install      # 一次性,安装 Bats
 npm run test:unit
 ```
 

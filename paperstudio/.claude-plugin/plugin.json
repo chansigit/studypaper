@@ -1,6 +1,6 @@
 {
   "name": "paperstudio",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Deep paper study for ML and computational-biology papers. Layers on claude-paper:study to add deep analysis, iterative review, and Chinese notes for Xiaohongshu/WeChat.",
   "author": {"name": "Sijie Chen", "email": "chansigit@gmail.com"}
 }
