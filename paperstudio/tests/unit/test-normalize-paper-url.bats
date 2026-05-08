@@ -60,6 +60,30 @@ setup() {
   [ "$output" = "https://aclanthology.org/2023.acl-long.123.pdf" ]
 }
 
+@test "normalize-paper-url: NeurIPS new layout (Conference suffix)" {
+  run "$SCRIPT" "https://proceedings.neurips.cc/paper_files/paper/2023/hash/abc123def-Abstract-Conference.html"
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://proceedings.neurips.cc/paper_files/paper/2023/file/abc123def-Paper-Conference.pdf" ]
+}
+
+@test "normalize-paper-url: NeurIPS new layout (no Conference suffix)" {
+  run "$SCRIPT" "https://proceedings.neurips.cc/paper_files/paper/2021/hash/xyz999-Abstract.html"
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://proceedings.neurips.cc/paper_files/paper/2021/file/xyz999-Paper.pdf" ]
+}
+
+@test "normalize-paper-url: NeurIPS legacy papers.nips.cc" {
+  run "$SCRIPT" "https://papers.nips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html"
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://papers.nips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf" ]
+}
+
+@test "normalize-paper-url: PMLR (ICML) page becomes /name/name.pdf" {
+  run "$SCRIPT" "https://proceedings.mlr.press/v202/smith23a.html"
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://proceedings.mlr.press/v202/smith23a/smith23a.pdf" ]
+}
+
 @test "normalize-paper-url: unknown URL passes through unchanged" {
   run "$SCRIPT" "https://example.com/some/random/paper.pdf"
   [ "$status" -eq 0 ]

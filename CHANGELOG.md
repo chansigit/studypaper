@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-05-08
+
+### Added
+
+- URL normalization for **NeurIPS proceedings** (both modern `proceedings.neurips.cc/paper_files/...-Abstract[-Conference].html` and legacy `papers.nips.cc/paper/.../Abstract.html`) and **PMLR** (`proceedings.mlr.press/v<vol>/<name>.html` → `<name>/<name>.pdf`, covering ICML / AISTATS / COLT / etc.).
+- 4 new bats tests for the proceedings URL patterns.
+
 ## [0.4.0] — 2026-05-08
 
 ### Added
@@ -86,7 +93,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/chansigit/studypaper/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/chansigit/studypaper/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/chansigit/studypaper/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/chansigit/studypaper/compare/v0.2.0...v0.2.1

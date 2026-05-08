@@ -66,5 +66,31 @@ if [[ "$url" =~ ^https?://aclanthology\.org/([^/]+)$ ]]; then
   exit 0
 fi
 
+# NeurIPS new layout: proceedings.neurips.cc/paper_files/paper/<year>/hash/<id>-Abstract[-Conference].html
+#   → proceedings.neurips.cc/paper_files/paper/<year>/file/<id>-Paper[-Conference].pdf
+if [[ "$url" =~ ^https?://proceedings\.neurips\.cc/paper_files/paper/([0-9]+)/hash/([^/]+)-Abstract(-Conference)?\.html$ ]]; then
+  year="${BASH_REMATCH[1]}"
+  id="${BASH_REMATCH[2]}"
+  suffix="${BASH_REMATCH[3]}"   # may be empty or "-Conference"
+  echo "https://proceedings.neurips.cc/paper_files/paper/${year}/file/${id}-Paper${suffix}.pdf"
+  exit 0
+fi
+
+# NeurIPS legacy: papers.nips.cc/paper/<year>/hash/<id>-Abstract.html
+#   → papers.nips.cc/paper/<year>/file/<id>-Paper.pdf
+if [[ "$url" =~ ^https?://papers\.nips\.cc/paper/([0-9]+)/hash/([^/]+)-Abstract\.html$ ]]; then
+  echo "https://papers.nips.cc/paper/${BASH_REMATCH[1]}/file/${BASH_REMATCH[2]}-Paper.pdf"
+  exit 0
+fi
+
+# PMLR (ICML / AISTATS / etc.): proceedings.mlr.press/v<vol>/<name>.html
+#   → proceedings.mlr.press/v<vol>/<name>/<name>.pdf
+if [[ "$url" =~ ^https?://proceedings\.mlr\.press/(v[0-9]+)/([^/]+)\.html$ ]]; then
+  vol="${BASH_REMATCH[1]}"
+  name="${BASH_REMATCH[2]}"
+  echo "https://proceedings.mlr.press/${vol}/${name}/${name}.pdf"
+  exit 0
+fi
+
 # Pass through.
 echo "$input"

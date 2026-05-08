@@ -20,7 +20,7 @@ Usage:
 - `/paperstudio:study /path/to/paper.pdf --force` (re-run all stages)
 - `/paperstudio:study --paper attention-is-all-you-need` (operate on an existing paper folder)
 
-**Supported URL hosts** (auto-converted to direct PDF URL): arXiv, bioRxiv / medRxiv / chemRxiv, OpenReview, ACL Anthology, HuggingFace papers. Unknown URLs pass through to the downloader unchanged.
+**Supported URL hosts** (auto-converted to direct PDF URL): arXiv, bioRxiv / medRxiv / chemRxiv, OpenReview, ACL Anthology, HuggingFace papers, NeurIPS proceedings (modern + legacy), PMLR (ICML / AISTATS / COLT / …). Unknown URLs pass through to the downloader unchanged.
 
 **Free-text title search**: if the argument is neither a path nor a URL, it's treated as an arXiv title query. The top 5 hits are listed; pick one to proceed.
 
