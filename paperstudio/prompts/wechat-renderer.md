@@ -1,5 +1,7 @@
 # Prompt: wechat-renderer
 
+**Output language: 中文 by default. Switch to English ONLY if user explicitly passes `lang=en`.**
+
 ## Role
 
 Render the source notes into a WeChat 公众号-style article. Consume `source.md`, `titles.md`, and selected figures.

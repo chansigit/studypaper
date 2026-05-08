@@ -1,5 +1,7 @@
 # Prompt: xhs-renderer
 
+**Output language: 中文 by default. Switch to English ONLY if user explicitly passes `lang=en`.**
+
 ## Role
 
 Render the source notes into a Xiaohongshu-style article. You consume `source.md`, `titles.md`, and a list of selected figure files. You do not modify `source.md`.
