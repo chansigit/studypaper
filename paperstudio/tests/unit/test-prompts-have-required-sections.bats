@@ -503,7 +503,7 @@ check_prompt() {
     || grep -q 'PAPER_DEEPSTUDY_NO_RUN_LOG' paperstudio/README.md
 }
 
-@test "all 16 sub-Agent prompts mandate provenance HTML comment" {
+@test "all 17 sub-Agent prompts mandate provenance HTML comment" {
   for f in prompts/paper-profiler.md \
            prompts/problem-framer.md \
            prompts/formalizer.md \
@@ -511,6 +511,7 @@ check_prompt() {
            prompts/experiment-critic.md \
            prompts/prior-work-historian.md \
            prompts/figure-interpreter.md \
+           prompts/analysis-coherence-checker.md \
            prompts/reviewer-synthesizer.md \
            prompts/review-writer.md \
            prompts/notes-writer.md \

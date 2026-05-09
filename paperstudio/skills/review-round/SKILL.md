@@ -28,6 +28,7 @@ Invoke after `/paperstudio:study` has produced a paper folder under `~/claude-pa
 Optional flags:
 - `--paper <slug>`: target a specific paper folder. Default: the most recently modified `~/claude-papers/papers/<slug>/`.
 - `--sequential`: run multiple objections one at a time (default is parallel).
+- `--strict-blind`: judge-agent does NOT see the current `review.md`. Restores the Plan-1 pure-blind behavior. Default (no flag): judge-agent receives `CURRENT_REVIEW_PATH=$PAPER_DIR/review.md` so it can detect duplicate accepted weaknesses across rounds.
 
 ---
 
@@ -156,10 +157,14 @@ Agent(
   prompt: <contents of $PLUGIN_ROOT/prompts/judge-agent.md> + concrete inputs:
     OBJECTION=<verbatim objection>
     DEFENSE=<DEFENSE_<i>>
+    CURRENT_REVIEW_PATH=$PAPER_DIR/review.md   # OMIT when --strict-blind is set
+    STRICT_BLIND=<1 if --strict-blind else unset>
 )
 ```
 
-**Important:** the judge dispatch must NOT include `PAPER_TEXT`, `ANALYSIS_DIR`, or any other paper context. The judge is intentionally blind. Only objection + defense.
+**Important:** the judge dispatch must NOT include `PAPER_TEXT` or `ANALYSIS_DIR` — those would compromise the dialectic by giving the judge access to evidence the defense should be surfacing itself. The judge sees only objection + defense + (optionally) the existing `review.md`.
+
+The `CURRENT_REVIEW_PATH` input lets the judge detect when an objection duplicates an already-accepted weakness or question, avoiding re-litigation across rounds. Pass it by default. Skip it only when the user passes `--strict-blind`, which restores Plan-1 pure-blindness (the judge has no awareness of prior rounds).
 
 After each judge-agent returns:
 

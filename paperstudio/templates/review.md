@@ -1,4 +1,12 @@
 <!-- generated: <runtime-timestamp> by reviewer-synthesizer (paperstudio v<plugin-version>) -->
+---
+verdict: <verdict>
+confidence: <low|medium|high>
+review_round: 0
+strengths_count: <int>
+weaknesses_count: <int>
+open_questions_count: <int>
+---
 # Review: <Paper Title>
 
 **Reviewer:** paperstudio (auto-generated v1; refined via /paperstudio:review-round)

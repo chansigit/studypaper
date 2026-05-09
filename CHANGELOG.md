@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-05-08
+
+The "review-flow upgrade" release. Six analysis/review improvements identified in the post-v0.5.2 self-review, shipped together. All are additive — existing paper folders keep working; full benefit appears after re-running `/paperstudio:study` on a paper.
+
+### Added
+
+- **Reviewer-synthesizer reads paper text directly** (Stage 2). Previously it only saw the analysis files (`summary of summaries`). Now it receives `PAPER_TEXT_PATH` and is required to do a "Discussion / Conclusion / Limitations sweep" on the raw paper to catch claims the analysis pipeline missed. Prompt + Stage 2 dispatch updated.
+- **Anchor citation rule** in all 6 analysis prompts (problem-framer, formalizer, method-analyst, experiment-critic, prior-work-historian, figure-interpreter). Every claim about the paper must cite `§N`, `Fig. N`, `Table N`, `Eq. N`, or `p. N`. Bullets without an anchor must be either dropped or marked `[anchor not found]`. Makes downstream review-round / reproduce-check evidence-traceable.
+- **Structured `review.md` frontmatter**: `verdict` (enum: strong_accept|accept|weak_accept|borderline|weak_reject|reject|strong_reject), `confidence` (low|medium|high), `review_round` (int), and counts for strengths / weaknesses / open_questions. Makes reviews machine-readable and comparable across papers. Enforced by `validate-artifact.sh` as enum-when-present (legacy reviews without frontmatter still validate).
+- **Judge-agent duplication awareness**. `/paperstudio:review-round` now passes `CURRENT_REVIEW_PATH=review.md` to the judge so it can detect when an objection duplicates an already-accepted weakness or question. Pure-blind behavior remains available via the new `--strict-blind` flag.
+- **Stage 1.5: cross-analysis coherence check.** New `analysis-coherence-checker` sub-agent reads all 7 analysis files + `paper.txt` after Stage 1 completes, produces `analysis/_coherence.md` with frontmatter (`issues_count`, `contradictions`, `notation_drift`, `missing_links`, `anchor_gaps`, `severity ∈ {none,low,medium,high}`). Reviewer-synthesizer ingests it as additional context. `severity: high` surfaces a chat warning but does not block.
+- **Stats-critic checklist** embedded in `experiment-critic`. Replaces a 1-line statistical-rigor bullet with an explicit 9-item checklist (sample size, variance, seeds ≥ 3, significance test, multiple-comparison correction, outliers, effect size, biological vs technical replicates, small-n caveats).
+- 3 forward-compatible behavior tests in `tests/behavior/`: validate `verdict`, `confidence`, and coherence `severity` enums when the fields are present (currently `skip`, will activate when golden is regenerated under v0.6.0+).
+- 1 prompt count test bumped: 16 → 17 sub-agent prompts (adds `analysis-coherence-checker`).
+
 ## [0.5.2] — 2026-05-08
 
 ### Changed
@@ -122,7 +137,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/chansigit/studypaper/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/chansigit/studypaper/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/chansigit/studypaper/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/chansigit/studypaper/compare/v0.4.1...v0.5.0

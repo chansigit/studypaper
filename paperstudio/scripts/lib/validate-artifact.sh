@@ -76,6 +76,23 @@ check_no_pattern() {
   fi
 }
 
+# Optional-key + enum validator: if the frontmatter key is present, its value
+# must match one of the supplied enum values. Absence is allowed (for legacy /
+# in-flight artifacts).
+check_fm_enum_if_present() {
+  local key="$1"; shift
+  local enum=("$@")
+  if grep -qE "^${key}:" "$FILE"; then
+    local val
+    val=$(grep -E "^${key}:" "$FILE" | head -1 | sed -E "s/^${key}:[[:space:]]*//; s/[[:space:]]*$//")
+    local ok=0
+    for e in "${enum[@]}"; do [ "$val" = "$e" ] && ok=1 && break; done
+    if [ "$ok" -eq 0 ]; then
+      fail "frontmatter '${key}: ${val}' not in enum (${enum[*]})"
+    fi
+  fi
+}
+
 # --- Always check provenance ---
 check_provenance
 
@@ -93,6 +110,11 @@ case "$TYPE" in
     check_required_h2 Score
     check_no_pattern "Plan 2 ✓" "plan-numbered leak"
     check_no_pattern "Plan 3a ✓" "plan-numbered leak"
+    # v0.6.0+ frontmatter (optional during transition; reviewer-synthesizer
+    # produces these on regeneration but pre-v0.6 artifacts won't have them).
+    check_fm_enum_if_present verdict \
+      strong_accept accept weak_accept borderline weak_reject reject strong_reject
+    check_fm_enum_if_present confidence low medium high
     ;;
   review-round)
     # review-round stores objection/defense in frontmatter, not as H2 headings.

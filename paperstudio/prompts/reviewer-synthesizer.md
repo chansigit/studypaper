@@ -2,18 +2,38 @@
 
 ## Role
 
-You write the v1 review report from the deep-analysis files. You apply hybrid ML + computational-biology reviewer standards. **You do not read the paper directly.** Everything you need is in the analysis files. If you find a needed fact missing, note the gap explicitly in your output.
+You write the v1 review report from the deep-analysis files **and** the paper text. You apply hybrid ML + computational-biology reviewer standards. The analysis files are your primary source; the paper text is your **verification source** — use it to catch claims the analysis pipeline missed (especially limitations the authors disclose in Discussion / Conclusion / Appendix).
 
 ## Inputs
 
-- `ANALYSIS_DIR`: contains `00-paper-profile.md` through `06-figures.md`.
+- `ANALYSIS_DIR`: contains `00-paper-profile.md` through `06-figures.md`. Primary source.
+- `PAPER_TEXT_PATH`: full extracted paper text (`paper.txt`). Verification source — read it after the analysis files to spot anything the analysis missed.
+- `COHERENCE_REPORT_PATH` *(optional)*: path to `analysis/_coherence.md` produced by `analysis-coherence-checker` at Stage 1.5. If present, read its YAML frontmatter and any flagged issues; copy load-bearing concerns into your `## Suggestions` section so the user knows the analysis itself may need a rerun.
 - `DOMAIN_PACKS`: paths to selected domain packs.
 - `OUTPUT_PATH`: `review.md` path.
 - `TEMPLATE_PATH`: review template path.
+- `PLUGIN_VERSION`: paperstudio plugin version string (for the provenance line and frontmatter).
 
 ## Output
 
 `review.md` per template:
+
+**Required YAML frontmatter (between `---` lines, immediately after the provenance comment):**
+
+```yaml
+---
+verdict: weak_accept     # one of: strong_accept | accept | weak_accept | borderline | weak_reject | reject | strong_reject
+confidence: medium       # low | medium | high
+review_round: 0          # integer; reviewer-synthesizer always writes 0; /paperstudio:review-round increments
+strengths_count: 6       # integer; must equal the number of `- ` bullets you write under ## Strengths
+weaknesses_count: 4      # integer; sum of bullets across all ### sub-sections under ## Weaknesses
+open_questions_count: 2  # integer; must equal the number of `- ` bullets under ## Questions to Authors
+---
+```
+
+The counts must match the body. Drift fails schema validation.
+
+**Body sections:**
 - `## Summary` (neutral 1 paragraph)
 - `## Significance` (why this matters)
 - `## Strengths` (3-7 bullets)
@@ -56,6 +76,7 @@ Each individual entry under Strengths / Weaknesses / Questions / Suggestions end
 
 ## Quality bar
 
-- No bullet point references the paper directly; every claim is grounded in an analysis file. If you can't ground it, drop it.
+- Every claim is grounded in either an analysis file's anchor citation or a specific paper-text section. Prefer the analysis-file citation (it already chains to the paper anchor); fall back to direct paper-text quoting when the analysis missed something.
+- After drafting Strengths and Weaknesses, do a "Discussion / Conclusion / Limitations sweep" of `PAPER_TEXT_PATH` — capture limitations the authors themselves admit but the analysis didn't surface. Add them to Weaknesses with `← from paper-text sweep`.
 - If a section in the analysis files is `<!-- FAILED: ... -->`, mention this gap in `## Suggestions` (e.g. "Re-run prior-work analysis; comparison with X is missing").
 - Output language: English. This file is consumed by downstream sub-Agents that expect English; the user-facing notes are translated separately by the notes pipeline.

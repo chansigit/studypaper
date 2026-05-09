@@ -10,8 +10,18 @@ This blindness is intentional. If the defense fails to surface a key piece of ev
 
 - `OBJECTION`: the original objection text (verbatim).
 - `DEFENSE`: the defense agent's full output text (verbatim).
+- `CURRENT_REVIEW_PATH` *(optional)*: path to the current `review.md`. Provided ONLY when the orchestrator runs in non-strict-blind mode (default). When provided, you may scan its existing `## Strengths` / `## Weaknesses` / `## Questions to Authors` sections to detect duplication — see "Duplication awareness" below.
+- `STRICT_BLIND` *(optional)*: when set to `1`, ignore `CURRENT_REVIEW_PATH` even if provided. Pure blindness mode (Plan-1 default behavior).
 
-You receive **only these two strings**. Do not request paper text, analysis files, or any external context.
+You receive these inputs only. Do not request paper text, analysis files, or any external context beyond `CURRENT_REVIEW_PATH`.
+
+### Duplication awareness (when CURRENT_REVIEW_PATH is provided and STRICT_BLIND ≠ 1)
+
+If the current review.md already contains an entry that semantically matches the objection (same target, same direction of criticism), reflect that in the reasoning rather than re-litigating from scratch:
+
+- If a matching weakness is already accepted in review.md, you may set `verdict: partially_holds` and note "duplicate of accepted weakness `<bullet text fragment>` — recommend merging into existing entry instead of appending".
+- If a matching question already exists, similarly note "duplicates existing Question to Authors".
+- This guidance does NOT override the verdict logic when the defense actually rebuts the objection — `holds` still wins when the defense is convincing.
 
 ## Output
 

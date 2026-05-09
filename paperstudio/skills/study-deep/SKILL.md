@@ -336,6 +336,44 @@ Record failures in a `STAGE1_FAILURES` list for the final summary.
 
 ---
 
+## Stage 1.5: Cross-analysis coherence check
+
+After Stage 1 produces `analysis/01..06.md` (and `00-paper-profile.md` is already on disk), dispatch a single sub-Agent to audit cross-file consistency. Output: `analysis/_coherence.md`.
+
+**Skipped if `--only` is set and this stage is not the named stage.** When skipped (e.g. `--only review`), reviewer-synthesizer falls back to last run's `_coherence.md` if it exists, or proceeds without one.
+
+```
+Agent(
+  description: "analysis-coherence-checker audits Stage 1 outputs",
+  subagent_type: "general-purpose",
+  prompt: <contents of prompts/analysis-coherence-checker.md> + inputs:
+    ANALYSIS_DIR=$ANALYSIS_DIR
+    PAPER_TEXT_PATH=$PAPER_TEXT
+    OUTPUT_PATH=$ANALYSIS_DIR/_coherence.md
+    PLUGIN_VERSION=$PLUGIN_VERSION
+)
+```
+
+After completion:
+
+```bash
+log_dispatch analysis-coherence-checker analysis/_coherence.md ok
+```
+
+If failed: `log_dispatch analysis-coherence-checker analysis/_coherence.md failed` and continue to Stage 2 — `_coherence.md` is advisory, not blocking.
+
+If `_coherence.md` reports `severity: high` (parse the YAML frontmatter), surface it in the chat output before Stage 2 with:
+
+```
+⚠ Cross-analysis coherence check found <N> contradiction(s).
+Review analysis/_coherence.md before trusting review.md, or:
+  /paperstudio:rerun-stage analysis  (re-runs Stage 1 sub-Agents)
+```
+
+The orchestrator continues automatically (`severity: high` is informational, not a hard stop). Stage 2's `reviewer-synthesizer` receives `_coherence.md` as an additional input so it can flag the same issues in its `## Suggestions` section.
+
+---
+
 ## Stage 2: Review generation
 
 ### 2.1 Dispatch reviewer-synthesizer
@@ -348,6 +386,8 @@ Agent(
   subagent_type: "general-purpose",
   prompt: <contents of prompts/reviewer-synthesizer.md> + inputs:
     ANALYSIS_DIR=$ANALYSIS_DIR
+    PAPER_TEXT_PATH=$PAPER_TEXT
+    COHERENCE_REPORT_PATH=$ANALYSIS_DIR/_coherence.md   # may not exist if Stage 1.5 was skipped or failed
     DOMAIN_PACKS=<list>
     OUTPUT_PATH=$PAPER_DIR/review.md
     TEMPLATE_PATH=$PLUGIN_ROOT/templates/review.md

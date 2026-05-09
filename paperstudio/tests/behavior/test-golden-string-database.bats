@@ -142,6 +142,46 @@ EXAMPLE_DIR="${BATS_TEST_DIRNAME}/../../../examples/string-database-2025"
 }
 
 # ---------------------------------------------------------------------------
+# v0.6.0 forward-compat invariants — optional today, required after the
+# golden snapshot is regenerated under v0.6.0+. They detect "the LLM produced
+# a verdict but used a non-enum value" without forcing the legacy snapshot
+# to have the field.
+# ---------------------------------------------------------------------------
+
+@test "golden review (forward-compat): if verdict frontmatter is present, value is in enum" {
+  f="$EXAMPLE_DIR/review.md"
+  if grep -qE '^verdict:' "$f"; then
+    val=$(grep -E '^verdict:' "$f" | head -1 | sed -E 's/^verdict:[[:space:]]*//; s/[[:space:]]*$//')
+    case "$val" in
+      strong_accept|accept|weak_accept|borderline|weak_reject|reject|strong_reject) ;;
+      *) echo "verdict=$val not in enum"; return 1 ;;
+    esac
+  else
+    skip "verdict frontmatter not yet in golden — regenerate under v0.6.0+ to enforce"
+  fi
+}
+
+@test "golden review (forward-compat): if confidence frontmatter is present, value is in {low,medium,high}" {
+  f="$EXAMPLE_DIR/review.md"
+  if grep -qE '^confidence:' "$f"; then
+    val=$(grep -E '^confidence:' "$f" | head -1 | sed -E 's/^confidence:[[:space:]]*//; s/[[:space:]]*$//')
+    [[ "$val" =~ ^(low|medium|high)$ ]] || { echo "confidence=$val invalid"; return 1; }
+  else
+    skip "confidence frontmatter not yet in golden — regenerate under v0.6.0+ to enforce"
+  fi
+}
+
+@test "golden coherence (forward-compat): if _coherence.md present, severity is in enum" {
+  f="$EXAMPLE_DIR/analysis/_coherence.md"
+  if [ -f "$f" ]; then
+    val=$(grep -E '^severity:' "$f" | head -1 | sed -E 's/^severity:[[:space:]]*//; s/[[:space:]]*$//')
+    [[ "$val" =~ ^(none|low|medium|high)$ ]] || { echo "severity=$val invalid"; return 1; }
+  else
+    skip "_coherence.md not yet in golden — regenerate under v0.6.0+ to enforce"
+  fi
+}
+
+# ---------------------------------------------------------------------------
 # Cross-cutting: every artifact has provenance + the validator agrees
 # ---------------------------------------------------------------------------
 
