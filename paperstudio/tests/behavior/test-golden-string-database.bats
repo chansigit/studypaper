@@ -146,38 +146,78 @@ EXAMPLE_DIR="${BATS_TEST_DIRNAME}/../../../examples/string-database-2025"
 # golden snapshot is regenerated under v0.6.0+. They detect "the LLM produced
 # a verdict but used a non-enum value" without forcing the legacy snapshot
 # to have the field.
+#
+# Expiry guard: when the golden's provenance line shows v0.6.0 or later, the
+# `skip`s flip to hard failures via the explicit "must be present" assertion
+# at the bottom of this section. If the snapshot is regenerated and the new
+# fields are missing, the test fails loudly instead of skipping silently.
 # ---------------------------------------------------------------------------
 
-@test "golden review (forward-compat): if verdict frontmatter is present, value is in enum" {
+golden_provenance_version() {
+  # Returns the major.minor.patch from the line-1 provenance comment of the
+  # golden review.md, or empty if not parseable.
+  head -1 "$EXAMPLE_DIR/review.md" | sed -nE 's/.*paperstudio v([0-9]+\.[0-9]+\.[0-9]+).*/\1/p'
+}
+
+golden_is_v060_or_later() {
+  local v
+  v=$(golden_provenance_version)
+  [ -n "$v" ] || return 1
+  # Compare via sort -V; if v sorts at-or-after 0.6.0, return true.
+  [ "$(printf '%s\n%s\n' "$v" "0.6.0" | sort -V | head -1)" = "0.6.0" ]
+}
+
+@test "golden review (forward-compat): verdict frontmatter present and in enum, OR golden is pre-v0.6.0" {
   f="$EXAMPLE_DIR/review.md"
-  if grep -qE '^verdict:' "$f"; then
+  if golden_is_v060_or_later; then
+    grep -qE '^verdict:' "$f" || { echo "golden is v0.6.0+ but verdict frontmatter missing"; return 1; }
     val=$(grep -E '^verdict:' "$f" | head -1 | sed -E 's/^verdict:[[:space:]]*//; s/[[:space:]]*$//')
     case "$val" in
       strong_accept|accept|weak_accept|borderline|weak_reject|reject|strong_reject) ;;
       *) echo "verdict=$val not in enum"; return 1 ;;
     esac
   else
-    skip "verdict frontmatter not yet in golden — regenerate under v0.6.0+ to enforce"
+    if grep -qE '^verdict:' "$f"; then
+      val=$(grep -E '^verdict:' "$f" | head -1 | sed -E 's/^verdict:[[:space:]]*//; s/[[:space:]]*$//')
+      case "$val" in
+        strong_accept|accept|weak_accept|borderline|weak_reject|reject|strong_reject) ;;
+        *) echo "verdict=$val not in enum"; return 1 ;;
+      esac
+    else
+      skip "golden is pre-v0.6.0 ($(golden_provenance_version)); verdict frontmatter not yet expected"
+    fi
   fi
 }
 
-@test "golden review (forward-compat): if confidence frontmatter is present, value is in {low,medium,high}" {
+@test "golden review (forward-compat): confidence frontmatter present and in enum, OR golden is pre-v0.6.0" {
   f="$EXAMPLE_DIR/review.md"
-  if grep -qE '^confidence:' "$f"; then
+  if golden_is_v060_or_later; then
+    grep -qE '^confidence:' "$f" || { echo "golden is v0.6.0+ but confidence frontmatter missing"; return 1; }
     val=$(grep -E '^confidence:' "$f" | head -1 | sed -E 's/^confidence:[[:space:]]*//; s/[[:space:]]*$//')
     [[ "$val" =~ ^(low|medium|high)$ ]] || { echo "confidence=$val invalid"; return 1; }
   else
-    skip "confidence frontmatter not yet in golden — regenerate under v0.6.0+ to enforce"
+    if grep -qE '^confidence:' "$f"; then
+      val=$(grep -E '^confidence:' "$f" | head -1 | sed -E 's/^confidence:[[:space:]]*//; s/[[:space:]]*$//')
+      [[ "$val" =~ ^(low|medium|high)$ ]] || { echo "confidence=$val invalid"; return 1; }
+    else
+      skip "golden is pre-v0.6.0 ($(golden_provenance_version)); confidence frontmatter not yet expected"
+    fi
   fi
 }
 
-@test "golden coherence (forward-compat): if _coherence.md present, severity is in enum" {
+@test "golden coherence (forward-compat): _coherence.md present with valid severity, OR golden is pre-v0.6.0" {
   f="$EXAMPLE_DIR/analysis/_coherence.md"
-  if [ -f "$f" ]; then
+  if golden_is_v060_or_later; then
+    [ -f "$f" ] || { echo "golden is v0.6.0+ but analysis/_coherence.md missing"; return 1; }
     val=$(grep -E '^severity:' "$f" | head -1 | sed -E 's/^severity:[[:space:]]*//; s/[[:space:]]*$//')
     [[ "$val" =~ ^(none|low|medium|high)$ ]] || { echo "severity=$val invalid"; return 1; }
   else
-    skip "_coherence.md not yet in golden — regenerate under v0.6.0+ to enforce"
+    if [ -f "$f" ]; then
+      val=$(grep -E '^severity:' "$f" | head -1 | sed -E 's/^severity:[[:space:]]*//; s/[[:space:]]*$//')
+      [[ "$val" =~ ^(none|low|medium|high)$ ]] || { echo "severity=$val invalid"; return 1; }
+    else
+      skip "golden is pre-v0.6.0 ($(golden_provenance_version)); _coherence.md not yet expected"
+    fi
   fi
 }
 

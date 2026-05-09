@@ -1,6 +1,5 @@
 {
-  "name": "paperstudio",
-  "version": "0.5.0",
+  "name": "paperstudio-tests",
   "private": true,
   "type": "commonjs",
   "engines": { "node": ">=18" },

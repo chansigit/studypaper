@@ -36,6 +36,23 @@ log_dispatch() {
   local status="${3:-ok}"
   local duration_ms="${4:-}"
 
+  # JSON-escape arbitrary string fields. Inputs in callers today are
+  # always literal subagent / artifact names (safe ASCII), but if a future
+  # caller passes anything user-derived (paper title, error message), this
+  # prevents a backslash or double-quote from corrupting the JSONL line.
+  json_escape() {
+    # Replace \ with \\, then " with \"; preserve everything else verbatim.
+    # Tab and newline are also encoded so a multi-line caller string can't
+    # split a single JSONL record into two.
+    printf '%s' "$1" \
+      | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' \
+            -e 's/\t/\\t/g' \
+      | tr '\n' '\1' | sed 's/\x01/\\n/g'
+  }
+  subagent=$(json_escape "$subagent")
+  output=$(json_escape "$output")
+  status=$(json_escape "$status")
+
   # Compose plugin_version from manifest, fallback "?"
   local plugin_version="?"
   local manifest="${CLAUDE_PLUGIN_ROOT:-}/.claude-plugin/plugin.json"

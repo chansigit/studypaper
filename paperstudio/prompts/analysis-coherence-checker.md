@@ -38,7 +38,13 @@ Then sections:
 - `## Contradictions` — file-A vs file-B factual disagreements (e.g. `01-problem` says model is regression, `03-method-deep` says classification).
 - `## Notation drift` — same entity named differently across files (e.g. `θ` vs `\theta` vs `phi` for the same parameter; "RoBERTa-large-PM-M3-Voc" vs "PubMedBERT-large").
 - `## Missing links` — entities cited in one file that should appear in a specific sibling file but don't (e.g. `04-experiments` lists baseline X, but X is absent from `05-prior-work`).
-- `## Anchor gaps` — analysis bullets that violate the anchor-citation rule (no `[§N]`, `[Fig. N]`, `[Table N]`, etc.). List the offending file + line number range.
+- `## Anchor gaps` — analysis bullets that violate the anchor-citation rule. A bullet **satisfies** the rule if it contains any of the following forms:
+  - `[§N]`, `[§N.M]`, `[§A.3, p. 17]` — bracketed section citation (preferred)
+  - `[Fig. N]`, `[Figure N]`, `[Table N]`, `[Eq. N]` — bracketed figure/table/equation
+  - `[p. N]` — bracketed page reference
+  - `(paper §N)`, `(paper Fig. N)`, `(paper Table N)` — parenthesized form (used by defense-agent and some legacy bullets; accept it but record in the report so we can standardize later)
+  - `[anchor not found]` — explicit acknowledgment that the paper buried the info; downstream `reviewer-synthesizer` will surface this as a transparency weakness
+  - List the offending file + line number range for each bullet that has none of the above.
 - `## Recommendations` — for each issue, one line: which sub-Agent to re-dispatch (with `/paperstudio:rerun-stage analysis`) and why, OR "tolerate (cosmetic)".
 
 If there are no issues in a category, write a single line: `None.` (Don't omit the heading.)

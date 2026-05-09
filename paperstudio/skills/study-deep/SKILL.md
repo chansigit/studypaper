@@ -16,7 +16,7 @@ These apply to **every** Agent dispatch in this skill. Stage-local exceptions mu
 3. **Log** — after every dispatch (success or fail), call `log_dispatch <subagent> <output-path> <ok|failed>`. Never on a skip.
 4. **Paths** — paper root is `${PAPERS_ROOT}`, resolved once from `${CLAUDE_PAPERS_ROOT:-$HOME/claude-papers/papers}`. Never hard-code `~/claude-papers/papers/` in writes.
 5. **Failure** — Agent failure: log `failed`, do NOT delete partial output, do NOT auto-retry, surface the actionable rerun command, continue independent stages.
-6. **Chat language** — reply in the user's invocation language. Artifact language is governed by `--lang` (Rule 4 of `_shared/dispatch-rules.md`).
+6. **Chat language** — reply in the user's invocation language. Artifact language is governed by the prompt's `LANG=` input.
 
 Full text + rationale: see [`paperstudio/skills/_shared/dispatch-rules.md`](../_shared/dispatch-rules.md).
 
@@ -57,7 +57,7 @@ If `--paper` is **not** set, the orchestrator either runs Stage 0.2 (for `/paper
 | `--only` value | Skip stages | Run stages |
 |---|---|---|
 | `profile` | Stage 1, 2, 3 | Stage 0 only (paper-profiler dispatch). The orchestrator backs up the existing `00-paper-profile.md` first. |
-| `analysis` | Stage 0.4, 0.5, 2, 3 | Stage 1 only (six parallel analysis sub-Agents). Stage 0.1–0.3.1 still runs to set up paths. Existing analysis files 01–06 are backed up first. |
+| `analysis` | Stage 0.4, 0.5, 2, 3 | Stage 1 + Stage 1.5 (six parallel analysis sub-Agents, then `analysis-coherence-checker`). Stage 0.1–0.3.1 still runs to set up paths. Existing `analysis/01–06.md` and `analysis/_coherence.md` are backed up first. |
 | `review` | Stage 0.4, 0.5, 1, 3 | Stage 2 only (reviewer-synthesizer). Existing `review.md` backed up. **Note:** this discards any edits made by `/paperstudio:review-round`. The orchestrator MUST warn the user before proceeding. |
 | `notes` | Stage 0.4, 0.5, 1, 2 | Stage 3 only (notes-writer + title-generator + xhs/wechat renderers). Existing `notes/*.md` backed up. **Note:** this also overwrites `notes/source.md`, so any manual content edits to `source.md` are lost — refer to `refine-notes` skill for the source-vs-rendering split workflow. |
 

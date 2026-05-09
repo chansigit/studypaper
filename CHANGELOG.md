@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Fixed (post-v0.6.0 review-round)
+
+Closes the 15 findings from the superpowers code-review on commit `79bc4c3`. No version bump — these stay on `main` until the next intentional release.
+
+- **C1 (ship-blocker)**: `review-writer` now updates `review.md` YAML frontmatter on every round (review_round / strengths_count / weaknesses_count / open_questions_count, with documented verdict-downgrade rules). `validate-artifact.sh` gains `check_review_count_consistency` so frontmatter / body drift is caught at validation time.
+- **C2 (ship-blocker)**: `study-deep` Hard-rules Rule 6 referenced the wrong rule in `_shared/dispatch-rules.md`; replaced with the standard wording shared by the other 8 SKILLs.
+- **I1**: `--only analysis` now also re-runs Stage 1.5 (`analysis-coherence-checker`); the table in `study-deep/SKILL.md` was missing the coherence step.
+- **I2**: `paperstudio/package.json` no longer carries a `version` field — single source of truth is `.claude-plugin/plugin.json`. New `tests/unit/test-version-source-of-truth.bats` asserts plugin.json and marketplace.json agree.
+- **I3**: top-level README and `paperstudio/README.md` now document `/paperstudio:study --lang en` (it shipped in v0.5.0 but was missing from both READMEs).
+- **I4**: README architecture diagram + repo-layout snippet now say "19 sub-agent prompts" (was 18; v0.6.0 added `analysis-coherence-checker.md`).
+- **I5**: `scripts/search-arxiv.sh` User-Agent string is now read from `plugin.json` instead of being hard-coded to `paperstudio/0.4.0`.
+- **I6**: `scripts/search-arxiv.sh` final pipeline replaced `head -n "$max"` with an `awk NR<=max` form to avoid SIGPIPE under `set -o pipefail`.
+- **I7**: `tests/behavior/test-golden-string-database.bats` forward-compat tests now read the golden's provenance version; once the snapshot is regenerated under v0.6.0+, the `skip`s flip to hard failures (no more silent forever-skip).
+- **M1**: `validate-artifact.sh` gains a `PAPERSTUDIO_VALIDATE_STRICT=1` env knob that promotes the v0.6.0 review frontmatter keys from "enum-when-present" to "required" — useful in CI on freshly regenerated paper folders.
+- **M2**: `add-prior-work` SKILL's "DOI not yet supported" roadmap blockquote moved out of the unusual position above the H1; now lives in the body next to the `<ref>` argument description.
+- **M3**: `_shared/dispatch-rules.md` Rule 3 reworded so "skip = no JSONL but still ✓ in summary" is no longer surface-contradictory with Rule 2's "Skipped dispatches still count".
+- **M4**: `analysis-coherence-checker` anchor-rule regex broadened to accept both `[§N]` (analysis-prompt convention) and `(paper §N)` (defense-agent convention) plus the explicit `[anchor not found]` opt-out, preventing silent under-reporting of anchor gaps once review-round artifacts feed downstream consumers.
+- **M5**: `scripts/lib/log-dispatch.sh` now JSON-escapes its three string fields (subagent, output, status) before serializing the JSONL line — defensive against any future caller that pipes a user-supplied string with quotes / backslashes / newlines.
+- **M6**: `examples/string-database-2025/README.md` gains a prominent "snapshot vintage" note explaining that the example was generated under v0.1.0 and what v0.6.0+ regeneration will add (frontmatter, `_coherence.md`, anchor citations) — so new users don't mistake a legacy snapshot for the current output shape.
+
+Tests: 248 bats (+3 new version-source) + 4 node, all passing. 3 forward-compat tests still `skip` against the legacy v0.1.0 golden but will hard-fail on v0.6.0+ regeneration.
+
 ## [0.6.0] — 2026-05-08
 
 The "review-flow upgrade" release. Six analysis/review improvements identified in the post-v0.5.2 self-review, shipped together. All are additive — existing paper folders keep working; full benefit appears after re-running `/paperstudio:study` on a paper.

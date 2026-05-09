@@ -117,7 +117,7 @@ In Claude Code (CLI / IDE / Web):
 [2] skills/        ×9    The orchestrators ("directors"). Stage ordering, flag
                          parsing, idempotence rules, who-dispatches-whom.
                          This is where the project's control flow lives.
-[3] prompts/       ×18   Sub-agent scripts ("actors"). Each one is the full
+[3] prompts/       ×19   Sub-agent scripts ("actors"). Each one is the full
                          prompt for a single specialized sub-agent (paper-profiler,
                          method-analyst, reviewer-synthesizer, …). They never
                          talk to each other directly — they exchange data via
@@ -208,6 +208,9 @@ If you only remember one thing: **constraints + templates + schema validation + 
 # One-shot full pipeline — fetch, analyze, review, render notes
 /paperstudio:study https://arxiv.org/abs/1706.03762
 
+# Same, but render the Stage 3 notes (xhs / wechat) in English instead of the default 中文
+/paperstudio:study https://arxiv.org/abs/1706.03762 --lang en
+
 # An adversarial review round — you raise an objection, defense and blind judge respond
 /paperstudio:review-round
 
@@ -225,7 +228,7 @@ If you only remember one thing: **constraints + templates + schema validation + 
 
 | Command | What it does |
 |---|---|
-| `/paperstudio:study <pdf-or-url>` | One-shot full pipeline |
+| `/paperstudio:study <pdf-or-url> [--lang en]` | One-shot full pipeline. Default Stage 3 (xhs / wechat) language is 中文; `--lang en` switches to English. |
 | `/paperstudio:rerun-stage <stage>` | Re-run a single stage (`analysis` / `review` / `notes` / `profile`) |
 | `/paperstudio:review-round` | Adversarial review round (objection → defense → blind judge → user verdict) |
 | `/paperstudio:refine-notes <variant>` | Apply an edit instruction to `xhs.md` or `wechat.md` |
@@ -254,7 +257,7 @@ studypaper/
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                 10 slash commands
 │   ├── skills/                   orchestration skills (study-deep, review-round, …)
-│   ├── prompts/                  18 sub-agent prompts
+│   ├── prompts/                  19 sub-agent prompts
 │   ├── templates/                output templates for every artifact
 │   ├── domain-packs/             7 domain knowledge packs
 │   ├── scripts/                  helper scripts (verify-prereqs, parse-judge-output, …)
@@ -365,7 +368,7 @@ notes/
                          不含业务逻辑。
 [2] skills/        ×9    编排器("导演")。stage 顺序、flag 解析、幂等规则、
                          谁派给谁。项目控制流的所在。
-[3] prompts/       ×18   子 Agent 脚本("演员")。每个文件是一个专职子 Agent
+[3] prompts/       ×19   子 Agent 脚本("演员")。每个文件是一个专职子 Agent
                          (paper-profiler / method-analyst / reviewer-synthesizer …)
                          的完整 prompt。它们彼此不直接通信 —— 通过磁盘文件
                          交接,skill 层负责路由。
@@ -454,6 +457,9 @@ notes/
 # 一键全自动 —— 下载、分析、审稿、渲染笔记
 /paperstudio:study https://arxiv.org/abs/1706.03762
 
+# 同上,但 Stage 3 笔记(xhs / wechat)输出英文,而不是默认中文
+/paperstudio:study https://arxiv.org/abs/1706.03762 --lang en
+
 # 一轮对抗式审稿 —— 你提质疑,辩护方和盲审 judge 应答
 /paperstudio:review-round
 
@@ -471,7 +477,7 @@ notes/
 
 | 命令 | 用途 |
 |---|---|
-| `/paperstudio:study <pdf-or-url>` | 一键全自动 pipeline |
+| `/paperstudio:study <pdf-or-url> [--lang en]` | 一键全自动 pipeline。Stage 3 笔记默认中文;`--lang en` 切换为英文。 |
 | `/paperstudio:rerun-stage <stage>` | 重跑单个 stage(`analysis` / `review` / `notes` / `profile`) |
 | `/paperstudio:review-round` | 对抗式审稿(质疑 → 辩护 → 盲审 → 用户拍板) |
 | `/paperstudio:refine-notes <variant>` | 对 `xhs.md` 或 `wechat.md` 应用一条修改指令 |
@@ -500,7 +506,7 @@ studypaper/
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                 10 个 slash 命令
 │   ├── skills/                   orchestration 技能(study-deep, review-round, …)
-│   ├── prompts/                  18 个 sub-agent 提示词
+│   ├── prompts/                  19 个 sub-agent 提示词
 │   ├── templates/                所有产物的模板
 │   ├── domain-packs/             7 个领域知识包
 │   ├── scripts/                  辅助脚本

@@ -79,6 +79,54 @@ check_no_pattern() {
 # Optional-key + enum validator: if the frontmatter key is present, its value
 # must match one of the supplied enum values. Absence is allowed (for legacy /
 # in-flight artifacts).
+# Count `^- ` bullets in the body region delimited by an H2 (or H3) heading
+# and the next H2 (or end of file). Used by review count-consistency check.
+count_bullets_under() {
+  local heading_pattern="$1"  # full regex, e.g. '^## Strengths[[:space:]]*$'
+  local stop_pattern="${2:-^## }"
+  awk -v start="$heading_pattern" -v stop="$stop_pattern" '
+    $0 ~ start { in_section=1; next }
+    in_section && $0 ~ stop { in_section=0 }
+    in_section && /^- / { n++ }
+    END { print n+0 }
+  ' "$FILE"
+}
+
+# Count bullets across ALL ### subsections inside a given H2.
+count_bullets_under_h2_subsections() {
+  local h2_pattern="$1"  # e.g. '^## Weaknesses[[:space:]]*$'
+  awk -v start="$h2_pattern" '
+    $0 ~ start { in_h2=1; next }
+    in_h2 && /^## / { in_h2=0 }
+    in_h2 && /^- / { n++ }
+    END { print n+0 }
+  ' "$FILE"
+}
+
+check_review_count_consistency() {
+  # Only fires when the FM key is present.
+  local declared body
+  for spec in \
+    "strengths_count|^## Strengths[[:space:]]*$|h2" \
+    "weaknesses_count|^## Weaknesses[[:space:]]*$|h2_with_subs" \
+    "open_questions_count|^## Questions to Authors[[:space:]]*$|h2"; do
+    local key="${spec%%|*}"
+    local rest="${spec#*|}"
+    local heading="${rest%|*}"
+    local mode="${rest##*|}"
+    if grep -qE "^${key}:" "$FILE"; then
+      declared=$(grep -E "^${key}:" "$FILE" | head -1 | sed -E "s/^${key}:[[:space:]]*//; s/[[:space:]]*$//")
+      case "$mode" in
+        h2_with_subs) body=$(count_bullets_under_h2_subsections "$heading") ;;
+        *) body=$(count_bullets_under "$heading") ;;
+      esac
+      if [ "$declared" != "$body" ]; then
+        fail "frontmatter ${key}=${declared} but body has ${body} bullet(s) — review-writer must update the count after every edit"
+      fi
+    fi
+  done
+}
+
 check_fm_enum_if_present() {
   local key="$1"; shift
   local enum=("$@")
@@ -110,11 +158,24 @@ case "$TYPE" in
     check_required_h2 Score
     check_no_pattern "Plan 2 ✓" "plan-numbered leak"
     check_no_pattern "Plan 3a ✓" "plan-numbered leak"
-    # v0.6.0+ frontmatter (optional during transition; reviewer-synthesizer
-    # produces these on regeneration but pre-v0.6 artifacts won't have them).
+    # v0.6.0+ frontmatter. By default, enum-when-present (legacy v0.5.x review.md
+    # without frontmatter still validates). Set PAPERSTUDIO_VALIDATE_STRICT=1 to
+    # require the frontmatter keys outright — useful in CI on freshly regenerated
+    # paper folders where missing frontmatter signals reviewer-synthesizer regression.
     check_fm_enum_if_present verdict \
       strong_accept accept weak_accept borderline weak_reject reject strong_reject
     check_fm_enum_if_present confidence low medium high
+    if [ "${PAPERSTUDIO_VALIDATE_STRICT:-0}" = "1" ]; then
+      check_required_fm_key verdict
+      check_required_fm_key confidence
+      check_required_fm_key review_round
+      check_required_fm_key strengths_count
+      check_required_fm_key weaknesses_count
+      check_required_fm_key open_questions_count
+    fi
+    # Count-consistency: when the FM declares a count, the body must match.
+    # Always runs — fires even in non-STRICT mode if the keys are present.
+    check_review_count_consistency
     ;;
   review-round)
     # review-round stores objection/defense in frontmatter, not as H2 headings.

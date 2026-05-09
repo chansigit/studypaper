@@ -5,8 +5,6 @@ disable-model-invocation: false
 allowed-tools: Bash, Read, Write, Edit, Agent
 ---
 
-> **Roadmap note:** DOI inputs (e.g. `10.1093/nar/gkae1113`) are not yet supported. The current implementation falls back to "free-text" parsing for DOIs which produces poor results. Use the arXiv URL or BibTeX form instead. *DOI not yet supported* — tracking issue in spec §11.
-
 # paperstudio: add-prior-work workflow
 
 
@@ -28,6 +26,8 @@ Full text + rationale: see [`paperstudio/skills/_shared/dispatch-rules.md`](../_
 Invoke after `/paperstudio:study` has produced `analysis/05-prior-work.md`. Each invocation augments that file with one new prior-work entry the auto-run pipeline missed. Reuses the `prior-work-historian` sub-Agent prompt from Plan 1 with extended inputs.
 
 Required positional arg: `<ref>` (BibTeX entry, arXiv URL, or free-text description).
+
+> **Roadmap note:** DOI inputs (e.g. `10.1093/nar/gkae1113`) are not yet supported. The current implementation falls back to "free-text" parsing for DOIs which produces poor results. Use the arXiv URL or BibTeX form instead. *DOI not yet supported* — tracking issue in spec §11.
 Optional flag: `--paper <slug>` (default: most recently modified paper folder).
 
 ---

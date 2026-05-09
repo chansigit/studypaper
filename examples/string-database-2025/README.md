@@ -2,6 +2,14 @@
 
 Real outputs from running the `paperstudio` pipeline against "The STRING database in 2025: protein networks with directionality of regulation" (Szklarczyk et al., 2025; *Nucleic Acids Research*; arXiv-equivalent: NAR `gkae1113`). The paper is a database release, classified as `cs-bio` / `protein-function` by the auto-run profiler.
 
+> **Note on snapshot vintage.** This example was generated under **paperstudio v0.1.0** (provenance lines say `paperstudio v0.1.0 [Plan 7 retrofit]`). It does not yet reflect v0.6.0 outputs:
+>
+> - `review.md` here has no YAML frontmatter; v0.6.0 reviews start with `verdict / confidence / review_round / *_count` keys.
+> - There is no `analysis/_coherence.md` in this snapshot; v0.6.0 produces one in Stage 1.5.
+> - Analysis bullets do not yet carry the `[§N]` / `[Fig. N]` / `[Table N]` anchor citations the v0.6.0 prompts require.
+>
+> When you regenerate this example under v0.6.0+, those additions appear automatically. The forward-compat behavior tests in `paperstudio/tests/behavior/` already enforce the new shape and will switch from `skip` to hard failures once the snapshot's provenance line shows `v0.6.0` or later.
+
 ## Files in this example
 
 | File | Source command | What it shows |

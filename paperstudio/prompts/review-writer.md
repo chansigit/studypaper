@@ -23,6 +23,15 @@ Two things:
 
 1. **The modified `review.md`** is written to `REVIEW_PATH` (in-place edit). After your edit, the file should still satisfy the structure that Plan 1's review template defines: the same H2/H3 sections in the same order.
 
+   **Frontmatter maintenance (REQUIRED — v0.6.0+ contract).** `review.md` carries a YAML frontmatter block (between `---` lines) immediately after the provenance comment. Every edit you make MUST keep the frontmatter accurate:
+   - `review_round`: set to `ROUND_NUMBER` (the input). reviewer-synthesizer writes `0`; you bump it on every round.
+   - `strengths_count`: count `^- ` bullets under `## Strengths` after your edit. (Usually unchanged — review-writer rarely touches Strengths — but always recount.)
+   - `weaknesses_count`: count `^- ` bullets across **all** `### *` sub-sections of `## Weaknesses` after your edit.
+   - `open_questions_count`: count `^- ` bullets under `## Questions to Authors` after your edit.
+   - `verdict` and `confidence`: leave unchanged unless the JUDGE_VERDICT explicitly justifies a downgrade (e.g., a `fails` of severity `major` on a load-bearing claim warrants a one-step downgrade: `accept` → `weak_accept` → `borderline` → `weak_reject`). When you do downgrade, append `← downgraded round <N>` as a brief comment line above the frontmatter to surface the change.
+
+   If the file has no frontmatter at all (legacy v0.5.x and earlier), insert one with the counts you just computed and `review_round: <ROUND_NUMBER>`. Use `verdict: weak_accept` and `confidence: medium` as conservative defaults so downstream schema validation passes.
+
 2. **The added/merged snippet** returned in your final message text, fenced as:
 
 ```

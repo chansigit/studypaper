@@ -32,7 +32,13 @@ encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote_plus(sys
 
 api="https://export.arxiv.org/api/query?search_query=all:${encoded}&max_results=${max}&sortBy=relevance"
 
-ua="paperstudio/0.4.0 (https://github.com/chansigit/studypaper)"
+# Resolve plugin version from .claude-plugin/plugin.json (single source of truth).
+# Fall back to 'unknown' if the manifest can't be read; we never want this UA
+# resolution to abort the search.
+plugin_root="$(cd "$(dirname "$0")/.." && pwd)"
+plugin_version=$(grep -oE '"version":[[:space:]]*"[^"]+"' "$plugin_root/.claude-plugin/plugin.json" 2>/dev/null \
+  | head -1 | sed -E 's/.*"([^"]+)".*$/\1/')
+ua="paperstudio/${plugin_version:-unknown} (https://github.com/chansigit/studypaper)"
 curl_out=$(curl -sSL --max-time 20 -A "$ua" -o /tmp/paperstudio-arxiv-$$.xml -w 'CODE=%{http_code}' "$api" 2>/dev/null || echo "CODE=000")
 http_code=$(printf '%s' "$curl_out" | grep -oE 'CODE=[0-9]+' | tail -1 | sed 's/CODE=//')
 [[ -z "$http_code" ]] && http_code="000"
@@ -78,4 +84,7 @@ echo "$xml" | awk 'BEGIN{RS="</entry>"} /<entry>/' | while IFS= read -r entry; d
   pdf="https://arxiv.org/pdf/${id}.pdf"
 
   printf '%s\t%s\t%s\t%s\t%s\n' "$id" "${year:-}" "${authors:-}" "${title:-}" "$pdf"
-done | head -n "$max" | awk 'BEGIN{n=0} {print; n++} END{exit (n>0?0:1)}'
+done | awk -v max="$max" '
+  NR <= max { print; n++ }
+  END { exit (n>0 ? 0 : 1) }
+'

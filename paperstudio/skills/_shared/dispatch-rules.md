@@ -47,7 +47,7 @@ log_dispatch <subagent-name> <relative-output-path> <ok|failed> [duration_ms]
 
 The function is sourced from `scripts/lib/log-dispatch.sh` near the top of every SKILL. It appends one JSONL line to `${PAPER_DIR}/.deepstudy/run.jsonl`. It MUST NEVER cause the orchestrator to abort — the function returns 0 even on its own write failure.
 
-For pre-dispatch skips (Rule 2 row 2), do NOT call `log_dispatch` — skips are not events.
+For pre-dispatch skips (Rule 2 row 2), do NOT call `log_dispatch` — skips are not dispatch events. They DO still count toward the success column in the chat-final summary; the existing on-disk file is the artifact of record. Net effect: no JSONL line is written, but the user still sees ✓ for that artifact in the post-run summary.
 
 ---
 
