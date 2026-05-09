@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "paperstudio",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "description": "Deep paper study for ML and computational-biology papers. Adversarial review rounds, reproducibility audit, deep-dives, head-to-head comparisons, and Chinese social-media notes (Xiaohongshu / WeChat) generated from a single source.",
       "author": {
         "name": "Sijie Chen",

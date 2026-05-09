@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Fixed (post-v0.6.0 review-round)
+## [0.6.1] — 2026-05-08
 
-Closes the 15 findings from the superpowers code-review on commit `79bc4c3`. No version bump — these stay on `main` until the next intentional release.
+Closes the 15 findings from the superpowers code-review on commit `79bc4c3`.
 
 - **C1 (ship-blocker)**: `review-writer` now updates `review.md` YAML frontmatter on every round (review_round / strengths_count / weaknesses_count / open_questions_count, with documented verdict-downgrade rules). `validate-artifact.sh` gains `check_review_count_consistency` so frontmatter / body drift is caught at validation time.
 - **C2 (ship-blocker)**: `study-deep` Hard-rules Rule 6 referenced the wrong rule in `_shared/dispatch-rules.md`; replaced with the standard wording shared by the other 8 SKILLs.
@@ -159,7 +159,8 @@ Initial release. Plugin published on the [`chansigit/studypaper`](https://github
 - 7-dimension reproducibility audit (`/paperstudio:reproduce-check`) with live GitHub URL verification via WebFetch.
 - Examples gallery (`examples/string-database-2025/`) showing the full pipeline output on *The STRING database in 2025*.
 
-[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/chansigit/studypaper/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/chansigit/studypaper/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/chansigit/studypaper/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/chansigit/studypaper/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/chansigit/studypaper/compare/v0.5.0...v0.5.1
